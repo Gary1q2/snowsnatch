@@ -23,18 +23,18 @@ class Player extends Entity {
 		super.update();
 	}
 
-	// Update movement
+	// Update movement based on key presses
 	updateMovement() {
-		if (Keys.left && this.x > 0) {
+		if (Keys.left && !Keys.right && this.x > 0) {
 			this.x--;
 		}
-		if (Keys.right && this.x < numWidth-1) {
+		if (Keys.right && !Keys.left && this.x < numWidth-1) {
 			this.x++;
 		}
-		if (Keys.up && this.y > 0) {
+		if (Keys.up && !Keys.down && this.y > 0) {
 			this.y--;
 		}
-		if (Keys.down && this.y < numHeight-1) {
+		if (Keys.down && !Keys.up && this.y < numHeight-1) {
 			this.y++;
 		}
 	}
