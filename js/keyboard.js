@@ -3,7 +3,8 @@ var Keys = {
 	left: false,
 	right: false,
 	up: false,
-	down: false
+	down: false,
+	space: false
 }
 
 // Which keys bind to which
@@ -11,7 +12,8 @@ var KeyCode = {
 	left: 65,
 	right: 68,
 	up: 87,
-	down: 83
+	down: 83,
+	space: 32
 }
 
 
@@ -38,6 +40,11 @@ document.onkeydown = function(event) {
 		case KeyCode.down:
 			Keys.down = true;
 			break;
+
+		// Press shoot
+		case KeyCode.space:
+			Keys.space = true;
+			break;
 	}
 }
 
@@ -63,6 +70,11 @@ document.onkeyup = function(event) {
 		// Released down
 		case KeyCode.down:
 			Keys.down = false;
+			break;
+
+		// Released shoot
+		case KeyCode.space:
+			Keys.space = false;
 			break;
 	}
 }
