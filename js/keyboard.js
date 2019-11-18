@@ -17,7 +17,6 @@ var KeyCode = {
 
 // Pressing keys
 document.onkeydown = function(event) {
-	console.log("pressed = " + event.keyCode);
 	switch (event.keyCode) {
 
 		// Press left

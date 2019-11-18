@@ -6,9 +6,9 @@
 	<body>
 		<canvas id="canvas" width=200 height=200></canvas>
 	</body>
-	<script src="class.js"></script>
-	<script src="keyboard.js"></script>
-	<script src="helper.js"></script>
+	<script src="js/class.js"></script>
+	<script src="js/keyboard.js"></script>
+	<script src="js/helper.js"></script>
 </html>
 
 <script>
@@ -29,16 +29,20 @@ var player;
 
 
 var square = new Image();
-square.src = "player.png";
+square.src = "img/player.png";
+var block = new Image();
+block.src = "img/block.png";
 
 
 window.onload = function() {
-	player = new Entity(4, 4, 20, 20, square);
+	player = new Player(4, 4, 20, 20, square);
+	blockTest = new Entity(7, 7, 20, 20, block);
 
 
 	requestAnimationFrame(gameLoop);
 }
 
+// Game loop
 function gameLoop() {
 	ctx.clearRect(0, 0, 200, 200);
 
@@ -46,6 +50,7 @@ function gameLoop() {
 
 
 	player.update();
+	blockTest.update();
 
 	requestAnimationFrame(gameLoop);
 }
