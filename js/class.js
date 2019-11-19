@@ -70,9 +70,11 @@ class Player extends Entity {
 
 		this.facing = "right";
 
-		// Delay keypress
-		this.pressTime = 10;
-		this.pressTimer = 0;
+		// Key presses
+		this.moveLeft = false;
+		this.moveRight = false;
+		this.moveUp = false;
+		this.moveDown = false;
 
 		this.shootTime = 20;
 		this.shootTimer = 0;
@@ -105,32 +107,27 @@ class Player extends Entity {
 
 	// Update movement based on key presses
 	updateMovement() {
-		if (this.pressTimer == 0) {
-			if (Keys.left && !Keys.right && this.x > 0) {
-				this.x--;
-				this.facing = "left";
-				this.pressTimer = this.pressTime;
-			} else
-			if (Keys.right && !Keys.left && this.x < numWidth-1) {
-				this.x++;
-				this.facing = "right";
-				this.pressTimer = this.pressTime;
-			} else
-			if (Keys.up && !Keys.down && this.y > 0) {
-				this.y--;
-				this.facing = "up";
-				this.pressTimer = this.pressTime;
-			} else
-			if (Keys.down && !Keys.up && this.y < numHeight-1) {
-				this.y++;
-				this.facing = "down";
-				this.pressTimer = this.pressTime;
-			}
+		if (!this.moveLeft && Keys.left && this.x > 0) {
+			this.x--;
+			this.facing = "left";
+		}
+		if (!this.moveRight && Keys.right && this.x < numWidth-1) {
+			this.x++;
+			this.facing = "right";
+		}
+		if (!this.moveUp && Keys.up && this.y > 0) {
+			this.y--;
+			this.facing = "up";
+		}
+		if (!this.moveDown && Keys.down && this.y < numHeight-1) {
+			this.y++;
+			this.facing = "down";
 		}
 
-		if (this.pressTimer > 0) {
-			this.pressTimer--;
-		}
+		this.moveLeft = Keys.left;
+		this.moveRight = Keys.right;
+		this.moveUp = Keys.up;
+		this.moveDown = Keys.down;
 	}
 
 	shoot() {

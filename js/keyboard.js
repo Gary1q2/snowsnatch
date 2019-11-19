@@ -9,10 +9,10 @@ var Keys = {
 
 // Which keys bind to which
 var KeyCode = {
-	left: 65,
-	right: 68,
-	up: 87,
-	down: 83,
+	left: 37,
+	right: 39,
+	up: 38,
+	down: 40,
 	space: 32
 }
 
