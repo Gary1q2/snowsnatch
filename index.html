@@ -34,8 +34,8 @@ var peng2 = new Image();
 peng2.src = "img/player2.png";
 var block = new Image();
 block.src = "img/block.png";
-var gun = new Image();
-gun.src = "img/gun.png";
+var gunImg = new Image();
+gunImg.src = "img/gun.png";
 var bg = new Image();
 bg.src = "img/bg.png";
 var snowball = new Image();
@@ -47,10 +47,12 @@ var bulletArr = new ObjectArray();
 window.onload = function() {
 
 	// Create players
-	player = new Player(0, 100, 20, 20, peng, 2, 2, [0, 1], 1, "right");
+	player = new Player(0, 30, 20, 20, peng, 2, 2, [0, 1], 1, "right");
 	player2 = new Player(380, 100, 20, 20, peng2, 2, 2, [0, 1], 2, "left");
 	playerArr.push(player);
 	playerArr.push(player2);
+
+
 	//testAnim = new AnimEntity(7, 7, 20, 20, peng, 2, 2, [0, 1]);
 	requestAnimationFrame(gameLoop);
 }
@@ -67,7 +69,11 @@ function gameLoop() {
 	player.update();
 	player2.update();
 	
+
+
 	bulletArr.update();	
+
+	ctx.fillText("gun shoot = " + player.gun.shooting, 20, 20);
 
 	requestAnimationFrame(gameLoop);
 }

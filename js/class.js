@@ -45,17 +45,33 @@ class AnimEntity extends Entity {
 		this.finishAnim = false;
 	}
 	update() {
-		this.drawAnimated(this.frameSeq); 
+		this.drawAnimated(this.frameSeq, 0); 
 	}
- 	drawAnimated(array) {
+ 	drawAnimated(array, angle) {
 		this.finishAnim = false;
 		this.animCurrFrame = array[this.animIndex];
 
 		var xPos = (this.animCurrFrame % this.nRow) * this.img.width/this.nCol;
 		var yPos = Math.floor(this.animCurrFrame / this.nCol) * this.img.height/this.nRow;
-
-		ctx.drawImage(this.img, xPos, yPos, this.img.width/this.nCol, this.img.height/this.nRow, this.x, this.y,
+	
+		// Draw animation depending on angle
+		if (angle == 0) {
+			ctx.translate(this.x, this.y);
+		} else if (angle == 90) {
+			ctx.translate(this.x, this.y);
+			ctx.rotate(-90*Math.PI/180);
+			ctx.translate(-this.img.width/this.nCol, 0);
+		} else if (angle == 180) {
+			ctx.translate(this.x+this.img.width/this.nCol, this.y);
+			ctx.scale(-1, 1);
+		} else if (angle == 270) {
+			ctx.translate(this.x, this.y);
+			ctx.rotate(90*Math.PI/180);
+			ctx.translate(0, -this.img.width/this.nCol);		
+		}
+		ctx.drawImage(this.img, xPos, yPos, this.img.width/this.nCol, this.img.height/this.nRow, 0, 0,
 					  this.img.width/this.nCol, this.img.height/this.nRow);
+		ctx.setTransform(1, 0, 0, 1, 0, 0);
 
 		if (this.animDelay <= 4) {
 			this.animDelay++;
@@ -70,7 +86,64 @@ class AnimEntity extends Entity {
 	}
 }
 
+class Gun extends AnimEntity {
+	constructor(x, y, width, height, img, nRow, nCol, frameSeq, player) {
+		super(x, y, width, height, img, nRow, nCol, frameSeq);
 
+		this.shooting = false;
+		this.player = player;
+	}
+
+	update() {
+		this.updateMovement();
+		this.draw();
+	}
+
+	draw() {
+
+		// Shooting animation in 4 directions
+		if (this.shooting) {
+			if (this.player.facing == "left") {
+				this.drawAnimated([2, 1], 180);
+			} else if (this.player.facing == "right") {
+				this.drawAnimated([2, 1], 0);
+			} else if (this.player.facing == "up") {
+				this.drawAnimated([2, 1], 90);
+			} else if (this.player.facing == "down") {
+				this.drawAnimated([2, 1], 270);
+			}	
+			if (this.finishAnim) {
+				this.shooting = false;
+			}
+
+		// Idle gun in 4 directions
+		} else {
+			if (this.player.facing == "left") {
+				this.drawAnimated(this.frameSeq, 180);
+			} else if (this.player.facing == "right") {
+				this.drawAnimated(this.frameSeq, 0);
+			} else if (this.player.facing == "up") {
+				this.drawAnimated(this.frameSeq, 90);
+			} else if (this.player.facing == "down") {
+				this.drawAnimated(this.frameSeq, 270);
+			}			
+		}	
+	}
+
+	// Stick with the player
+	updateMovement() {
+		this.x = this.player.x;
+		this.y = this.player.y;
+	}
+	// Display shooting animation
+	shoot() {
+		this.shooting = true;
+
+		// Prepare for new animation
+		this.animIndex = 0;
+		this.animDelay = 0;
+	}
+}
 class Bullet extends Entity {
 	constructor(x, y, owner, dir, width, height, img) {
 		super(x, y, width, height, img);
@@ -138,6 +211,8 @@ class Player extends AnimEntity {
 
 		this.playerID = playerID;
 
+		this.gun = new Gun(0, 100, 20, 20, gunImg, 2, 2, [0], this);
+
 		this.leftKey;
 		this.rightKey;
 		this.upKey;
@@ -149,6 +224,8 @@ class Player extends AnimEntity {
 		this.shoot();
 		this.updateMovement();
 		this.draw();
+
+		this.gun.update();
 	}
 
 	// Grab keypresses from global keys object
@@ -169,22 +246,7 @@ class Player extends AnimEntity {
 	}
 
 	draw() {
-		super.drawAnimated(this.frameSeq);
-		if (this.facing == "left") {
-			ctx.translate(this.x+gridLen, this.y);
-			ctx.scale(-1, 1);
-		} else if (this.facing == "right") {
-			ctx.translate(this.x, this.y);
-		} else if (this.facing == "up") {
-			ctx.translate(this.x, this.y+gridLen);
-			ctx.rotate(-90*Math.PI/180);
-		} else if (this.facing == "down") {
-			ctx.translate(this.x+gridLen, this.y);
-			ctx.rotate(90*Math.PI/180);
-		}
-
-		ctx.drawImage(gun, 5, 5);
-		ctx.setTransform(1, 0, 0, 1, 0, 0);
+		super.drawAnimated(this.frameSeq, 0);
 	}
 
 	// Update movement based on key presses
@@ -210,6 +272,7 @@ class Player extends AnimEntity {
 	shoot() {
 		if (this.shootKey && this.shootTimer == 0) {
 			console.log("created a bullet");
+			this.gun.shoot();
 			bulletArr.add(new Bullet(this.x, this.y, this.playerID, this.facing, 20, 20, snowball));
 			this.shootTimer = this.shootTime;
 		}
