@@ -28,8 +28,10 @@ var player;
 
 
 
-var square = new Image();
-square.src = "img/player.png";
+var peng = new Image();
+peng.src = "img/player.png";
+var peng2 = new Image();
+peng2.src = "img/player2.png";
 var block = new Image();
 block.src = "img/block.png";
 var gun = new Image();
@@ -39,13 +41,17 @@ bg.src = "img/bg.png";
 var snowball = new Image();
 snowball.src = "img/snowball.png";
 
-
+var playerArr = [];
 var bulletArr = new ObjectArray();
 
 window.onload = function() {
-	player = new Player(4, 4, 20, 20, square, 2, 2, [0, 1]);
 
-	testAnim = new AnimEntity(7, 7, 20, 20, square, 2, 2, [0, 1]);
+	// Create players
+	player = new Player(0, 100, 20, 20, peng, 2, 2, [0, 1], 1, "right");
+	player2 = new Player(380, 100, 20, 20, peng2, 2, 2, [0, 1], 2, "left");
+	playerArr.push(player);
+	playerArr.push(player2);
+	//testAnim = new AnimEntity(7, 7, 20, 20, peng, 2, 2, [0, 1]);
 	requestAnimationFrame(gameLoop);
 }
 
@@ -56,12 +62,26 @@ function gameLoop() {
 	drawGrids();
 
 
-	testAnim.update();
+	//testAnim.update();
 
 	player.update();
+	player2.update();
+	
 	bulletArr.update();	
 
 	requestAnimationFrame(gameLoop);
+}
+
+
+
+// Functions
+
+// Checks if two rectangles have a collision (true or false)
+function testCollisionRectRect(rect1, rect2) {
+	return rect1.x <= rect2.x + rect2.width 
+		&& rect2.x <= rect1.x + rect1.width
+		&& rect1.y <= rect2.y + rect2.height
+		&& rect2.y <= rect1.y + rect1.height;
 }
 
 

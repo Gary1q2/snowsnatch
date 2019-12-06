@@ -12,6 +12,23 @@ class Entity {
 	update() {
 		this.draw();
 	}
+
+	// Check collision with another object
+	collideWith(other) {
+		var rect1 = {
+			x: this.x - this.width/2,
+			y: this.y - this.height/2,
+			width: this.width,
+			height: this.height
+		};
+		var rect2 = {
+			x: other.x - other.width/2,
+			y: other.y - other.height/2,
+			width: other.width,
+			height: other.height
+		};
+		return testCollisionRectRect(rect1, rect2);
+	}
 }
 
 class AnimEntity extends Entity {
@@ -54,18 +71,23 @@ class AnimEntity extends Entity {
 }
 
 
-class Bullet extends Entity{
-	constructor(x, y, dir, width, height, img) {
+class Bullet extends Entity {
+	constructor(x, y, owner, dir, width, height, img) {
 		super(x, y, width, height, img);
 		this.speed = 2;
 		this.dir = dir;
 		this.dead = false;
+		this.owner = owner;
 	}
 
 	update() {
 		this.updateMovement();
+		this.checkHit();
 		this.checkDead();
-		super.update();
+
+		if (!this.dead) {
+			super.update();
+		}
 	}
 
 	updateMovement() {
@@ -84,6 +106,17 @@ class Bullet extends Entity{
 		}	
 	}
 
+	// Check if hitting anyone
+	checkHit() {
+		for (var i of playerArr) {
+			if (this.owner != i.playerID && this.collideWith(i)) {
+				this.dead = true;
+				console.log("REKTT player " + i.playerID + "died...");
+				alert("REKTT player " + i.playerID + "died...");
+			}
+		}
+	}
+
 	// Check if out of bounds or not
 	checkDead() {
 		if (this.x < 0 || this.x > numWidth*gridLen-gridLen ||
@@ -94,19 +127,45 @@ class Bullet extends Entity{
 }
 
 class Player extends AnimEntity {
-	constructor(x, y, width, height, img, nRow, nCol, frameSeq) {
+	constructor(x, y, width, height, img, nRow, nCol, frameSeq, playerID, startFace) {
 		super(x, y, width, height, img, nRow, nCol, frameSeq);
 
 		this.speed = 1;
-		this.facing = "right";
+		this.facing = startFace;
 
 		this.shootTime = 20;
 		this.shootTimer = 0;
+
+		this.playerID = playerID;
+
+		this.leftKey;
+		this.rightKey;
+		this.upKey;
+		this.downKey;
+		this.shootKey;
 	}
 	update() {
+		this.updateKeypress();
 		this.shoot();
 		this.updateMovement();
 		this.draw();
+	}
+
+	// Grab keypresses from global keys object
+	updateKeypress() {
+		if (this.playerID == 1) {
+			this.leftKey = Keys.left;
+			this.rightKey = Keys.right;
+			this.upKey = Keys.up;
+			this.downKey = Keys.down;
+			this.shootKey = Keys.space;
+		} else if (this.playerID == 2) {
+			this.leftKey = Keys.a;
+			this.rightKey = Keys.d;
+			this.upKey = Keys.w;
+			this.downKey = Keys.s;
+			this.shootKey = Keys.f;			
+		}
 	}
 
 	draw() {
@@ -130,28 +189,28 @@ class Player extends AnimEntity {
 
 	// Update movement based on key presses
 	updateMovement() {
-		if (Keys.left && this.x > 0) {
+		if (this.leftKey && this.x > 0) {
 			this.x -= this.speed;
 			this.facing = "left";
 		}
-		if (Keys.right && this.x < numWidth*gridLen-gridLen) {
+		if (this.rightKey && this.x < numWidth*gridLen-gridLen) {
 			this.x += this.speed;
 			this.facing = "right";
 		}
-		if (Keys.up && this.y > 0) {
+		if (this.upKey && this.y > 0) {
 			this.y -= this.speed;
 			this.facing = "up";
 		}
-		if (Keys.down && this.y < numHeight*gridLen-gridLen) {
+		if (this.downKey && this.y < numHeight*gridLen-gridLen) {
 			this.y += this.speed;
 			this.facing = "down";
 		}
 	}
 
 	shoot() {
-		if (Keys.space && this.shootTimer == 0) {
+		if (this.shootKey && this.shootTimer == 0) {
 			console.log("created a bullet");
-			bulletArr.add(new Bullet(this.x, this.y, this.facing, 20, 20, snowball));
+			bulletArr.add(new Bullet(this.x, this.y, this.playerID, this.facing, 20, 20, snowball));
 			this.shootTimer = this.shootTime;
 		}
 
