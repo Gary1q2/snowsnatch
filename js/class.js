@@ -246,7 +246,15 @@ class Player extends AnimEntity {
 	}
 
 	draw() {
-		super.drawAnimated(this.frameSeq, 0);
+		if (this.facing == "left") {
+			super.drawAnimated(this.frameSeq, 180);
+		} else if (this.facing == "right") {
+			super.drawAnimated(this.frameSeq, 0);
+		} else if (this.facing == "up") {
+			super.drawAnimated(this.frameSeq, 90);
+		} else if (this.facing == "down") {
+			super.drawAnimated(this.frameSeq, 270);
+		}
 	}
 
 	// Update movement based on key presses
