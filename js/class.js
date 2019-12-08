@@ -129,7 +129,7 @@ class Wall extends Entity {
 
 	update() {
 		super.update();
-		this.drawCol();
+		//this.drawCol();
 	}
 }
 
@@ -332,21 +332,29 @@ class Player extends Entity {
 
 	// Update movement based on key presses
 	updateMovement() {
-		if (this.leftKey && this.x > 0 && !this.checkWallColAt(-this.speed, 0)) {
-			this.x -= this.speed;
+		if (this.leftKey) {
+			if (this.x > 0 && !this.checkWallColAt(-this.speed, 0)) {
+				this.x -= this.speed;
+			}
 			this.facing = "left";
 		}
-		if (this.rightKey && this.x < numWidth*gridLen-gridLen && !this.checkWallColAt(this.speed, 0)) {
-			this.x += this.speed;
-			this.facing = "right";
+		if (this.rightKey) {
+			if (this.x < numWidth*gridLen-gridLen && !this.checkWallColAt(this.speed, 0)) {
+				this.x += this.speed;
+			}
+			this.facing = "right";		
 		}
-		if (this.upKey && this.y > 0 && !this.checkWallColAt(0, -this.speed)) {
-			this.y -= this.speed;
-			this.facing = "up";
+		if (this.upKey) {
+			if (this.y > 0 && !this.checkWallColAt(0, -this.speed)) {
+				this.y -= this.speed;
+			}
+			this.facing = "up";		
 		}
-		if (this.downKey && this.y < numHeight*gridLen-gridLen && !this.checkWallColAt(0, this.speed)) {
-			this.y += this.speed;
-			this.facing = "down";
+		if (this.downKey) {
+			if (this.y < numHeight*gridLen-gridLen && !this.checkWallColAt(0, this.speed)) {
+				this.y += this.speed;
+			}
+			this.facing = "down";		
 		}
 	}
 
