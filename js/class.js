@@ -45,7 +45,7 @@ class Entity {
 					  this.img.width/this.nCol, this.img.height/this.nRow);
 		ctx.setTransform(1, 0, 0, 1, 0, 0);
 
-		if (this.animDelay <= 40) {
+		if (this.animDelay <= 4) {
 			this.animDelay++;
 		} else {
 			this.animDelay = 0;
@@ -212,15 +212,22 @@ class Bullet extends Entity {
 		if (!this.dead) {
 			this.draw();
 		}
-
-		//this.drawCol();
 	}
 
 	// Draw idle or breaking animation
 	draw() {
 		if (this.breaking) {
 			console.log("breaking... frame" + this.animIndex);
-			this.drawAnimated([1, 2, 3, 4], 0);
+			var seq = [1, 2, 3, 4];
+			if (this.dir == "left") {
+				this.drawAnimated(seq, 90)
+			} else if (this.dir == "right") {
+				this.drawAnimated(seq, 270)
+			} else if (this.dir == "up") {
+				this.drawAnimated(seq, 180)
+			} else if (this.dir == "down") {
+				this.drawAnimated(seq, 0)
+			}
 			if (this.finishAnim) {
 				console.log("finished");
 				this.dead = true;
@@ -280,6 +287,7 @@ class Bullet extends Entity {
 	break() {
 		console.log("BROKE");
 		this.breaking = true;
+		snowbreak_snd.play();
 
 		// Prepare for new animation
 		this.animIndex = 0;
