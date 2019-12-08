@@ -23,7 +23,7 @@ class Entity {
 		this.finishAnim = false;
 		this.animCurrFrame = array[this.animIndex];
 
-		var xPos = (this.animCurrFrame % this.nRow) * this.img.width/this.nCol;
+		var xPos = (this.animCurrFrame % this.nCol) * this.img.width/this.nCol;
 		var yPos = Math.floor(this.animCurrFrame / this.nCol) * this.img.height/this.nRow;
 	
 		// Draw animation depending on angle
@@ -45,7 +45,7 @@ class Entity {
 					  this.img.width/this.nCol, this.img.height/this.nRow);
 		ctx.setTransform(1, 0, 0, 1, 0, 0);
 
-		if (this.animDelay <= 4) {
+		if (this.animDelay <= 40) {
 			this.animDelay++;
 		} else {
 			this.animDelay = 0;
@@ -199,20 +199,37 @@ class Bullet extends Entity {
 		this.dir = dir;
 		this.dead = false;
 		this.owner = owner;
+
+		this.breaking = false;   // Showing breaking animation
 	}
 
 	update() {
-		this.updateMovement();
-		this.checkHit();
-		this.checkDead();
-
+		if (!this.breaking) {
+			this.updateMovement();
+			this.checkHit();
+			this.checkDead();
+		}
 		if (!this.dead) {
-			super.update();
+			this.draw();
 		}
 
-		this.drawCol();
+		//this.drawCol();
 	}
 
+	// Draw idle or breaking animation
+	draw() {
+		if (this.breaking) {
+			console.log("breaking... frame" + this.animIndex);
+			this.drawAnimated([1, 2, 3, 4], 0);
+			if (this.finishAnim) {
+				console.log("finished");
+				this.dead = true;
+			}
+		} else {
+			console.log("not broken");
+			this.drawAnimated(this.frameSeq, 0);
+		}
+	}
 	updateMovement() {
 		if (this.dir == "left") {
 			this.x -= this.speed;
@@ -233,8 +250,8 @@ class Bullet extends Entity {
 	checkHit() {
 		for (var i of playerArr) {
 			if (this.owner != i.playerID && this.collideWith(i)) {
-				this.dead = true;
 				console.log("REKTT player " + i.playerID + "died...");
+				this.break();
 				i.die();
 			}
 		}
@@ -245,7 +262,7 @@ class Bullet extends Entity {
 		if (this.x < 0 || this.x > numWidth*gridLen-gridLen ||
 		      this.y < 0 || this.y > numHeight*gridLen-gridLen ||
 		        this.checkWallCol()) {
-			this.dead = true;
+			this.break();
 		}
 	}
 
@@ -257,6 +274,16 @@ class Bullet extends Entity {
 			}
 		}
 		return false;
+	}
+
+	// Snowball break apart after hitting object
+	break() {
+		console.log("BROKE");
+		this.breaking = true;
+
+		// Prepare for new animation
+		this.animIndex = 0;
+		this.animDelay = 0;
 	}
 
 }
@@ -362,7 +389,7 @@ class Player extends Entity {
 		if (this.shootKey && this.shootTimer == 0) {
 			console.log("created a bullet");
 			this.gun.shoot();
-			bulletArr.add(new Bullet(this.x, this.y, 8, 8, snowball, 1, 1, [0], this.playerID, this.facing));
+			bulletArr.add(new Bullet(this.x, this.y, 8, 8, snowball, 3, 2, [0], this.playerID, this.facing));
 			this.shootTimer = this.shootTime;
 			shoot_snd.play();
 		}

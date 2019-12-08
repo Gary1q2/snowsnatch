@@ -65,21 +65,21 @@ window.onload = function() {
 
 	//testAnim = new AnimEntity(7, 7, 20, 20, peng, 2, 2, [0, 1]);
 
-	wallArr.push(new Wall(3*gridLen, 3*gridLen, 20, 20, wall, 1, 1, [0]));
-	wallArr.push(new Wall(4*gridLen, 3*gridLen, 20, 20, wall, 1, 1, [0]));
-	wallArr.push(new Wall(5*gridLen, 3*gridLen, 20, 20, wall, 1, 1, [0]));
-	wallArr.push(new Wall(6*gridLen, 3*gridLen, 20, 20, wall, 1, 1, [0]));
-	wallArr.push(new Wall(6*gridLen, 4*gridLen, 20, 20, wall, 1, 1, [0]));
-	wallArr.push(new Wall(6*gridLen, 5*gridLen, 20, 20, wall, 1, 1, [0]));
-	wallArr.push(new Wall(6*gridLen, 6*gridLen, 20, 20, wall, 1, 1, [0]));
+	wallArr.push(new Wall(3*gridLen, 3*gridLen, 20, 20, wall, 2, 3, [0, 1, 2, 3, 4, 5]));
+	wallArr.push(new Wall(4*gridLen, 3*gridLen, 20, 20, wall, 2, 3, [0, 1, 2, 3, 4, 5]));
+	wallArr.push(new Wall(5*gridLen, 3*gridLen, 20, 20, wall, 2, 3, [0, 1, 2, 3, 4, 5]));
+	wallArr.push(new Wall(6*gridLen, 3*gridLen, 20, 20, wall, 2, 3, [0, 1, 2, 3, 4, 5]));
+	wallArr.push(new Wall(6*gridLen, 4*gridLen, 20, 20, wall, 2, 3, [0, 1, 2, 3, 4, 5]));
+	wallArr.push(new Wall(6*gridLen, 5*gridLen, 20, 20, wall, 2, 3, [0, 1, 2, 3, 4, 5]));
+	wallArr.push(new Wall(6*gridLen, 6*gridLen, 20, 20, wall, 2, 3, [0, 1, 2, 3, 4, 5]));
 
-	wallArr.push(new Wall(16*gridLen, 3*gridLen, 20, 20, wall, 1, 1, [0]));
-	wallArr.push(new Wall(15*gridLen, 3*gridLen, 20, 20, wall, 1, 1, [0]));
-	wallArr.push(new Wall(14*gridLen, 3*gridLen, 20, 20, wall, 1, 1, [0]));
-	wallArr.push(new Wall(13*gridLen, 3*gridLen, 20, 20, wall, 1, 1, [0]));
-	wallArr.push(new Wall(13*gridLen, 4*gridLen, 20, 20, wall, 1, 1, [0]));
-	wallArr.push(new Wall(13*gridLen, 5*gridLen, 20, 20, wall, 1, 1, [0]));
-	wallArr.push(new Wall(13*gridLen, 6*gridLen, 20, 20, wall, 1, 1, [0]));
+	wallArr.push(new Wall(16*gridLen, 3*gridLen, 20, 20, wall, 2, 3, [0, 1, 2, 3, 4, 5]));
+	wallArr.push(new Wall(15*gridLen, 3*gridLen, 20, 20, wall, 2, 3, [0, 1, 2, 3, 4, 5]));
+	wallArr.push(new Wall(14*gridLen, 3*gridLen, 20, 20, wall, 2, 3, [0, 1, 2, 3, 4, 5]));
+	wallArr.push(new Wall(13*gridLen, 3*gridLen, 20, 20, wall, 2, 3, [0, 1, 2, 3, 4, 5]));
+	wallArr.push(new Wall(13*gridLen, 4*gridLen, 20, 20, wall, 2, 3, [0, 1, 2, 3, 4, 5]));
+	wallArr.push(new Wall(13*gridLen, 5*gridLen, 20, 20, wall, 2, 3, [0, 1, 2, 3, 4, 5]));
+	wallArr.push(new Wall(13*gridLen, 6*gridLen, 20, 20, wall, 2, 3, [0, 1, 2, 3, 4, 5]));
 
 	requestAnimationFrame(gameLoop);
 }
