@@ -17,6 +17,7 @@
 var canvas = document.getElementById('canvas');
 var ctx = canvas.getContext('2d');
 ctx.imageSmoothingEnabled = false;
+ctx.lineWidth = 1;
 
 // Global variables
 var gridLen = 20;                       // Each grid 20 pixels
@@ -40,6 +41,9 @@ var bg = new Image();
 bg.src = "img/bg.png";
 var snowball = new Image();
 snowball.src = "img/snowball.png";
+var wall = new Image();
+wall.src = "img/wall.png";
+
 
 var shoot_snd = document.createElement("audio");
 shoot_snd.src = "sound/shoot.mp3";
@@ -48,17 +52,27 @@ die_snd.src = "sound/die.mp3";
 
 var playerArr = [];
 var bulletArr = new ObjectArray();
+var wallArr = [];
 
 window.onload = function() {
 
 	// Create players
 	player = new Player(0, 30, 20, 20, peng, 2, 2, [0, 1], 1, "right");
-	player2 = new Player(100, 70, 20, 20, peng2, 2, 2, [0, 1], 2, "left");
+	//player2 = new Player(100, 70, 20, 20, peng2, 2, 2, [0, 1], 2, "left");
 	playerArr.push(player);
-	playerArr.push(player2);
+	//playerArr.push(player2);
 
 
 	//testAnim = new AnimEntity(7, 7, 20, 20, peng, 2, 2, [0, 1]);
+
+	wallArr.push(new Wall(3*gridLen, 3*gridLen, 20, 20, wall));
+	wallArr.push(new Wall(4*gridLen, 3*gridLen, 20, 20, wall));
+	wallArr.push(new Wall(5*gridLen, 3*gridLen, 20, 20, wall));
+	wallArr.push(new Wall(6*gridLen, 3*gridLen, 20, 20, wall));
+	wallArr.push(new Wall(6*gridLen, 4*gridLen, 20, 20, wall));
+	wallArr.push(new Wall(6*gridLen, 5*gridLen, 20, 20, wall));
+	wallArr.push(new Wall(6*gridLen, 6*gridLen, 20, 20, wall));
+
 	requestAnimationFrame(gameLoop);
 }
 
@@ -72,37 +86,28 @@ function gameLoop() {
 	//testAnim.update();
 
 	player.update();
-	player2.update();
+	//player2.update();
 	
 
 
 	bulletArr.update();	
 
-	ctx.fillText("gun shoot = " + player.gun.shooting, 20, 20);
+	// Update all wall objects
+	for (var i = 0; i < wallArr.length; i++) {
+		wallArr[i].update();
+	}
+
 
 	requestAnimationFrame(gameLoop);
 }
-
-
-
-// Functions
-
-// Checks if two rectangles have a collision (true or false)
-function testCollisionRectRect(rect1, rect2) {
-	return rect1.x <= rect2.x + rect2.width 
-		&& rect2.x <= rect1.x + rect1.width
-		&& rect1.y <= rect2.y + rect2.height
-		&& rect2.y <= rect1.y + rect1.height;
-}
-
 
 </script>
 
 <style>
 #canvas {
-	border: 3px solid black;
-	height: 600px;
+	/*border: 3px solid black;*/
 	width: 1200px;
+	height: 600px;
 
 	image-rendering: pixelated;
 }

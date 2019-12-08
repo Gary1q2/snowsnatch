@@ -13,17 +13,61 @@ class Entity {
 		this.draw();
 	}
 
+	// Draw collision box for non animated sprite
+	drawCol() {
+
+		var x_anchor = this.x+this.img.width/2-this.width/2;
+		var y_anchor = this.y+this.img.height/2-this.height/2;
+
+		ctx.beginPath();
+
+		// Left vertical
+		ctx.moveTo(x_anchor+0.5, y_anchor);
+		ctx.lineTo(x_anchor+0.5, y_anchor+this.height);
+
+		// Right vertical
+		ctx.moveTo(x_anchor+this.width-0.5, y_anchor);
+		ctx.lineTo(x_anchor+this.width-0.5, y_anchor+this.height);
+
+		// Top horizontal
+		ctx.moveTo(x_anchor, y_anchor+0.5);
+		ctx.lineTo(x_anchor+this.width, y_anchor+0.5);
+
+		// Bottom horizontal
+		ctx.moveTo(x_anchor, y_anchor+this.height-0.5);
+		ctx.lineTo(x_anchor+this.width, y_anchor+this.height-0.5);
+			
+		ctx.stroke();
+	}
+
 	// Check collision with another object
 	collideWith(other) {
 		var rect1 = {
-			x: this.x - this.width/2,
-			y: this.y - this.height/2,
+			x: this.x + ,
+			y: this.y,
 			width: this.width,
 			height: this.height
 		};
 		var rect2 = {
-			x: other.x - other.width/2,
-			y: other.y - other.height/2,
+			x: other.x,
+			y: other.y,
+			width: other.width,
+			height: other.height
+		};
+		return testCollisionRectRect(rect1, rect2);
+	}
+
+	// Check collision with another object @ certain offset
+	collideWithAt(other, xOff, yOff) {
+		var rect1 = {
+			x: this.x + xOff,
+			y: this.y + yOff,
+			width: this.width,
+			height: this.height
+		};
+		var rect2 = {
+			x: other.x,
+			y: other.y,
 			width: other.width,
 			height: other.height
 		};
@@ -84,6 +128,44 @@ class AnimEntity extends Entity {
 			}
 		}
 	}
+
+	// Draw collision box for animated sprite
+	drawCol() {
+
+		var x_anchor = this.x+this.img.width/this.nCol/2-this.width/2;
+		var y_anchor = this.y+this.img.height/this.nRow/2-this.height/2;
+
+		ctx.beginPath();
+
+		// Left vertical
+		ctx.moveTo(x_anchor+0.5, y_anchor);
+		ctx.lineTo(x_anchor+0.5, y_anchor+this.height);
+
+		// Right vertical
+		ctx.moveTo(x_anchor+this.width-0.5, y_anchor);
+		ctx.lineTo(x_anchor+this.width-0.5, y_anchor+this.height);
+
+		// Top horizontal
+		ctx.moveTo(x_anchor, y_anchor+0.5);
+		ctx.lineTo(x_anchor+this.width, y_anchor+0.5);
+
+		// Bottom horizontal
+		ctx.moveTo(x_anchor, y_anchor+this.height-0.5);
+		ctx.lineTo(x_anchor+this.width, y_anchor+this.height-0.5);
+			
+		ctx.stroke();
+	}
+}
+
+class Wall extends Entity {
+	constructor(x, y, width, height, img) {
+		super(x, y, width, height, img);
+	}
+
+	update() {
+		super.update();
+		this.drawCol();
+	}
 }
 
 class Gun extends AnimEntity {
@@ -97,6 +179,7 @@ class Gun extends AnimEntity {
 	update() {
 		this.updateMovement();
 		this.draw();
+		this.drawCol();
 	}
 
 	draw() {
@@ -161,6 +244,8 @@ class Bullet extends Entity {
 		if (!this.dead) {
 			super.update();
 		}
+
+		this.drawCol();
 	}
 
 	updateMovement() {
@@ -190,13 +275,25 @@ class Bullet extends Entity {
 		}
 	}
 
-	// Check if out of bounds or not
+	// Check if out of bounds or hit some terrain
 	checkDead() {
 		if (this.x < 0 || this.x > numWidth*gridLen-gridLen ||
-		      this.y < 0 || this.y > numHeight*gridLen-gridLen) {
+		      this.y < 0 || this.y > numHeight*gridLen-gridLen ||
+		        this.checkWallCol()) {
 			this.dead = true;
 		}
 	}
+
+	// Check collision with wall objects
+	checkWallCol() {
+		for (var i = 0; i < wallArr.length; i++) {
+			if (this.collideWith(wallArr[i])) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 }
 
 class Player extends AnimEntity {
@@ -265,23 +362,24 @@ class Player extends AnimEntity {
 		} else {
 			this.drawAnimated([2], 0);
 		}
+		this.drawCol();
 	}
 
 	// Update movement based on key presses
 	updateMovement() {
-		if (this.leftKey && this.x > 0) {
+		if (this.leftKey && this.x > 0 && !this.checkWallColAt(-this.speed, 0)) {
 			this.x -= this.speed;
 			this.facing = "left";
 		}
-		if (this.rightKey && this.x < numWidth*gridLen-gridLen) {
+		if (this.rightKey && this.x < numWidth*gridLen-gridLen && !this.checkWallColAt(this.speed, 0)) {
 			this.x += this.speed;
 			this.facing = "right";
 		}
-		if (this.upKey && this.y > 0) {
+		if (this.upKey && this.y > 0 && !this.checkWallColAt(0, -this.speed)) {
 			this.y -= this.speed;
 			this.facing = "up";
 		}
-		if (this.downKey && this.y < numHeight*gridLen-gridLen) {
+		if (this.downKey && this.y < numHeight*gridLen-gridLen && !this.checkWallColAt(0, this.speed)) {
 			this.y += this.speed;
 			this.facing = "down";
 		}
@@ -291,7 +389,7 @@ class Player extends AnimEntity {
 		if (this.shootKey && this.shootTimer == 0) {
 			console.log("created a bullet");
 			this.gun.shoot();
-			bulletArr.add(new Bullet(this.x, this.y, this.playerID, this.facing, 7, 7, snowball));
+			bulletArr.add(new Bullet(this.x, this.y, this.playerID, this.facing, 8, 8, snowball));
 			this.shootTimer = this.shootTime;
 			shoot_snd.play();
 		}
@@ -305,6 +403,26 @@ class Player extends AnimEntity {
 	die() {
 		this.dead = true;
 		die_snd.play();
+	}
+
+	// Check collision with wall objects
+	checkWallCol() {
+		for (var i = 0; i < wallArr.length; i++) {
+			if (this.collideWith(wallArr[i])) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	// Check collision with wall objects at offset
+	checkWallColAt(xOff, yOff) {
+		for (var i = 0; i < wallArr.length; i++) {
+			if (this.collideWithAt(wallArr[i], xOff, yOff)) {
+				return true;
+			}
+		}
+		return false;
 	}
 }
 
