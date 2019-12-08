@@ -185,7 +185,7 @@ class Bullet extends Entity {
 			if (this.owner != i.playerID && this.collideWith(i)) {
 				this.dead = true;
 				console.log("REKTT player " + i.playerID + "died...");
-				alert("REKTT player " + i.playerID + "died...");
+				i.die();
 			}
 		}
 	}
@@ -213,6 +213,8 @@ class Player extends AnimEntity {
 
 		this.gun = new Gun(0, 100, 20, 20, gunImg, 2, 2, [0], this);
 
+		this.dead = false;
+
 		this.leftKey;
 		this.rightKey;
 		this.upKey;
@@ -220,12 +222,16 @@ class Player extends AnimEntity {
 		this.shootKey;
 	}
 	update() {
-		this.updateKeypress();
-		this.shoot();
-		this.updateMovement();
+		if (!this.dead) {
+			this.updateKeypress();
+			this.shoot();
+			this.updateMovement();
+		}
 		this.draw();
 
-		this.gun.update();
+		if (!this.dead) {
+			this.gun.update();
+		}
 	}
 
 	// Grab keypresses from global keys object
@@ -246,14 +252,18 @@ class Player extends AnimEntity {
 	}
 
 	draw() {
-		if (this.facing == "left") {
-			super.drawAnimated(this.frameSeq, 180);
-		} else if (this.facing == "right") {
-			super.drawAnimated(this.frameSeq, 0);
-		} else if (this.facing == "up") {
-			super.drawAnimated(this.frameSeq, 90);
-		} else if (this.facing == "down") {
-			super.drawAnimated(this.frameSeq, 270);
+		if (!this.dead) {
+			if (this.facing == "left") {
+				this.drawAnimated(this.frameSeq, 180);
+			} else if (this.facing == "right") {
+				this.drawAnimated(this.frameSeq, 0);
+			} else if (this.facing == "up") {
+				this.drawAnimated(this.frameSeq, 90);
+			} else if (this.facing == "down") {
+				this.drawAnimated(this.frameSeq, 270);
+			}
+		} else {
+			this.drawAnimated([2], 0);
 		}
 	}
 
@@ -281,14 +291,20 @@ class Player extends AnimEntity {
 		if (this.shootKey && this.shootTimer == 0) {
 			console.log("created a bullet");
 			this.gun.shoot();
-			bulletArr.add(new Bullet(this.x, this.y, this.playerID, this.facing, 20, 20, snowball));
+			bulletArr.add(new Bullet(this.x, this.y, this.playerID, this.facing, 7, 7, snowball));
 			this.shootTimer = this.shootTime;
+			shoot_snd.play();
 		}
 
 		if (this.shootTimer > 0) {
 			this.shootTimer--;
 		}
+	}
 
+	// Get the player to die
+	die() {
+		this.dead = true;
+		die_snd.play();
 	}
 }
 

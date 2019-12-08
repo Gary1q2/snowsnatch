@@ -41,6 +41,11 @@ bg.src = "img/bg.png";
 var snowball = new Image();
 snowball.src = "img/snowball.png";
 
+var shoot_snd = document.createElement("audio");
+shoot_snd.src = "sound/shoot.mp3";
+var die_snd = document.createElement("audio");
+die_snd.src = "sound/die.mp3";
+
 var playerArr = [];
 var bulletArr = new ObjectArray();
 
@@ -48,7 +53,7 @@ window.onload = function() {
 
 	// Create players
 	player = new Player(0, 30, 20, 20, peng, 2, 2, [0, 1], 1, "right");
-	player2 = new Player(380, 100, 20, 20, peng2, 2, 2, [0, 1], 2, "left");
+	player2 = new Player(100, 70, 20, 20, peng2, 2, 2, [0, 1], 2, "left");
 	playerArr.push(player);
 	playerArr.push(player2);
 
