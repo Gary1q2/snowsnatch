@@ -1,83 +1,10 @@
 class Entity {
-	constructor(x, y, width, height, img) {
+	constructor(x, y, width, height, img, nRow, nCol, frameSeq) {
 		this.x = x;
 		this.y = y;
 		this.width = width;
 		this.height = height;
 		this.img = img;
-	}
-	draw() {
-		ctx.drawImage(this.img,this.x,this.y);
-	}
-	update() {
-		this.draw();
-	}
-
-	// Draw collision box for non animated sprite
-	drawCol() {
-
-		var x_anchor = this.x+this.img.width/2-this.width/2;
-		var y_anchor = this.y+this.img.height/2-this.height/2;
-
-		ctx.beginPath();
-
-		// Left vertical
-		ctx.moveTo(x_anchor+0.5, y_anchor);
-		ctx.lineTo(x_anchor+0.5, y_anchor+this.height);
-
-		// Right vertical
-		ctx.moveTo(x_anchor+this.width-0.5, y_anchor);
-		ctx.lineTo(x_anchor+this.width-0.5, y_anchor+this.height);
-
-		// Top horizontal
-		ctx.moveTo(x_anchor, y_anchor+0.5);
-		ctx.lineTo(x_anchor+this.width, y_anchor+0.5);
-
-		// Bottom horizontal
-		ctx.moveTo(x_anchor, y_anchor+this.height-0.5);
-		ctx.lineTo(x_anchor+this.width, y_anchor+this.height-0.5);
-			
-		ctx.stroke();
-	}
-
-	// Check collision with another object
-	collideWith(other) {
-		var rect1 = {
-			x: this.x + ,
-			y: this.y,
-			width: this.width,
-			height: this.height
-		};
-		var rect2 = {
-			x: other.x,
-			y: other.y,
-			width: other.width,
-			height: other.height
-		};
-		return testCollisionRectRect(rect1, rect2);
-	}
-
-	// Check collision with another object @ certain offset
-	collideWithAt(other, xOff, yOff) {
-		var rect1 = {
-			x: this.x + xOff,
-			y: this.y + yOff,
-			width: this.width,
-			height: this.height
-		};
-		var rect2 = {
-			x: other.x,
-			y: other.y,
-			width: other.width,
-			height: other.height
-		};
-		return testCollisionRectRect(rect1, rect2);
-	}
-}
-
-class AnimEntity extends Entity {
-	constructor(x, y, width, height, img, nRow, nCol, frameSeq) {
-		super(x, y, width, height, img);
 
 		this.nRow = nRow;
 		this.nCol = nCol;
@@ -91,6 +18,7 @@ class AnimEntity extends Entity {
 	update() {
 		this.drawAnimated(this.frameSeq, 0); 
 	}
+
  	drawAnimated(array, angle) {
 		this.finishAnim = false;
 		this.animCurrFrame = array[this.animIndex];
@@ -129,9 +57,8 @@ class AnimEntity extends Entity {
 		}
 	}
 
-	// Draw collision box for animated sprite
+	// Draw collision box for sprite
 	drawCol() {
-
 		var x_anchor = this.x+this.img.width/this.nCol/2-this.width/2;
 		var y_anchor = this.y+this.img.height/this.nRow/2-this.height/2;
 
@@ -155,11 +82,49 @@ class AnimEntity extends Entity {
 			
 		ctx.stroke();
 	}
+
+
+	// Check collision with another object
+	collideWith(other) {
+		var rect1 = {
+			x: this.x+this.img.width/this.nCol/2-this.width/2,
+			y: this.y+this.img.height/this.nRow/2-this.height/2,
+			width: this.width,
+			height: this.height
+		};
+		var rect2 = {
+			x: other.x+other.img.width/other.nCol/2-other.width/2,
+			y: other.y+other.img.height/other.nRow/2-other.height/2,
+			width: other.width,
+			height: other.height
+		};
+		return testCollisionRectRect(rect1, rect2);
+	}
+
+
+
+	// Check collision with another object @ certain offset
+	collideWithAt(other, xOff, yOff) {
+		var rect1 = {
+			x: this.x + xOff,
+			y: this.y + yOff,
+			width: this.width,
+			height: this.height
+		};
+		var rect2 = {
+			x: other.x,
+			y: other.y,
+			width: other.width,
+			height: other.height
+		};
+		return testCollisionRectRect(rect1, rect2);
+	}
 }
 
+
 class Wall extends Entity {
-	constructor(x, y, width, height, img) {
-		super(x, y, width, height, img);
+	constructor(x, y, width, height, img, nRow, nCol, frameSeq) {
+		super(x, y, width, height, img, nRow, nCol, frameSeq);
 	}
 
 	update() {
@@ -168,7 +133,7 @@ class Wall extends Entity {
 	}
 }
 
-class Gun extends AnimEntity {
+class Gun extends Entity {
 	constructor(x, y, width, height, img, nRow, nCol, frameSeq, player) {
 		super(x, y, width, height, img, nRow, nCol, frameSeq);
 
@@ -228,8 +193,8 @@ class Gun extends AnimEntity {
 	}
 }
 class Bullet extends Entity {
-	constructor(x, y, owner, dir, width, height, img) {
-		super(x, y, width, height, img);
+	constructor(x, y, width, height, img, nRow, nCol, frameSeq, owner, dir) {
+		super(x, y, width, height, img, nRow, nCol, frameSeq);
 		this.speed = 2;
 		this.dir = dir;
 		this.dead = false;
@@ -296,7 +261,7 @@ class Bullet extends Entity {
 
 }
 
-class Player extends AnimEntity {
+class Player extends Entity {
 	constructor(x, y, width, height, img, nRow, nCol, frameSeq, playerID, startFace) {
 		super(x, y, width, height, img, nRow, nCol, frameSeq);
 
@@ -389,7 +354,7 @@ class Player extends AnimEntity {
 		if (this.shootKey && this.shootTimer == 0) {
 			console.log("created a bullet");
 			this.gun.shoot();
-			bulletArr.add(new Bullet(this.x, this.y, this.playerID, this.facing, 8, 8, snowball));
+			bulletArr.add(new Bullet(this.x, this.y, 8, 8, snowball, 1, 1, [0], this.playerID, this.facing));
 			this.shootTimer = this.shootTime;
 			shoot_snd.play();
 		}
