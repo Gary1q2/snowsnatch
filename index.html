@@ -59,8 +59,8 @@ var wallArr = [];
 window.onload = function() {
 
 	// Create players
-	player = new Player(0, 30, 20, 20, peng, 2, 2, [0, 1], 1, "right");
-	player2 = new Player(170, 70, 20, 20, peng2, 2, 2, [0, 1], 2, "left");
+	player = new Player(0, 30, 20, 20, peng, 2, 2, [0], 1, "right");
+	player2 = new Player(200, 70, 20, 20, peng2, 2, 2, [0], 2, "left");
 	playerArr.push(player);
 	playerArr.push(player2);
 
@@ -74,6 +74,9 @@ window.onload = function() {
 	wallArr.push(new Wall(6*gridLen, 4*gridLen, 20, 20, wall, 1, 1, [0]));
 	wallArr.push(new Wall(6*gridLen, 5*gridLen, 20, 20, wall, 1, 1, [0]));
 	wallArr.push(new Wall(6*gridLen, 6*gridLen, 20, 20, wall, 1, 1, [0]));
+	wallArr.push(new Wall(8*gridLen, 6*gridLen, 20, 20, wall, 1, 1, [0]));
+	wallArr.push(new Wall(8*gridLen, 5*gridLen, 20, 20, wall, 1, 1, [0]));
+	wallArr.push(new Wall(8*gridLen, 4*gridLen, 20, 20, wall, 1, 1, [0]));
 
 	wallArr.push(new Wall(16*gridLen, 3*gridLen, 20, 20, wall, 1, 1, [0]));
 	wallArr.push(new Wall(15*gridLen, 3*gridLen, 20, 20, wall, 1, 1, [0]));

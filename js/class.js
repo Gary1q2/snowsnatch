@@ -317,6 +317,8 @@ class Player extends Entity {
 		this.upKey;
 		this.downKey;
 		this.shootKey;
+
+		this.moving = false; // If player is moving or not
 	}
 	update() {
 		if (!this.dead) {
@@ -346,19 +348,52 @@ class Player extends Entity {
 			this.downKey = Keys.s;
 			this.shootKey = Keys.f;			
 		}
+
+		// Check if player is moving or not
+		if (this.leftKey || this.rightKey || this.upKey || this.downKey) {
+			if (!this.moving) {
+				this.moving = true;
+
+				// Prepare for new animation
+				this.animIndex = 0;
+				this.animDelay = 0;
+			}
+		} else {
+			this.moving = false;
+		}
 	}
 
 	draw() {
+		// Alive sprite
 		if (!this.dead) {
-			if (this.facing == "left") {
-				this.drawAnimated(this.frameSeq, 180);
-			} else if (this.facing == "right") {
-				this.drawAnimated(this.frameSeq, 0);
-			} else if (this.facing == "up") {
-				this.drawAnimated(this.frameSeq, 90);
-			} else if (this.facing == "down") {
-				this.drawAnimated(this.frameSeq, 270);
+
+			// Walking animation
+			if (this.moving) {
+				if (this.facing == "left") {
+					this.drawAnimated([0, 1], 180);
+				} else if (this.facing == "right") {
+					this.drawAnimated([0, 1], 0);
+				} else if (this.facing == "up") {
+					this.drawAnimated([0, 1], 90);
+				} else if (this.facing == "down") {
+					this.drawAnimated([0, 1], 270);
+				}
+
+			// Idle animation
+			} else {
+				this.animIndex = 0;
+				if (this.facing == "left") {
+					this.drawAnimated(this.frameSeq, 180);
+				} else if (this.facing == "right") {
+					this.drawAnimated(this.frameSeq, 0);
+				} else if (this.facing == "up") {
+					this.drawAnimated(this.frameSeq, 90);
+				} else if (this.facing == "down") {
+					this.drawAnimated(this.frameSeq, 270);
+				}
 			}
+
+		// Dead sprite
 		} else {
 			this.drawAnimated([2], 0);
 		}
