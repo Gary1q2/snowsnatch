@@ -121,6 +121,14 @@ class Entity {
 	}
 }
 
+class Crate extends Entity {
+	constructor(x, y, width, height, img, nRow, nCol, frameSeq) {
+		super(x, y, width, height, img, nRow, nCol, frameSeq);
+	}
+	update() {
+		super.update();
+	}
+}
 
 class Wall extends Entity {
 	constructor(x, y, width, height, img, nRow, nCol, frameSeq) {
@@ -132,6 +140,7 @@ class Wall extends Entity {
 		//this.drawCol();
 	}
 }
+
 
 class Gun extends Entity {
 	constructor(x, y, width, height, img, nRow, nCol, frameSeq, player) {
@@ -183,23 +192,216 @@ class Gun extends Entity {
 		this.x = this.player.x;
 		this.y = this.player.y;
 	}
-	// Display shooting animation
+}
+
+class SnowGun extends Gun {
+	constructor(x, y, width, height, img, nRow, nCol, frameSeq, player) {
+		super(x, y, width, height, img, nRow, nCol, frameSeq, player);
+	}
+
+	update() {
+		super.update();
+	}	
+
+	// Shoot the gun (create bullet + recoil)
 	shoot() {
 		this.shooting = true;
+		bulletArr.add(new Snowball(this.x, this.y, 8, 8, snowball, 3, 2, [0], this.player.playerID, this.player.facing));
 
 		// Prepare for new animation
 		this.animIndex = 0;
 		this.animDelay = 0;
 	}
 }
+
+class LaserGun extends Gun {
+	constructor(x, y, width, height, img, nRow, nCol, frameSeq, player) {
+		super(x, y, width, height, img, nRow, nCol, frameSeq, player);
+
+		this.chargeTime = 60;
+		this.chargeTimer = 0;
+	}
+
+	update() {
+		this.updateMovement();
+		this.draw();
+		this.chargeGun();
+	}
+
+	// Charging down the gun
+	chargeGun() {
+		if (this.chargeTimer > 0) {
+			this.chargeTimer--;
+			if (this.chargeTimer == 0) {
+				this.shooting = true;
+
+				console.log("SHOT LASERRR");
+				if (this.player.facing == "left") {
+					for (var i = this.x+this.player.width/2; i > -20; i-=20) {
+						bulletArr.add(new LaserBlast(i, this.y, 8, 8, laserBeam_img, 2, 3, [0,1,2], this.player.playerID, this.player.facing));
+					}
+				} else if (this.player.facing == "right") {
+					for (var i = this.x+this.player.width/2; i < canvas.width; i+=20) {
+						bulletArr.add(new LaserBlast(i, this.y, 8, 8, laserBeam_img, 2, 3, [0,1,2], this.player.playerID, this.player.facing));
+					}
+				} else if (this.player.facing == "up") {
+					for (var i = this.y+this.player.height/2; i > -20; i-=20) {
+						bulletArr.add(new LaserBlast(this.x, i, 8, 8, laserBeam_img, 2, 3, [0,1,2], this.player.playerID, this.player.facing));
+					}
+				} else if (this.player.facing == "down") {
+					for (var i = this.y+this.player.height/2; i < canvas.height; i+=20) {
+						bulletArr.add(new LaserBlast(this.x, i, 8, 8, laserBeam_img, 2, 3, [0,1,2], this.player.playerID, this.player.facing));
+					}
+				}
+
+				// Prepare for new animation
+				this.animIndex = 0;
+				this.animDelay = 0;
+			}
+		}
+	}
+
+	draw() {
+
+		// Shooting animation in 4 directions
+		if (this.shooting) {
+			if (this.player.facing == "left") {
+				this.drawAnimated([2, 1], 180);
+			} else if (this.player.facing == "right") {
+				this.drawAnimated([2, 1], 0);
+			} else if (this.player.facing == "up") {
+				this.drawAnimated([2, 1], 90);
+			} else if (this.player.facing == "down") {
+				this.drawAnimated([2, 1], 270);
+			}	
+			if (this.finishAnim) {
+				this.shooting = false;
+			}
+
+		// Idle gun in 4 directions
+		} else {
+			if (this.player.facing == "left") {
+				this.drawAnimated(this.frameSeq, 180);
+			} else if (this.player.facing == "right") {
+				this.drawAnimated(this.frameSeq, 0);
+			} else if (this.player.facing == "up") {
+				this.drawAnimated(this.frameSeq, 90);
+			} else if (this.player.facing == "down") {
+				this.drawAnimated(this.frameSeq, 270);
+			}			
+		}	
+
+		// Charging animation
+		if (this.chargeTimer > 0) {
+			ctx.fillStyle = "red";
+			ctx.globalAlpha = 0.3;
+			var beamWidth = 4;
+			var beamDist = 400;
+
+			if (this.player.facing == "left") {
+				ctx.fillRect(this.player.x+this.player.width/2, this.player.y+this.player.height/2-beamWidth/2, -beamDist, beamWidth);
+			} else if (this.player.facing == "right") {
+				ctx.fillRect(this.player.x+this.player.width/2, this.player.y+this.player.height/2-beamWidth/2, beamDist, beamWidth);
+			} else if (this.player.facing == "up") {
+				ctx.fillRect(this.player.x+this.player.width/2-beamWidth/2, this.player.y+this.player.height/2, beamWidth, -beamDist);
+			} else if (this.player.facing == "down") {
+				ctx.fillRect(this.player.x+this.player.width/2-beamWidth/2, this.player.y+this.player.height/2, beamWidth, beamDist);
+			}
+
+			ctx.fillStyle = "black";
+			ctx.globalAlpha = 1;
+		}
+	}
+
+	// Charge the gun + shoot it
+	shoot() {
+		this.chargeTimer = this.chargeTime;
+	}
+}
+
 class Bullet extends Entity {
 	constructor(x, y, width, height, img, nRow, nCol, frameSeq, owner, dir) {
 		super(x, y, width, height, img, nRow, nCol, frameSeq);
-		this.speed = 2;
 		this.dir = dir;
-		this.dead = false;
 		this.owner = owner;
+	}
+}
 
+class LaserBlast extends Bullet {
+	constructor(x, y, width, height, img, nRow, nCol, frameSeq, owner, dir) {
+		super(x, y, width, height, img, nRow, nCol, frameSeq, owner, dir);
+
+		this.aliveTimer = 30;  // How long to stay alive for
+		this.hurtTimer = 10; // How long can deal damage
+
+		this.dead = false;
+
+	}
+
+	update() {
+		this.tickTimer();
+		this.checkHit();
+		this.draw();
+	}
+
+	// Count down until the beam disappears
+	tickTimer() {
+		if (this.aliveTimer > 0) {
+			this.aliveTimer--;
+			if (this.aliveTimer == 0) {
+				this.dead = true;
+			}
+		} 
+		if (this.hurtTimer > 0) {
+			this.hurtTimer--;
+		}
+	}
+	// Draw the laser beam
+	draw() {
+		if (!this.dead) {
+			if (this.hurtTimer > 0) {
+				if (this.dir == "left") {
+					this.drawAnimated(this.frameSeq, 180);
+				} else if (this.dir == "right") {
+					this.drawAnimated(this.frameSeq, 0);
+				} else if (this.dir == "up") {
+					this.drawAnimated(this.frameSeq, 90);
+				} else if (this.dir == "down") {
+					this.drawAnimated(this.frameSeq, 270);
+				}
+			} else {
+				if (this.dir == "left") {
+					this.drawAnimated([3,4,5], 180);
+				} else if (this.dir == "right") {
+					this.drawAnimated([3,4,5], 0);
+				} else if (this.dir == "up") {
+					this.drawAnimated([3,4,5], 90);
+				} else if (this.dir == "down") {
+					this.drawAnimated([3,4,5], 270);
+				}	
+			}
+		}
+	}
+
+	// Check if hitting anyone
+	checkHit() {
+		if (this.hurtTimer > 0) {
+			for (var i of playerArr) {
+				if (this.owner != i.playerID && this.collideWith(i)) {
+					console.log("REKTT player " + i.playerID + "died...");
+					i.die();
+				}
+			}
+		}	
+	}
+
+}
+class Snowball extends Bullet {
+	constructor(x, y, width, height, img, nRow, nCol, frameSeq, owner, dir) {
+		super(x, y, width, height, img, nRow, nCol, frameSeq, owner, dir);
+
+		this.speed = 2;
+		this.dead = false;
 		this.breaking = false;   // Showing breaking animation
 	}
 
@@ -217,7 +419,6 @@ class Bullet extends Entity {
 	// Draw idle or breaking animation
 	draw() {
 		if (this.breaking) {
-			console.log("breaking... frame" + this.animIndex);
 			var seq = [1, 2, 3, 4];
 			if (this.dir == "left") {
 				this.drawAnimated(seq, 90)
@@ -229,14 +430,13 @@ class Bullet extends Entity {
 				this.drawAnimated(seq, 0)
 			}
 			if (this.finishAnim) {
-				console.log("finished");
 				this.dead = true;
 			}
 		} else {
-			console.log("not broken");
 			this.drawAnimated(this.frameSeq, 0);
 		}
 	}
+
 	updateMovement() {
 		if (this.dir == "left") {
 			this.x -= this.speed;
@@ -253,6 +453,15 @@ class Bullet extends Entity {
 		}	
 	}
 
+	// Check if out of bounds or hit some terrain
+	checkDead() {
+		if (this.x < 0 || this.x > numWidth*gridLen-gridLen ||
+		      this.y < 0 || this.y > numHeight*gridLen-gridLen ||
+		        this.checkWallCol()) {
+			this.break();
+		}
+	}
+
 	// Check if hitting anyone
 	checkHit() {
 		for (var i of playerArr) {
@@ -261,15 +470,6 @@ class Bullet extends Entity {
 				this.break();
 				i.die();
 			}
-		}
-	}
-
-	// Check if out of bounds or hit some terrain
-	checkDead() {
-		if (this.x < 0 || this.x > numWidth*gridLen-gridLen ||
-		      this.y < 0 || this.y > numHeight*gridLen-gridLen ||
-		        this.checkWallCol()) {
-			this.break();
 		}
 	}
 
@@ -285,7 +485,6 @@ class Bullet extends Entity {
 
 	// Snowball break apart after hitting object
 	break() {
-		console.log("BROKE");
 		this.breaking = true;
 		snowbreak_snd.play();
 
@@ -308,7 +507,11 @@ class Player extends Entity {
 
 		this.playerID = playerID;
 
-		this.gun = new Gun(0, 100, 20, 20, gunImg, 2, 2, [0], this);
+		//if (playerID == 1) {
+		//	this.gun = new SnowGun(0, 100, 20, 20, gunImg, 2, 2, [0], this);
+		//} else if (playerID == 2) {
+			this.gun = new LaserGun(0, 100, 20, 20, laserGun_img, 2, 2, [0], this);
+		//}
 
 		this.dead = false;
 
@@ -430,9 +633,7 @@ class Player extends Entity {
 
 	shoot() {
 		if (this.shootKey && this.shootTimer == 0) {
-			console.log("created a bullet");
 			this.gun.shoot();
-			bulletArr.add(new Bullet(this.x, this.y, 8, 8, snowball, 3, 2, [0], this.playerID, this.facing));
 			this.shootTimer = this.shootTime;
 			shoot_snd.play();
 		}

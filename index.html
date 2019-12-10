@@ -43,6 +43,12 @@ var snowball = new Image();
 snowball.src = "img/snowball.png";
 var wall = new Image();
 wall.src = "img/wall.png";
+var laserGun_img = new Image();
+laserGun_img.src = "img/laserGun.png";
+var laserBeam_img = new Image();
+laserBeam_img.src = "img/laserBeam.png";
+var crate_img = new Image();
+crate_img.src = "img/crate.png";
 
 
 var shoot_snd = document.createElement("audio");
@@ -60,31 +66,27 @@ window.onload = function() {
 
 	// Create players
 	player = new Player(0, 30, 20, 20, peng, 2, 2, [0], 1, "right");
-	player2 = new Player(200, 70, 20, 20, peng2, 2, 2, [0], 2, "left");
+	player2 = new Player(250, 70, 20, 20, peng2, 2, 2, [0], 2, "left");
 	playerArr.push(player);
 	playerArr.push(player2);
 
 
-	//testAnim = new AnimEntity(7, 7, 20, 20, peng, 2, 2, [0, 1]);
+	// Player walls down
+	addWall(3, 3);
+	addWall(4, 3);
+	addWall(5, 3);
+	addWall(5, 4);
+	addWall(5, 5);
+	addWall(5, 6);
 
-	wallArr.push(new Wall(3*gridLen, 3*gridLen, 20, 20, wall, 1, 1, [0]));
-	wallArr.push(new Wall(4*gridLen, 3*gridLen, 20, 20, wall, 1, 1, [0]));
-	wallArr.push(new Wall(5*gridLen, 3*gridLen, 20, 20, wall, 1, 1, [0]));
-	wallArr.push(new Wall(6*gridLen, 3*gridLen, 20, 20, wall, 1, 1, [0]));
-	wallArr.push(new Wall(6*gridLen, 4*gridLen, 20, 20, wall, 1, 1, [0]));
-	wallArr.push(new Wall(6*gridLen, 5*gridLen, 20, 20, wall, 1, 1, [0]));
-	wallArr.push(new Wall(6*gridLen, 6*gridLen, 20, 20, wall, 1, 1, [0]));
-	wallArr.push(new Wall(8*gridLen, 6*gridLen, 20, 20, wall, 1, 1, [0]));
-	wallArr.push(new Wall(8*gridLen, 5*gridLen, 20, 20, wall, 1, 1, [0]));
-	wallArr.push(new Wall(8*gridLen, 4*gridLen, 20, 20, wall, 1, 1, [0]));
+	addWall(8, 6);
+	addWall(8, 5);
+	addWall(8, 4);
+	addWall(8, 3);
+	addWall(9, 3);
+	addWall(10, 3);
 
-	wallArr.push(new Wall(16*gridLen, 3*gridLen, 20, 20, wall, 1, 1, [0]));
-	wallArr.push(new Wall(15*gridLen, 3*gridLen, 20, 20, wall, 1, 1, [0]));
-	wallArr.push(new Wall(14*gridLen, 3*gridLen, 20, 20, wall, 1, 1, [0]));
-	wallArr.push(new Wall(13*gridLen, 3*gridLen, 20, 20, wall, 1, 1, [0]));
-	wallArr.push(new Wall(13*gridLen, 4*gridLen, 20, 20, wall, 1, 1, [0]));
-	wallArr.push(new Wall(13*gridLen, 5*gridLen, 20, 20, wall, 1, 1, [0]));
-	wallArr.push(new Wall(13*gridLen, 6*gridLen, 20, 20, wall, 1, 1, [0]));
+	crate = new Crate(8*gridLen, 8*gridLen, 20, 20, crate_img, 1, 1, [0]);
 
 	requestAnimationFrame(gameLoop);
 }
@@ -96,13 +98,9 @@ function gameLoop() {
 	//drawGrids();
 
 
-	//testAnim.update();
-
 	player.update();
 	player2.update();
 	
-
-
 	bulletArr.update();	
 
 	// Update all wall objects
@@ -110,6 +108,7 @@ function gameLoop() {
 		wallArr[i].update();
 	}
 
+	crate.update();
 
 	requestAnimationFrame(gameLoop);
 }
