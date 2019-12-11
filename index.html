@@ -66,9 +66,9 @@ window.onload = function() {
 
 	// Create players
 	player = new Player(0, 30, 20, 20, peng, 2, 2, [0], 1, "right");
-	player2 = new Player(250, 70, 20, 20, peng2, 2, 2, [0], 2, "left");
+	//player2 = new Player(250, 70, 20, 20, peng2, 2, 2, [0], 2, "left");
 	playerArr.push(player);
-	playerArr.push(player2);
+	//playerArr.push(player2);
 
 	// Player walls down
 	addWall(3, 3);
@@ -98,7 +98,7 @@ function gameLoop() {
 
 
 	player.update();
-	player2.update();
+	//player2.update();
 	
 	tempArr.update();	
 

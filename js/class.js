@@ -146,6 +146,9 @@ class Entity {
 				height: other.width
 			};
 		}
+		console.log(rect1);
+		console.log(other.angle);
+		console.log(rect2);
 		return testCollisionRectRect(rect1, rect2);
 	}
 
@@ -225,16 +228,16 @@ class Gun extends Entity {
 
 		// Shooting animation in 4 directions
 		if (this.shooting) {
-			if (this.player.facing == "left") {
+			if (this.player.angle == "left") {
 				this.setAngle("left");
 				this.drawAnimated([2, 1]);
-			} else if (this.player.facing == "right") {
+			} else if (this.player.angle == "right") {
 				this.setAngle("right");
 				this.drawAnimated([2, 1]);
-			} else if (this.player.facing == "up") {
+			} else if (this.player.angle == "up") {
 				this.setAngle("up");
 				this.drawAnimated([2, 1]);
-			} else if (this.player.facing == "down") {
+			} else if (this.player.angle == "down") {
 				this.setAngle("down");
 				this.drawAnimated([2, 1]);
 			}	
@@ -244,16 +247,16 @@ class Gun extends Entity {
 
 		// Idle gun in 4 directions
 		} else {
-			if (this.player.facing == "left") {
+			if (this.player.angle == "left") {
 				this.setAngle("left");
 				this.drawAnimated(this.frameSeq);
-			} else if (this.player.facing == "right") {
+			} else if (this.player.angle == "right") {
 				this.setAngle("right");
 				this.drawAnimated(this.frameSeq);
-			} else if (this.player.facing == "up") {
+			} else if (this.player.angle == "up") {
 				this.setAngle("up");
 				this.drawAnimated(this.frameSeq);
-			} else if (this.player.facing == "down") {
+			} else if (this.player.angle == "down") {
 				this.setAngle("down");
 				this.drawAnimated(this.frameSeq);
 			}			
@@ -279,7 +282,7 @@ class SnowGun extends Gun {
 	// Shoot the gun (create bullet + recoil)
 	shoot() {
 		this.shooting = true;
-		tempArr.add(new Snowball(this.x, this.y, 8, 8, snowball, 3, 2, [0], this.player.playerID, this.player.facing));
+		tempArr.add(new Snowball(this.x, this.y, 8, 8, snowball, 3, 2, [0], this.player.playerID, this.player.angle));
 
 		// Prepare for new animation
 		this.animIndex = 0;
@@ -309,21 +312,21 @@ class LaserGun extends Gun {
 				this.shooting = true;
 
 				console.log("SHOT LASERRR");
-				if (this.player.facing == "left") {
+				if (this.player.angle == "left") {
 					for (var i = this.x-this.player.width/2; i > -20; i-=20) {
-						tempArr.add(new LaserBlast(i, this.y, 20, 8, laserBeam_img, 2, 3, [0,1,2], this.player.playerID, this.player.facing));
+						tempArr.add(new LaserBlast(i, this.y, 20, 8, laserBeam_img, 2, 3, [0,1,2], this.player.playerID, this.player.angle));
 					}
-				} else if (this.player.facing == "right") {
+				} else if (this.player.angle == "right") {
 					for (var i = this.x+this.player.width/2; i < canvas.width; i+=20) {
-						tempArr.add(new LaserBlast(i, this.y, 20, 8, laserBeam_img, 2, 3, [0,1,2], this.player.playerID, this.player.facing));
+						tempArr.add(new LaserBlast(i, this.y, 20, 8, laserBeam_img, 2, 3, [0,1,2], this.player.playerID, this.player.angle));
 					}
-				} else if (this.player.facing == "up") {
+				} else if (this.player.angle == "up") {
 					for (var i = this.y-this.player.height/2; i > -20; i-=20) {
-						tempArr.add(new LaserBlast(this.x, i, 20, 8, laserBeam_img, 2, 3, [0,1,2], this.player.playerID, this.player.facing));
+						tempArr.add(new LaserBlast(this.x, i, 20, 8, laserBeam_img, 2, 3, [0,1,2], this.player.playerID, this.player.angle));
 					}
-				} else if (this.player.facing == "down") {
+				} else if (this.player.angle == "down") {
 					for (var i = this.y+this.player.height/2; i < canvas.height; i+=20) {
-						tempArr.add(new LaserBlast(this.x, i, 20, 8, laserBeam_img, 2, 3, [0,1,2], this.player.playerID, this.player.facing));
+						tempArr.add(new LaserBlast(this.x, i, 20, 8, laserBeam_img, 2, 3, [0,1,2], this.player.playerID, this.player.angle));
 					}
 				}
 
@@ -338,16 +341,16 @@ class LaserGun extends Gun {
 
 		// Shooting animation in 4 directions
 		if (this.shooting) {
-			if (this.player.facing == "left") {
+			if (this.player.angle == "left") {
 				this.setAngle("left");
 				this.drawAnimated([2, 1]);
-			} else if (this.player.facing == "right") {
+			} else if (this.player.angle == "right") {
 				this.setAngle("right");
 				this.drawAnimated([2, 1]);
-			} else if (this.player.facing == "up") {
+			} else if (this.player.angle == "up") {
 				this.setAngle("up");
 				this.drawAnimated([2, 1]);
-			} else if (this.player.facing == "down") {
+			} else if (this.player.angle == "down") {
 				this.setAngle("down");
 				this.drawAnimated([2, 1]);
 			}	
@@ -357,16 +360,16 @@ class LaserGun extends Gun {
 
 		// Idle gun in 4 directions
 		} else {
-			if (this.player.facing == "left") {
+			if (this.player.angle == "left") {
 				this.setAngle("left");
 				this.drawAnimated(this.frameSeq);
-			} else if (this.player.facing == "right") {
+			} else if (this.player.angle == "right") {
 				this.setAngle("right");
 				this.drawAnimated(this.frameSeq);
-			} else if (this.player.facing == "up") {
+			} else if (this.player.angle == "up") {
 				this.setAngle("up");
 				this.drawAnimated(this.frameSeq);
-			} else if (this.player.facing == "down") {
+			} else if (this.player.angle == "down") {
 				this.setAngle("down");
 				this.drawAnimated(this.frameSeq);
 			}			
@@ -379,13 +382,13 @@ class LaserGun extends Gun {
 			var beamWidth = 4;
 			var beamDist = 400;
 
-			if (this.player.facing == "left") {
+			if (this.player.angle == "left") {
 				ctx.fillRect(this.player.x+this.player.width/2, this.player.y+this.player.height/2-beamWidth/2, -beamDist, beamWidth);
-			} else if (this.player.facing == "right") {
+			} else if (this.player.angle == "right") {
 				ctx.fillRect(this.player.x+this.player.width/2, this.player.y+this.player.height/2-beamWidth/2, beamDist, beamWidth);
-			} else if (this.player.facing == "up") {
+			} else if (this.player.angle == "up") {
 				ctx.fillRect(this.player.x+this.player.width/2-beamWidth/2, this.player.y+this.player.height/2, beamWidth, -beamDist);
-			} else if (this.player.facing == "down") {
+			} else if (this.player.angle == "down") {
 				ctx.fillRect(this.player.x+this.player.width/2-beamWidth/2, this.player.y+this.player.height/2, beamWidth, beamDist);
 			}
 
@@ -598,7 +601,6 @@ class Player extends Entity {
 		super(x, y, width, height, img, nRow, nCol, frameSeq);
 
 		this.speed = 1;
-		this.facing = startFace;
 
 		this.shootTime = 20;
 		this.shootTimer = 0;
@@ -620,6 +622,9 @@ class Player extends Entity {
 		this.shootKey;
 
 		this.moving = false; // If player is moving or not
+
+		this.strafeDir = "none"; // Direction keep facing when strafing
+		this.firstKeyPress = "none";  // Key first pressed for strafing
 	}
 	update() {
 		if (!this.dead) {
@@ -661,7 +666,29 @@ class Player extends Entity {
 			}
 		} else {
 			this.moving = false;
+			this.firstKeyPress = "none";
 		}
+
+		if (this.moving) {
+
+			// Start strafing
+			if (this.firstKeyPress == "none") {
+				if (this.leftKey) { this.firstKeyPress = "left"; }
+				if (this.rightKey) { this.firstKeyPress = "right"; }
+				if (this.upKey) { this.firstKeyPress = "up"; }
+				if (this.downKey) { this.firstKeyPress = "down"; }
+				this.setAngle(this.firstKeyPress);
+
+			// Change strafe direction mid-strafe
+			} else {
+				var keyArr = this.currKeysPressed();
+				if (keyArr.length == 1 && this.firstKeyPress != keyArr[0]) {
+					this.firstKeyPress = keyArr[0];
+					this.setAngle(this.firstKeyPress);
+				}
+			}
+		}
+		console.log("1stkeyPress = " + this.firstKeyPress);
 	}
 
 	draw() {
@@ -670,36 +697,12 @@ class Player extends Entity {
 
 			// Walking animation
 			if (this.moving) {
-				if (this.facing == "left") {
-					this.setAngle("left");
-					this.drawAnimated([0, 1]);
-				} else if (this.facing == "right") {
-					this.setAngle("right");
-					this.drawAnimated([0, 1]);
-				} else if (this.facing == "up") {
-					this.setAngle("up");
-					this.drawAnimated([0, 1]);
-				} else if (this.facing == "down") {
-					this.setAngle("down");
-					this.drawAnimated([0, 1]);
-				}
+				this.drawAnimated([0, 1]);
 
 			// Idle animation
 			} else {
 				this.animIndex = 0;
-				if (this.facing == "left") {
-					this.setAngle("left");
-					this.drawAnimated(this.frameSeq);
-				} else if (this.facing == "right") {
-					this.setAngle("right");
-					this.drawAnimated(this.frameSeq);
-				} else if (this.facing == "up") {
-					this.setAngle("up");
-					this.drawAnimated(this.frameSeq);
-				} else if (this.facing == "down") {
-					this.setAngle("down");
-					this.drawAnimated(this.frameSeq);
-				}
+				this.drawAnimated(this.frameSeq);
 			}
 
 		// Dead sprite
@@ -716,26 +719,24 @@ class Player extends Entity {
 			if (this.x > 0 && !this.checkWallColAt(-this.speed, 0)) {
 				this.x -= this.speed;
 			}
-			this.facing = "left";
 		}
 		if (this.rightKey) {
 			if (this.x < numWidth*gridLen-gridLen && !this.checkWallColAt(this.speed, 0)) {
 				this.x += this.speed;
 			}
-			this.facing = "right";		
 		}
 		if (this.upKey) {
 			if (this.y > 0 && !this.checkWallColAt(0, -this.speed)) {
 				this.y -= this.speed;
-			}
-			this.facing = "up";		
+			}	
 		}
+			
 		if (this.downKey) {
 			if (this.y < numHeight*gridLen-gridLen && !this.checkWallColAt(0, this.speed)) {
 				this.y += this.speed;
-			}
-			this.facing = "down";		
+			}	
 		}
+			
 	}
 
 	shoot() {
@@ -774,6 +775,16 @@ class Player extends Entity {
 			}
 		}
 		return false;
+	}
+
+	// Return the current keys pressed
+	currKeysPressed() {
+		var keys = [];
+		if (this.rightKey) { keys.push("right"); }
+		if (this.leftKey) { keys.push("left");}
+		if (this.upKey) { keys.push("up"); }
+		if (this.downKey) { keys.push("down"); }
+		return keys;
 	}
 }
 
