@@ -146,9 +146,6 @@ class Entity {
 				height: other.width
 			};
 		}
-		console.log(rect1);
-		console.log(other.angle);
-		console.log(rect2);
 		return testCollisionRectRect(rect1, rect2);
 	}
 
@@ -176,10 +173,47 @@ class Entity {
 	}
 }
 
+class Snow extends Entity {
+	constructor(x, y, width, height, img, nRow, nCol, frameSeq) {
+		super(x, y, width, height, img, nRow, nCol, frameSeq);
+		this.dead = false;
+		this.breaking = false;
+
+		this.x = this.x-(this.img.width/this.nCol/2-this.width/2); 
+		this.y = this.y-(this.img.height/this.nRow/2-this.height/2); 
+	}
+	update() {
+		this.checkStep();
+		this.draw();
+	}
+	draw() {
+		if (!this.breaking) {
+			this.drawAnimated(this.frameSeq);
+		} else {
+			this.drawAnimated([0,1,2,3,4,5,6,7,8,9,10,11]);
+			if (this.finishAnim) {
+				this.dead = true;
+			}
+		}
+	}
+	// Check if stepped on
+	checkStep() {
+		for (var i of playerArr) {
+			if (this.collideWith(i)) {
+				console.log("player " + i.playerID + "stepped on snow");
+				if (!this.breaking) {
+					this.breaking = true;
+					snowbreak_snd.play();
+				}
+				break;
+			}
+		}
+	}
+}
+
 class Crate extends Entity {
 	constructor(x, y, width, height, img, nRow, nCol, frameSeq) {
 		super(x, y, width, height, img, nRow, nCol, frameSeq);
-
 		this.dead = false;
 	}
 	update() {
@@ -192,7 +226,17 @@ class Crate extends Entity {
 			if (this.collideWith(i)) {
 				console.log("player " + i.playerID + " got a crate");
 				this.dead = true;
-				tempArr.add(new Crate(Math.floor(Math.random()*8)*gridLen,8*gridLen, 20, 20, crate_img, 1, 1, [0]));
+				console.log("created a crate");
+
+				// Alternate guns
+				if (i.gun.gunID == 2) {
+					i.gun = new SnowGun(0, 100, 20, 20, gunImg, 2, 2, [0], i);
+				} else {
+					i.gun = new LaserGun(0, 100, 20, 20, laserGun_img, 2, 2, [0], i);
+				}
+
+				tempArr.add(new Crate(Math.floor(Math.random()*19)*gridLen,Math.floor(Math.random()*9)*gridLen, 20, 20, crate_img, 1, 1, [0]));
+				break;
 			}
 		}
 	}
@@ -267,12 +311,14 @@ class Gun extends Entity {
 	updateMovement() {
 		this.x = this.player.x;
 		this.y = this.player.y;
+		this.setAngle(this.player.angle);
 	}
 }
 
 class SnowGun extends Gun {
 	constructor(x, y, width, height, img, nRow, nCol, frameSeq, player) {
 		super(x, y, width, height, img, nRow, nCol, frameSeq, player);
+		this.gunID = 1;
 	}
 
 	update() {
@@ -293,6 +339,7 @@ class SnowGun extends Gun {
 class LaserGun extends Gun {
 	constructor(x, y, width, height, img, nRow, nCol, frameSeq, player) {
 		super(x, y, width, height, img, nRow, nCol, frameSeq, player);
+		this.gunID = 2;
 
 		this.chargeTime = 60;
 		this.chargeTimer = 0;
@@ -312,6 +359,7 @@ class LaserGun extends Gun {
 				this.shooting = true;
 
 				console.log("SHOT LASERRR");
+				console.log("player angle = " + this.player.angle);
 				if (this.player.angle == "left") {
 					for (var i = this.x-this.player.width/2; i > -20; i-=20) {
 						tempArr.add(new LaserBlast(i, this.y, 20, 8, laserBeam_img, 2, 3, [0,1,2], this.player.playerID, this.player.angle));
@@ -324,7 +372,7 @@ class LaserGun extends Gun {
 					for (var i = this.y-this.player.height/2; i > -20; i-=20) {
 						tempArr.add(new LaserBlast(this.x, i, 20, 8, laserBeam_img, 2, 3, [0,1,2], this.player.playerID, this.player.angle));
 					}
-				} else if (this.player.angle == "down") {
+				} else {
 					for (var i = this.y+this.player.height/2; i < canvas.height; i+=20) {
 						tempArr.add(new LaserBlast(this.x, i, 20, 8, laserBeam_img, 2, 3, [0,1,2], this.player.playerID, this.player.angle));
 					}
@@ -448,33 +496,9 @@ class LaserBlast extends Bullet {
 	draw() {
 		if (!this.dead) {
 			if (this.hurtTimer > 0) {
-				if (this.dir == "left") {
-					this.setAngle("left");
-					this.drawAnimated(this.frameSeq);
-				} else if (this.dir == "right") {
-					this.setAngle("right");
-					this.drawAnimated(this.frameSeq);
-				} else if (this.dir == "up") {
-					this.setAngle("up");
-					this.drawAnimated(this.frameSeq);
-				} else if (this.dir == "down") {
-					this.setAngle("down");
-					this.drawAnimated(this.frameSeq);
-				}
+				this.drawAnimated(this.frameSeq);
 			} else {
-				if (this.dir == "left") {
-					this.setAngle("left");
-					this.drawAnimated([3,4,5]);
-				} else if (this.dir == "right") {
-					this.setAngle("right");
-					this.drawAnimated([3,4,5]);
-				} else if (this.dir == "up") {
-					this.setAngle("up");
-					this.drawAnimated([3,4,5]);
-				} else if (this.dir == "down") {
-					this.setAngle("down");
-					this.drawAnimated([3,4,5]);
-				}	
+				this.drawAnimated([3,4,5]);
 			}
 		}
 	}
@@ -607,11 +631,11 @@ class Player extends Entity {
 
 		this.playerID = playerID;
 
-		//if (playerID == 1) {
-		//	this.gun = new SnowGun(0, 100, 20, 20, gunImg, 2, 2, [0], this);
-		//} else if (playerID == 2) {
+		if (playerID == 1) {
+			this.gun = new SnowGun(0, 100, 20, 20, gunImg, 2, 2, [0], this);
+		} else if (playerID == 2) {
 			this.gun = new LaserGun(0, 100, 20, 20, laserGun_img, 2, 2, [0], this);
-		//}
+		}
 
 		this.dead = false;
 
@@ -688,7 +712,6 @@ class Player extends Entity {
 				}
 			}
 		}
-		console.log("1stkeyPress = " + this.firstKeyPress);
 	}
 
 	draw() {
