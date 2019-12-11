@@ -59,7 +59,7 @@ var snowbreak_snd = document.createElement("audio");
 snowbreak_snd.src = "sound/snow_break.mp3";
 
 var playerArr = [];
-var bulletArr = new ObjectArray();
+var tempArr = new ObjectArray();
 var wallArr = [];
 
 window.onload = function() {
@@ -69,7 +69,6 @@ window.onload = function() {
 	player2 = new Player(250, 70, 20, 20, peng2, 2, 2, [0], 2, "left");
 	playerArr.push(player);
 	playerArr.push(player2);
-
 
 	// Player walls down
 	addWall(3, 3);
@@ -86,7 +85,7 @@ window.onload = function() {
 	addWall(9, 3);
 	addWall(10, 3);
 
-	crate = new Crate(8*gridLen, 8*gridLen, 20, 20, crate_img, 1, 1, [0]);
+	tempArr.add(new Crate(8*gridLen, 8*gridLen, 20, 20, crate_img, 1, 1, [0]));
 
 	requestAnimationFrame(gameLoop);
 }
@@ -101,14 +100,13 @@ function gameLoop() {
 	player.update();
 	player2.update();
 	
-	bulletArr.update();	
+	tempArr.update();	
 
 	// Update all wall objects
 	for (var i = 0; i < wallArr.length; i++) {
 		wallArr[i].update();
 	}
 
-	crate.update();
 
 	requestAnimationFrame(gameLoop);
 }
