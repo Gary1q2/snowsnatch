@@ -1,5 +1,5 @@
 class Entity {
-	constructor(x, y, width, height, img, nRow, nCol, frameSeq) {
+	constructor(x, y, width, height, img, nRow, nCol, frameSeq, centerX, centerY) {
 		this.x = x;
 		this.y = y;
 		this.width = width;
@@ -9,6 +9,9 @@ class Entity {
 		this.nRow = nRow;
 		this.nCol = nCol;
 		this.frameSeq = frameSeq;
+
+		this.centerX = centerX;
+		this.centerY = centerY;
 
 		this.angle = "right"; // 0 = right, 90 = up, 180 = left, 270 = down
 
@@ -43,7 +46,7 @@ class Entity {
 			ctx.rotate(90*Math.PI/180);
 			ctx.translate(0, -this.img.width/this.nCol);		
 		}
-		ctx.drawImage(this.img, xPos, yPos, this.img.width/this.nCol, this.img.height/this.nRow, 0, 0,
+		ctx.drawImage(this.img, xPos, yPos, this.img.width/this.nCol, this.img.height/this.nRow, -this.centerX, -this.centerY,
 					  this.img.width/this.nCol, this.img.height/this.nRow);
 		ctx.setTransform(1, 0, 0, 1, 0, 0);
 
@@ -61,14 +64,14 @@ class Entity {
 
 	// Draw collision box for sprite
 	drawCol() {
-		var x_anchor;
-		var y_anchor;
+		var x_anchor = this.x-this.centerX;
+		var y_anchor = this.y-this.centerY;
 
 		ctx.beginPath();
 
 		if (this.angle == "right" || this.angle == "left") {
-			x_anchor = this.x+this.img.width/this.nCol/2-this.width/2;
-		    y_anchor = this.y+this.img.height/this.nRow/2-this.height/2;
+			x_anchor += this.img.width/this.nCol/2-this.width/2;
+		    y_anchor += this.img.height/this.nRow/2-this.height/2;
 
 			// Left vertical
 			ctx.moveTo(x_anchor+0.5, y_anchor);
@@ -87,8 +90,8 @@ class Entity {
 			ctx.lineTo(x_anchor+this.width, y_anchor+this.height-0.5);
 
 		} else if (this.angle == "up" || this.angle == "down") {
-			x_anchor = this.x+this.img.width/this.nCol/2-this.height/2;
-		    y_anchor = this.y+this.img.height/this.nRow/2-this.width/2;
+			x_anchor += this.img.width/this.nCol/2-this.height/2;
+		    y_anchor += this.img.height/this.nRow/2-this.width/2;
 
 			// Left vertical
 			ctx.moveTo(x_anchor+0.5, y_anchor);
@@ -116,15 +119,15 @@ class Entity {
 		var rect1;
 		if (this.angle == "right" || this.angle == "left") {
 			rect1 = {
-				x: this.x+this.img.width/this.nCol/2-this.width/2,
-				y: this.y+this.img.height/this.nRow/2-this.height/2,
+				x: this.x-this.centerX+this.img.width/this.nCol/2-this.width/2,
+				y: this.y-this.centerY+this.img.height/this.nRow/2-this.height/2,
 				width: this.width,
 				height: this.height
 			};
 		} else if (this.angle == "up" || this.angle == "down") {
 			rect1 = {
-				x: this.x+this.img.width/this.nCol/2-this.height/2,
-				y: this.y+this.img.height/this.nRow/2-this.width/2,
+				x: this.x-this.centerX+this.img.width/this.nCol/2-this.height/2,
+				y: this.y-this.centerX+this.img.height/this.nRow/2-this.width/2,
 				width: this.height,
 				height: this.width
 			};
@@ -149,8 +152,6 @@ class Entity {
 		return testCollisionRectRect(rect1, rect2);
 	}
 
-
-
 	// Check collision with another object @ certain offset
 	collideWithAt(other, xOff, yOff) {
 		var rect1 = {
@@ -168,19 +169,38 @@ class Entity {
 		return testCollisionRectRect(rect1, rect2);
 	}
 
+	// Check collision with wall objects
+	checkWallCol() {
+		for (var i = 0; i < wallArr.length; i++) {
+			if (this.collideWith(wallArr[i])) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	setAngle(angle) {
 		this.angle = angle;
+	}
+
+	// Change current sprite to another
+	changeSprite(img, width, height, nRow, nCol, frameSeq, centerX, centerY) {
+		this.img = img;
+		this.width = width;
+		this.height = height;
+		this.nRow = nRow;
+		this.nCol = nCol
+		this.frameSeq = frameSeq;
+		this.centerX = centerX;
+		this.centerY = centerY;
 	}
 }
 
 class Snow extends Entity {
-	constructor(x, y, width, height, img, nRow, nCol, frameSeq) {
-		super(x, y, width, height, img, nRow, nCol, frameSeq);
+	constructor(x, y, width, height, img, nRow, nCol, frameSeq, centerX, centerY) {
+		super(x, y, width, height, img, nRow, nCol, frameSeq, centerX, centerY);
 		this.dead = false;
 		this.breaking = false;
-
-		this.x = this.x-(this.img.width/this.nCol/2-this.width/2); 
-		this.y = this.y-(this.img.height/this.nRow/2-this.height/2); 
 	}
 	update() {
 		this.checkStep();
@@ -200,7 +220,6 @@ class Snow extends Entity {
 	checkStep() {
 		for (var i of playerArr) {
 			if (this.collideWith(i)) {
-				console.log("player " + i.playerID + "stepped on snow");
 				if (!this.breaking) {
 					this.breaking = true;
 					snowbreak_snd.play();
@@ -212,30 +231,57 @@ class Snow extends Entity {
 }
 
 class Crate extends Entity {
-	constructor(x, y, width, height, img, nRow, nCol, frameSeq) {
-		super(x, y, width, height, img, nRow, nCol, frameSeq);
+	constructor(x, y, width, height, img, nRow, nCol, frameSeq, centerX, centerY) {
+		super(x, y, width, height, img, nRow, nCol, frameSeq, centerX, centerY);
 		this.dead = false;
+
+		this.broken = false;
+		this.waitTimer = 0;
+		this.waitTime = 60;
 	}
 	update() {
-		super.update();
 		this.checkGot();
+		this.draw();
+
+		if (this.waitTimer > 0) {
+			this.waitTimer--;
+			if (this.waitTimer == 0) {
+				this.dead = true;
+			}
+		}
 	}
+
+	draw() {
+		if (!this.dead) {
+			if (this.broken) {
+				this.drawAnimated([1]);
+			} else {
+				this.drawAnimated(this.frameSeq);
+			}
+		}
+	}
+
 	// Check if player got it
 	checkGot() {
 		for (var i of playerArr) {
-			if (this.collideWith(i)) {
-				console.log("player " + i.playerID + " got a crate");
-				this.dead = true;
-				console.log("created a crate");
+			if (this.collideWith(i) && !this.dead && !this.broken) {
+				this.broken = true;
+				this.waitTimer = this.waitTime;
+				crateOpen_snd.play();
 
 				// Alternate guns
-				if (i.gun.gunID == 2) {
-					i.gun = new SnowGun(0, 100, 20, 20, gunImg, 2, 2, [0], i);
-				} else {
-					i.gun = new LaserGun(0, 100, 20, 20, laserGun_img, 2, 2, [0], i);
-				}
+				while (true) {
+					var rand = Math.random();
+					if (rand < 0.5 && i.gun.gunID != 2) {
+						i.gun = new LaserGun(0, 100, 20, 20, laserGun_img, 2, 2, [0], 0, 0, i);
+						break;
+					} else if (rand >= 0.5 && i.gun.gunID != 3) {
+						i.gun = new Shotgun(0, 100, 20, 20, shotgun_img, 2, 3, [0], 0,0, i);
+						break;
+		     		}
+	     		}
 
-				tempArr.add(new Crate(Math.floor(Math.random()*19)*gridLen,Math.floor(Math.random()*9)*gridLen, 20, 20, crate_img, 1, 1, [0]));
+				tempArr.add(new Crate(Math.floor(Math.random()*19)*gridLen,Math.floor(Math.random()*9)*gridLen, 20, 20, crate_img, 1, 2, [0], 0,0));
 				break;
 			}
 		}
@@ -243,20 +289,19 @@ class Crate extends Entity {
 }
 
 class Wall extends Entity {
-	constructor(x, y, width, height, img, nRow, nCol, frameSeq) {
-		super(x, y, width, height, img, nRow, nCol, frameSeq);
+	constructor(x, y, width, height, img, nRow, nCol, frameSeq, centerX, centerY) {
+		super(x, y, width, height, img, nRow, nCol, frameSeq, centerX, centerY);
 	}
 
 	update() {
 		super.update();
-		this.drawCol();
 	}
 }
 
 
 class Gun extends Entity {
-	constructor(x, y, width, height, img, nRow, nCol, frameSeq, player) {
-		super(x, y, width, height, img, nRow, nCol, frameSeq);
+	constructor(x, y, width, height, img, nRow, nCol, frameSeq, centerX, centerY, player) {
+		super(x, y, width, height, img, nRow, nCol, frameSeq, centerX, centerY);
 
 		this.shooting = false;
 		this.player = player;
@@ -264,48 +309,9 @@ class Gun extends Entity {
 
 	update() {
 		this.updateMovement();
-		this.draw();
-		this.drawCol();
+		this.checkAmmo();
 	}
 
-	draw() {
-
-		// Shooting animation in 4 directions
-		if (this.shooting) {
-			if (this.player.angle == "left") {
-				this.setAngle("left");
-				this.drawAnimated([2, 1]);
-			} else if (this.player.angle == "right") {
-				this.setAngle("right");
-				this.drawAnimated([2, 1]);
-			} else if (this.player.angle == "up") {
-				this.setAngle("up");
-				this.drawAnimated([2, 1]);
-			} else if (this.player.angle == "down") {
-				this.setAngle("down");
-				this.drawAnimated([2, 1]);
-			}	
-			if (this.finishAnim) {
-				this.shooting = false;
-			}
-
-		// Idle gun in 4 directions
-		} else {
-			if (this.player.angle == "left") {
-				this.setAngle("left");
-				this.drawAnimated(this.frameSeq);
-			} else if (this.player.angle == "right") {
-				this.setAngle("right");
-				this.drawAnimated(this.frameSeq);
-			} else if (this.player.angle == "up") {
-				this.setAngle("up");
-				this.drawAnimated(this.frameSeq);
-			} else if (this.player.angle == "down") {
-				this.setAngle("down");
-				this.drawAnimated(this.frameSeq);
-			}			
-		}	
-	}
 
 	// Stick with the player
 	updateMovement() {
@@ -313,22 +319,98 @@ class Gun extends Entity {
 		this.y = this.player.y;
 		this.setAngle(this.player.angle);
 	}
+
+	checkAmmo() {
+		if (this.ammo == 0) {
+			this.player.gun = new SnowGun(0, 100, 20, 20, gunImg, 2, 2, [0], 0,0, this.player);
+		}
+	}
 }
 
-class SnowGun extends Gun {
-	constructor(x, y, width, height, img, nRow, nCol, frameSeq, player) {
-		super(x, y, width, height, img, nRow, nCol, frameSeq, player);
-		this.gunID = 1;
+class Shotgun extends Gun {
+	constructor(x, y, width, height, img, nRow, nCol, frameSeq, centerX, centerY, player) {
+		super(x, y, width, height, img, nRow, nCol, frameSeq, centerX, centerY, player);
+		this.gunID = 3;
+		this.shootTime = 60;
+		this.ammo = 10;
 	}
 
 	update() {
-		super.update();
+		this.updateMovement();
+		this.checkAmmo();
+		this.draw();
 	}	
+	draw() {
+		this.setAngle(this.player.angle);
+
+		// Shooting animation in 4 directions
+		if (this.shooting) {
+			this.drawAnimated([1,2,4,3,4,0]);
+			if (this.finishAnim) {
+				this.shooting = false;
+				shotgunReload_snd.play();
+			}
+
+		// Idle gun in 4 directions
+		} else {
+			this.drawAnimated(this.frameSeq);	
+		}	
+		
+		ctx.drawImage(ammo_img, this.player.x, this.player.y-10);
+		ctx.fillText(this.ammo, this.player.x+12, this.player.y);
+	}
 
 	// Shoot the gun (create bullet + recoil)
 	shoot() {
 		this.shooting = true;
-		tempArr.add(new Snowball(this.x, this.y, 8, 8, snowball, 3, 2, [0], this.player.playerID, this.player.angle));
+		this.ammo--;
+		console.log("shotty ammo = " + this.ammo);
+		for (var i = 0; i < 6; i++) {
+			tempArr.add(new Pellet(this.x, this.y, 4, 4, pellet_img, 1, 1, [0], 0,0, this.player.playerID, this.player.angle));
+		}
+		shotgunShoot_snd.play();
+
+
+		// Prepare for new animation
+		this.animIndex = 0;
+		this.animDelay = 0;
+	}
+}
+
+class SnowGun extends Gun {
+	constructor(x, y, width, height, img, nRow, nCol, frameSeq, centerX, centerY, player) {
+		super(x, y, width, height, img, nRow, nCol, frameSeq, centerX, centerY, player);
+		this.gunID = 1;
+		this.shootTime = 20;
+	}
+
+	update() {
+		this.updateMovement();
+		this.draw();
+	}	
+
+	draw() {
+		this.setAngle(this.player.angle);
+
+		// Shooting animation in 4 directions
+		if (this.shooting) {
+			this.drawAnimated([2, 1]);
+			if (this.finishAnim) {
+				this.shooting = false;
+			}
+
+		// Idle gun in 4 directions
+		} else {
+			this.drawAnimated(this.frameSeq);		
+		}	
+
+		//ctx.fillText("Ammo: "+this.ammo, this.player.x, this.player.y);
+	}
+	// Shoot the gun (create bullet + recoil)
+	shoot() {
+		this.shooting = true;
+		tempArr.add(new Snowball(this.x, this.y, 8, 8, snowball, 3, 2, [0], 0,0, this.player.playerID, this.player.angle));
+		shoot_snd.play();
 
 		// Prepare for new animation
 		this.animIndex = 0;
@@ -337,18 +419,24 @@ class SnowGun extends Gun {
 }
 	 
 class LaserGun extends Gun {
-	constructor(x, y, width, height, img, nRow, nCol, frameSeq, player) {
-		super(x, y, width, height, img, nRow, nCol, frameSeq, player);
+	constructor(x, y, width, height, img, nRow, nCol, frameSeq, centerX, centerY, player) {
+		super(x, y, width, height, img, nRow, nCol, frameSeq, centerX, centerY, player);
 		this.gunID = 2;
+		this.shootTime = 90;
 
 		this.chargeTime = 60;
 		this.chargeTimer = 0;
+
+		this.ammo = 10;
 	}
 
 	update() {
 		this.updateMovement();
+		this.checkAmmo();
 		this.draw();
 		this.chargeGun();
+
+		console.log("ammo = " + this.ammo);
 	}
 
 	// Charging down the gun
@@ -362,21 +450,22 @@ class LaserGun extends Gun {
 				console.log("player angle = " + this.player.angle);
 				if (this.player.angle == "left") {
 					for (var i = this.x-this.player.width/2; i > -20; i-=20) {
-						tempArr.add(new LaserBlast(i, this.y, 20, 8, laserBeam_img, 2, 3, [0,1,2], this.player.playerID, this.player.angle));
+						tempArr.add(new LaserBlast(i, this.y, 20, 8, laserBeam_img, 2, 3, [0,1,2], 0,0, this.player.playerID, this.player.angle));
 					}
 				} else if (this.player.angle == "right") {
 					for (var i = this.x+this.player.width/2; i < canvas.width; i+=20) {
-						tempArr.add(new LaserBlast(i, this.y, 20, 8, laserBeam_img, 2, 3, [0,1,2], this.player.playerID, this.player.angle));
+						tempArr.add(new LaserBlast(i, this.y, 20, 8, laserBeam_img, 2, 3, [0,1,2], 0,0, this.player.playerID, this.player.angle));
 					}
 				} else if (this.player.angle == "up") {
 					for (var i = this.y-this.player.height/2; i > -20; i-=20) {
-						tempArr.add(new LaserBlast(this.x, i, 20, 8, laserBeam_img, 2, 3, [0,1,2], this.player.playerID, this.player.angle));
+						tempArr.add(new LaserBlast(this.x, i, 20, 8, laserBeam_img, 2, 3, [0,1,2], 0,0, this.player.playerID, this.player.angle));
 					}
 				} else {
 					for (var i = this.y+this.player.height/2; i < canvas.height; i+=20) {
-						tempArr.add(new LaserBlast(this.x, i, 20, 8, laserBeam_img, 2, 3, [0,1,2], this.player.playerID, this.player.angle));
+						tempArr.add(new LaserBlast(this.x, i, 20, 8, laserBeam_img, 2, 3, [0,1,2], 0,0, this.player.playerID, this.player.angle));
 					}
 				}
+				lasershoot_snd.play();
 
 				// Prepare for new animation
 				this.animIndex = 0;
@@ -386,41 +475,18 @@ class LaserGun extends Gun {
 	}
 
 	draw() {
+		this.setAngle(this.player.angle);
 
 		// Shooting animation in 4 directions
 		if (this.shooting) {
-			if (this.player.angle == "left") {
-				this.setAngle("left");
-				this.drawAnimated([2, 1]);
-			} else if (this.player.angle == "right") {
-				this.setAngle("right");
-				this.drawAnimated([2, 1]);
-			} else if (this.player.angle == "up") {
-				this.setAngle("up");
-				this.drawAnimated([2, 1]);
-			} else if (this.player.angle == "down") {
-				this.setAngle("down");
-				this.drawAnimated([2, 1]);
-			}	
+			this.drawAnimated([2, 1]);	
 			if (this.finishAnim) {
 				this.shooting = false;
 			}
 
 		// Idle gun in 4 directions
 		} else {
-			if (this.player.angle == "left") {
-				this.setAngle("left");
-				this.drawAnimated(this.frameSeq);
-			} else if (this.player.angle == "right") {
-				this.setAngle("right");
-				this.drawAnimated(this.frameSeq);
-			} else if (this.player.angle == "up") {
-				this.setAngle("up");
-				this.drawAnimated(this.frameSeq);
-			} else if (this.player.angle == "down") {
-				this.setAngle("down");
-				this.drawAnimated(this.frameSeq);
-			}			
+			this.drawAnimated(this.frameSeq);		
 		}	
 
 		// Charging animation
@@ -443,41 +509,128 @@ class LaserGun extends Gun {
 			ctx.fillStyle = "black";
 			ctx.globalAlpha = 1;
 		}
+
+		ctx.drawImage(ammo_img, this.player.x, this.player.y-10);
+		ctx.fillText(this.ammo, this.player.x+12, this.player.y);
 	}
 
 	// Charge the gun + shoot it
 	shoot() {
 		if (this.chargeTimer == 0) {
 			this.chargeTimer = this.chargeTime;
+			this.ammo--;
+			lasercharge_snd.play();
 		}
 	}
 }
 
 class Bullet extends Entity {
-	constructor(x, y, width, height, img, nRow, nCol, frameSeq, owner, dir) {
-		super(x, y, width, height, img, nRow, nCol, frameSeq);
+	constructor(x, y, width, height, img, nRow, nCol, frameSeq, centerX, centerY, owner, dir) {
+		super(x, y, width, height, img, nRow, nCol, frameSeq, centerX, centerY);
 		this.dir = dir;
 		this.owner = owner;
+		this.dead = false;
+	}
+}
+
+class Pellet extends Bullet {
+	constructor(x, y, width, height, img, nRow, nCol, frameSeq, centerX, centerY, owner, dir) {
+		super(x, y, width, height, img, nRow, nCol, frameSeq, centerX, centerY, owner, dir);
+		this.moveTimer = 6 + Math.floor(Math.random()*10);
+		this.deadTimer = 17;
+
+
+		this.speed = 5;
+		this.spreadAngle = 40;
+
+		// Choose top or bottom spread
+		this.angle = Math.floor(Math.random()*this.spreadAngle/2) * Math.PI/180;
+		if (Math.random() > 0.5) {
+			this.angle = -this.angle;
+		}
+
+		// Separating speed in horizontal and vertical
+		this.hspeed = this.speed * Math.cos(this.angle);
+		this.vspeed = this.speed * Math.sin(this.angle);
+
+		this.setAngle(this.dir);
+	}	
+
+	update() {
+		if (this.moveTimer > 0) {
+			this.updateMovement();	
+		}
+		this.tickTimers();
+		this.checkDead();
+		this.checkHit();
+		this.draw();
+	}
+	draw() {
+		this.drawAnimated(this.frameSeq);
+		//this.drawCol();
+	}
+
+	// Count down the timers
+	tickTimers() {
+		if (this.moveTimer > 0) {
+			this.moveTimer--;
+		}
+		if (this.deadTimer > 0) {
+			this.deadTimer--;
+			if (this.deadTimer == 0) {
+				this.dead = true;
+			}
+		}		
+	}
+	updateMovement() {
+		if (this.dir == "left") {
+			this.x -= this.hspeed;
+			this.y -= this.vspeed;
+		} else if (this.dir == "right") {
+			this.x += this.hspeed;
+			this.y += this.vspeed;
+		} else if (this.dir == "up") {
+			this.x -= this.vspeed;
+			this.y -= this.hspeed;
+		} else {
+			this.x += this.vspeed;
+			this.y += this.hspeed;
+		}
+	}
+	// Check if out of bounds or hit some terrain
+	checkDead() {
+		if (this.x < 0 || this.x > numWidth*gridLen-gridLen ||
+		      this.y < 0 || this.y > numHeight*gridLen-gridLen ||
+		        this.checkWallCol()) {
+			this.moveTimer = 0;
+		}
+	}
+
+	// Check if hitting anyone
+	checkHit() {
+		for (var i of playerArr) {
+			if (this.owner != i.playerID && this.collideWith(i) && !i.dead) {
+				console.log("REKTT player " + i.playerID + "died...");
+				i.die(this.dir);
+			}
+		}
 	}
 }
 
 class LaserBlast extends Bullet {
-	constructor(x, y, width, height, img, nRow, nCol, frameSeq, owner, dir) {
-		super(x, y, width, height, img, nRow, nCol, frameSeq, owner, dir);
+	constructor(x, y, width, height, img, nRow, nCol, frameSeq, centerX, centerY, owner, dir) {
+		super(x, y, width, height, img, nRow, nCol, frameSeq, centerX, centerY, owner, dir);
 
 		this.aliveTimer = 30;  // How long to stay alive for
 		this.hurtTimer = 10; // How long can deal damage
 
-		this.dead = false;
-
-		this.angle = dir;
+		this.setAngle(dir);
 	}
 
 	update() {
 		this.tickTimer();
 		this.checkHit();
 		this.draw();
-		this.drawCol();
 	}
 
 	// Count down until the beam disappears
@@ -503,13 +656,14 @@ class LaserBlast extends Bullet {
 		}
 	}
 
+
 	// Check if hitting anyone
 	checkHit() {
 		if (this.hurtTimer > 0) {
 			for (var i of playerArr) {
-				if (this.owner != i.playerID && this.collideWith(i)) {
+				if (this.owner != i.playerID && this.collideWith(i) && !i.dead) {
 					console.log("REKTT player " + i.playerID + "died...");
-					i.die();
+					i.die(this.dir);
 				}
 			}
 		}	
@@ -517,11 +671,9 @@ class LaserBlast extends Bullet {
 
 }
 class Snowball extends Bullet {
-	constructor(x, y, width, height, img, nRow, nCol, frameSeq, owner, dir) {
-		super(x, y, width, height, img, nRow, nCol, frameSeq, owner, dir);
-
+	constructor(x, y, width, height, img, nRow, nCol, frameSeq, centerX, centerY, owner, dir) {
+		super(x, y, width, height, img, nRow, nCol, frameSeq, centerX, centerY, owner, dir);
 		this.speed = 2;
-		this.dead = false;
 		this.breaking = false;   // Showing breaking animation
 	}
 
@@ -590,22 +742,12 @@ class Snowball extends Bullet {
 	// Check if hitting anyone
 	checkHit() {
 		for (var i of playerArr) {
-			if (this.owner != i.playerID && this.collideWith(i)) {
+			if (this.owner != i.playerID && this.collideWith(i) && !i.dead) {
 				console.log("REKTT player " + i.playerID + "died...");
 				this.break();
-				i.die();
+				i.die(this.dir);
 			}
 		}
-	}
-
-	// Check collision with wall objects
-	checkWallCol() {
-		for (var i = 0; i < wallArr.length; i++) {
-			if (this.collideWith(wallArr[i])) {
-				return true;
-			}
-		}
-		return false;
 	}
 
 	// Snowball break apart after hitting object
@@ -621,23 +763,24 @@ class Snowball extends Bullet {
 }
 
 class Player extends Entity {
-	constructor(x, y, width, height, img, nRow, nCol, frameSeq, playerID, startFace) {
-		super(x, y, width, height, img, nRow, nCol, frameSeq);
+	constructor(x, y, width, height, img, nRow, nCol, frameSeq, centerX, centerY, playerID, startFace) {
+		super(x, y, width, height, img, nRow, nCol, frameSeq, centerX, centerY);
 
 		this.speed = 1;
 
-		this.shootTime = 20;
 		this.shootTimer = 0;
 
 		this.playerID = playerID;
 
-		if (playerID == 1) {
-			this.gun = new SnowGun(0, 100, 20, 20, gunImg, 2, 2, [0], this);
-		} else if (playerID == 2) {
-			this.gun = new LaserGun(0, 100, 20, 20, laserGun_img, 2, 2, [0], this);
-		}
+		//if (playerID == 1) {
+			this.gun = new SnowGun(0, 100, 20, 20, gunImg, 2, 2, [0], 0,0, this);
+		//} else if (playerID == 2) {
+		//	this.gun = new Shotgun(0, 100, 20, 20, shotgun_img, 2, 3, [0], 0,0, this);
+			//this.gun = new LaserGun(0, 100, 20, 20, laserGun_img, 2, 2, [0], 0,0, this);
+		//}
 
 		this.dead = false;
+		this.dying = false;
 
 		this.leftKey;
 		this.rightKey;
@@ -720,7 +863,7 @@ class Player extends Entity {
 
 			// Walking animation
 			if (this.moving) {
-				this.drawAnimated([0, 1]);
+				this.drawAnimated([0, 9]);
 
 			// Idle animation
 			} else {
@@ -730,10 +873,19 @@ class Player extends Entity {
 
 		// Dead sprite
 		} else {
-			this.setAngle("right");
-			this.drawAnimated([2]);
+
+			// Dying animation
+			if (this.dying) {
+				this.drawAnimated([2,3,4,5,6,7,8]);
+				if (this.finishAnim) {
+					this.dying = false;
+				}
+
+			// Dead sprite
+			} else {
+				this.drawAnimated([8]);
+			}
 		}
-		this.drawCol();
 	}
 
 	// Update movement based on key presses
@@ -765,8 +917,7 @@ class Player extends Entity {
 	shoot() {
 		if (this.shootKey && this.shootTimer == 0) {
 			this.gun.shoot();
-			this.shootTimer = this.shootTime;
-			shoot_snd.play();
+			this.shootTimer = this.gun.shootTime;
 		}
 
 		if (this.shootTimer > 0) {
@@ -775,19 +926,30 @@ class Player extends Entity {
 	}
 
 	// Get the player to die
-	die() {
+	die(bulletDir) {
 		this.dead = true;
-		die_snd.play();
-	}
+		this.dying = true;
 
-	// Check collision with wall objects
-	checkWallCol() {
-		for (var i = 0; i < wallArr.length; i++) {
-			if (this.collideWith(wallArr[i])) {
-				return true;
-			}
-		}
-		return false;
+		this.setAngle("right");
+		// Set direction for player to die
+		/*if (bulletDir == "left") {
+			this.setAngle("right");
+		} else if (bulletDir == "right") {
+			this.setAngle("left");
+		} else if (bulletDir == "up") {
+			this.setAngle("down");
+		} else if (bulletDir == "down") {
+			this.setAngle("up");
+		}*/
+		
+
+		// Prepare for new animation
+		this.animIndex = 0;
+		this.animDelay = 0;
+		this.changeSprite(playerDie_img, 60, 60, 3, 3, [0], 20, 20);
+
+		die_snd.play();
+		die2_snd.play();
 	}
 
 	// Check collision with wall objects at offset

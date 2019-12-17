@@ -1,6 +1,6 @@
 // Create wall at grid position
 function addWall(xGrid, yGrid) {
-	wallArr.push(new Wall(xGrid*gridLen, yGrid*gridLen, 20, 20, wall, 1, 1, [0]));
+	wallArr.push(new Wall(xGrid*gridLen, yGrid*gridLen, 20, 20, wall, 1, 1, [0], 0,0));
 }
 
 // Checks if two rectangles have a collision (true or false)

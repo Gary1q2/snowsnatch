@@ -1,0 +1,37 @@
+Guns n boxes
+Good
+
+-Has timed fire that kill u to make game more interesting over time
+-Destroy terrain to get weapons
+
+Bad
+-Not that satisfying to kill the enemy
+
+Monkeys with guns
+Good
+-Get random weapons from crates
+-Crates drop down from the sky and u can shoot and stand on the crate :O (cool mech)
+-Has spikes that come kill u after certain time (makes more interesting)
+-Cool skins for monkeys
+-Gun goes back to normal after running out of ammo
+-There is health so players get to skirmish slightly longer…
+-Everything you shoot and interact with has nice animations + sounds
+-Every level has different mechanics :O
+
+Bad
+-Not much stuff to learn, need something to master
+-Controls could be a lot more responsive
+-If a party game, need to give noobs a more balanced way to get ahead?
+
+Super Crate box
+Good
+-Every weapon has pros and cons
+-Weapon is super satisfying to use
+-Everything is really satisfying to do
+
+Bad
+-It has no buffer for jumping, so controls kinda suck a bit
+-Overarching ideas
+-Get random weapons from crates
+-Destructible environment
+-Environment starts to kill you after some time (makes it more interesting)
