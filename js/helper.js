@@ -41,3 +41,9 @@ function drawGrids() {
 
 	ctx.globalAlpha = 1;
 }
+
+
+// HTML button functions
+function goToControlScreen() {
+	
+}

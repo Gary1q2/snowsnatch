@@ -355,7 +355,7 @@ class Shotgun extends Gun {
 		} else {
 			this.drawAnimated(this.frameSeq);	
 		}	
-		
+
 		ctx.drawImage(ammo_img, this.player.x, this.player.y-10);
 		ctx.fillText(this.ammo, this.player.x+12, this.player.y);
 	}
@@ -886,6 +886,7 @@ class Player extends Entity {
 				this.drawAnimated([8]);
 			}
 		}
+		this.drawCol();
 	}
 
 	// Update movement based on key presses

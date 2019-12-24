@@ -1,0 +1,62 @@
+#canvas {
+	/*border: 3px solid black;*/
+	width: 1200px;
+	height: 600px;
+
+	image-rendering: pixelated;
+}
+
+#timer {
+	position: absolute;
+	font-size: 60px;
+
+	top: 50px;
+	left: 50%;
+}
+
+#banner {
+	position: absolute;
+	font-size: 60px;
+
+	top: 100px;
+	left: 50%;
+}
+
+#titlescreen {
+	width: 1200px;
+	height: 600px;
+	image-rendering: pixelated;
+}
+
+#playButton {
+	position: absolute;
+	top: 200px;
+	left: 50%;
+
+	font-size: 60px;
+}
+
+#controlButton {
+	position: absolute;
+	top: 300px;
+	left: 50%;
+
+	font-size: 60px;
+}
+
+#backToMenuButton {
+	position: absolute;
+	bottom: 150px;
+	left: 100px;
+
+	font-size: 60px;
+	visibility: hidden;
+}
+
+#controlScreen {
+	width: 1200px;
+	height: 600px;
+	image-rendering: pixelated;
+
+	visibility: hidden;
+}
