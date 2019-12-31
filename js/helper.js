@@ -1,5 +1,5 @@
 // Create wall at grid position
-function addWall(arr, xGrid, yGrid) {
+function addWall(xGrid, yGrid) {
 	wallArr.push(new Wall(xGrid*gridLen, yGrid*gridLen));
 }
 

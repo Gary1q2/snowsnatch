@@ -36,6 +36,11 @@ titleBack_img.src = "img/titlescreen.png";
 var controlBack_img = new Image();
 controlBack_img.src = "img/controlScreen.png";
 
+var msgReady_img = new Image();
+msgReady_img.src = "img/msg-ready.png";
+var msgFight_img = new Image();
+msgFight_img.src = "img/msg-fight.png";
+
 
 var shoot_snd = document.createElement("audio");
 shoot_snd.src = "sound/shoot.mp3";
@@ -55,3 +60,6 @@ var shotgunShoot_snd = document.createElement("audio");
 shotgunShoot_snd.src = "sound/shotgunShoot.mp3";
 var shotgunReload_snd = document.createElement("audio");
 shotgunReload_snd.src = "sound/shotgunReload.mp3";
+
+var readFight_snd = document.createElement("audio");
+readFight_snd.src = "sound/readyFight.mp3";

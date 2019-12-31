@@ -7,6 +7,23 @@ class Game {
 		// Countdown timer
 		this.timer = 30;
 		this.tickTimer = 0;
+
+		// Display ready, fight! images
+		this.fightMsgTimer = 0;
+
+
+		this.level = [
+			[ 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ],
+			[ 0 , 1 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ],
+			[ 0 , 0 ,"W","W","W","W","W","W", 0 , 0 , 0 , 0 ,"W","W","W","W","W","W", 0 , 0 ],
+			[ 0 , 0 ,"W", 0 , 0 , 0 , 0 , 0 ,"C", 0 , 0 ,"C", 0 , 0 , 0 , 0 , 0 ,"W", 0 , 0 ],
+			[ 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ],
+			[ 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ,"C", 0 ],
+			[ 0 , 0 ,"W", 0 , 0 , 0 , 0 , 0 ,"C", 0 , 0 ,"C", 0 , 0 , 0 , 0 , 0 ,"W", 0 , 0 ],
+			[ 0 , 0 ,"W","W","W","W","W","W", 0 , 0 , 0 , 0 ,"W","W","W","W","W","W", 0 , 0 ],
+			[ 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 2 , 0 ],
+			[ 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ]
+		];
 	}
 
 	toControlScreen() {
@@ -22,7 +39,6 @@ class Game {
 		document.getElementById("controlButton").style.visibility = "hidden";
 
 		document.getElementById("timer").style.visibility = "visible";
-		document.getElementById("banner").style.visibility = "visible";
 		document.getElementById("backToMenuButton").style.visibility = "visible";
 
 		// Reset these variables
@@ -31,36 +47,27 @@ class Game {
 		wallArr = [];                 // Array for walls
 		snowArr = new ObjectArray();  // Array for snow piles
 
-		// Create players
-		playerArr.push(new Player(0, 100, 1, DIR.right));
-		playerArr.push(new Player(360, 100, 2, DIR.left));
-
-		// Create snow piles
+		// Create objects from level array
 		for (var i = 0; i < numHeight; i++) {
 			for (var j = 0; j < numWidth; j++) {
-				snowArr.add(new Snow(j*gridLen, i*gridLen));
+				if (this.level[i][j] == "W") {
+					addWall(j, i);
+				} else if (this.level[i][j] == 1) {
+					playerArr.push(new Player(j*gridLen, i*gridLen, 1, DIR.right));
+				} else if (this.level[i][j] == 2) {
+					playerArr.push(new Player(j*gridLen, i*gridLen, 2, DIR.left));
+				} else if (this.level[i][j] == "C") {
+					tempArr.add(new Crate(j*gridLen, i*gridLen));
+				} else {
+					snowArr.add(new Snow(j*gridLen, i*gridLen));
+				}
 			}
 		}
 
-		// Create walls
-		addWall(wallArr, 3, 3);
-		addWall(wallArr, 4, 3);
-		addWall(wallArr, 5, 3);
-		addWall(wallArr, 5, 4);
-		addWall(wallArr, 5, 5);
-		addWall(wallArr, 5, 6);
-
-		addWall(wallArr, 8, 6);
-		addWall(wallArr, 8, 5);
-		addWall(wallArr, 8, 4);
-		addWall(wallArr, 8, 3);
-		addWall(wallArr, 9, 3);
-		addWall(wallArr, 10, 3);
-
-		// Add crate
-		tempArr.add(new Crate(8*gridLen, 8*gridLen));
-
 		this.gamestate = GAMESTATE.arena;
+
+		this.fightMsgTimer = 100;
+		readFight_snd.play();
 	}
 
 	toMenuScreen() {
@@ -69,7 +76,6 @@ class Game {
 
 		document.getElementById("backToMenuButton").style.visibility = "hidden";
 		document.getElementById("timer").style.visibility = "hidden";
-		document.getElementById("banner").style.visibility = "hidden";
 
 		this.gamestate = GAMESTATE.menu;
 	}
@@ -102,6 +108,18 @@ class Game {
 					this.timer--;
 				}
 				document.getElementById('timer').innerHTML = this.timer;
+			}
+
+			if (this.fightMsgTimer != 0) {
+				if (this.fightMsgTimer > 40) {
+					ctx.drawImage(msgReady_img, 140, 80);
+				} else {
+					ctx.drawImage(msgFight_img, 140, 80);
+				}
+			}
+
+			if (this.fightMsgTimer > 0) {
+				this.fightMsgTimer--;
 			}
 		}
 	}

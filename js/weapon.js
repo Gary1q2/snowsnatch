@@ -134,8 +134,6 @@ class LaserGun extends Gun {
 		this.checkAmmo();
 		this.draw();
 		this.chargeGun();
-
-		console.log("ammo = " + this.ammo);
 	}
 
 	// Charging down the gun
@@ -218,6 +216,7 @@ class LaserGun extends Gun {
 		if (this.chargeTimer == 0) {
 			this.chargeTimer = this.chargeTime;
 			this.ammo--;
+			console.log("ammo = " + this.ammo);
 			lasercharge_snd.play();
 		}
 	}

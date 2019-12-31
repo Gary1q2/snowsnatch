@@ -280,7 +280,17 @@ class Crate extends Entity {
 						break;
 		     		}
 	     		}
-				tempArr.add(new Crate(Math.floor(Math.random()*19)*gridLen,Math.floor(Math.random()*9)*gridLen));
+
+	     		// Spawn crate in random empty spawn
+	     		while (true) {
+	     			var temp_y = Math.floor(Math.random()*numHeight);
+	     			var temp_x = Math.floor(Math.random()*numWidth);
+	     			if (game.level[temp_y][temp_x] != "W") {
+	     				tempArr.add(new Crate(temp_x*gridLen, temp_y*gridLen));
+	     				break;
+	     			}
+	     		}
+				
 				break;
 			}
 		}
@@ -325,9 +335,12 @@ class Player extends Entity {
 
 		this.strafeDir = DIR.none; // Direction keep facing when strafing
 		this.firstKeyPress = DIR.none;  // Key first pressed for strafing
+		
+
+		this.canMoveTimer = 100;
 	}
 	update() {
-		if (!this.dead) {
+		if (!this.dead && this.canMoveTimer <= 0) {
 			this.updateKeypress();
 			this.shoot();
 			this.updateMovement();
@@ -337,6 +350,8 @@ class Player extends Entity {
 		if (!this.dead) {
 			this.gun.update();
 		}
+
+		this.canMoveTimer--;
 	}
 
 	// Grab keypresses from global keys object
