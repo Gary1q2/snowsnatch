@@ -6,27 +6,26 @@
 
 	<body>
 		<!--Menu screen-->
-		<!--<div>
-			<button id="playButton">Play</button>
-			<button id="controlButton" onclick=>Controls</button>
-			<img id="titlescreen" src="img/titlescreen.png">
-		</div>-->
+		<div>
+			<button id="playButton" onclick="game.toArenaScreen()">Play</button>
+			<button id="controlButton" onclick="game.toControlScreen()">Controls</button>
+		</div>
 
 		<!--Control screen-->
-		<!--<div>
-			<button id="backToMenuButton">Menu</button>
-			<img id="controlScreen" src="img/controlScreen.png">
-		</div>-->
+		<div>
+			<button id="backToMenuButton" onclick="game.toMenuScreen()">Menu</button>
+		</div>
 
 
 		<!--Game screen-->
-		<div id="timer">30</div>
+		<<div id="timer">30</div>
 		<div id="banner">Ready</div>
 		<canvas id="canvas" width=400 height=200></canvas>
 
 	</body>
 	<script src="js/class.js"></script>
 	<script src="js/weapon.js"></script>
+	<script src="js/game.js"></script>
 	<script src="js/keyboard.js"></script>
 	<script src="js/helper.js"></script>
 	<script src="js/files.js"></script>
@@ -42,6 +41,24 @@ ctx.imageSmoothingEnabled = false;
 ctx.lineWidth = 1;
 
 
+
+const DIR = {
+	left: 0,
+	up: 1,
+	right: 2,
+	down: 3,
+	none: 4
+};
+
+const GAMESTATE = {
+	menu: 0,
+	arena: 1,
+	paused: 2,
+	gameover: 3,
+	controls: 4
+}
+
+
 var gridLen = 20;          // Each grid 20 pixels wide/high
 var numWidth = canvas.width/gridLen;   // Number of grids horizontal
 var numHeight = canvas.height/gridLen;  // Number of grids vertical
@@ -50,79 +67,18 @@ var playerArr = [];               // Array of players
 var tempArr = new ObjectArray();  // Array of temporary objects eg. bullets
 var wallArr = [];                 // Array for walls
 var snowArr = new ObjectArray();  // Array for snow piles
-
-
-window.onload = function() {
-
-	// Create players
-	playerArr.push(new Player(0, 100, 1, "right"));
-	playerArr.push(new Player(360, 100, 2, "left"));
-
-	// Create snow piles
-	for (var i = 0; i < numHeight; i++) {
-		for (var j = 0; j < numWidth; j++) {
-			snowArr.add(new Snow(j*gridLen, i*gridLen));
-		}
-	}
-
-	// Create walls
-	addWall(wallArr, 3, 3);
-	addWall(wallArr, 4, 3);
-	addWall(wallArr, 5, 3);
-	addWall(wallArr, 5, 4);
-	addWall(wallArr, 5, 5);
-	addWall(wallArr, 5, 6);
-
-	addWall(wallArr, 8, 6);
-	addWall(wallArr, 8, 5);
-	addWall(wallArr, 8, 4);
-	addWall(wallArr, 8, 3);
-	addWall(wallArr, 9, 3);
-	addWall(wallArr, 10, 3);
-
-	// Add crate
-	tempArr.add(new Crate(8*gridLen, 8*gridLen));
-
-	requestAnimationFrame(gameLoop);
-}
-
-var timer = 30;
-var tickTimer = 0;
+var game = new Game();
 
 // Game loop
 function gameLoop() {
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
-	ctx.drawImage(bg, 0, 0);
-	//drawGrids();
+	
 
-
-
-
-	snowArr.update();
-
-	for (var i = 0; i < playerArr.length; i++) {
-		playerArr[i].update();
-	}
-	tempArr.update();
-
-	// Update all wall objects
-	for (var i = 0; i < wallArr.length; i++) {
-		wallArr[i].update();
-	}
-
-
-
-
-	tickTimer++;
-	if (tickTimer == 60) {
-		tickTimer = 0;
-		if (timer > 0) {
-			timer--;
-		}
-		document.getElementById('timer').innerHTML = timer;
-	}
+	game.update();
 
 	requestAnimationFrame(gameLoop);
 }
+
+requestAnimationFrame(gameLoop);
 
 </script>

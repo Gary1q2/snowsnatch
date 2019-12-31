@@ -30,6 +30,13 @@ var ammo_img = new Image();
 ammo_img.src = "img/ammo.png";
 
 
+
+var titleBack_img = new Image();
+titleBack_img.src = "img/titlescreen.png";
+var controlBack_img = new Image();
+controlBack_img.src = "img/controlScreen.png";
+
+
 var shoot_snd = document.createElement("audio");
 shoot_snd.src = "sound/shoot.mp3";
 var die_snd = document.createElement("audio");

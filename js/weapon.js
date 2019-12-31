@@ -147,15 +147,15 @@ class LaserGun extends Gun {
 
 				console.log("SHOT LASERRR");
 				console.log("player angle = " + this.player.angle);
-				if (this.player.angle == "left") {
+				if (this.player.angle == DIR.left) {
 					for (var i = this.x-this.player.width/2; i > -20; i-=20) {
 						tempArr.add(new LaserBlast(i, this.y, this.player.playerID, this.player.angle));
 					}
-				} else if (this.player.angle == "right") {
+				} else if (this.player.angle == DIR.right) {
 					for (var i = this.x+this.player.width/2; i < canvas.width; i+=20) {
 						tempArr.add(new LaserBlast(i, this.y, this.player.playerID, this.player.angle));
 					}
-				} else if (this.player.angle == "up") {
+				} else if (this.player.angle == DIR.up) {
 					for (var i = this.y-this.player.height/2; i > -20; i-=20) {
 						tempArr.add(new LaserBlast(this.x, i, this.player.playerID, this.player.angle));
 					}
@@ -195,13 +195,13 @@ class LaserGun extends Gun {
 			var beamWidth = 4;
 			var beamDist = 400;
 
-			if (this.player.angle == "left") {
+			if (this.player.angle == DIR.left) {
 				ctx.fillRect(this.player.x+this.player.width/2, this.player.y+this.player.height/2-beamWidth/2, -beamDist, beamWidth);
-			} else if (this.player.angle == "right") {
+			} else if (this.player.angle == DIR.right) {
 				ctx.fillRect(this.player.x+this.player.width/2, this.player.y+this.player.height/2-beamWidth/2, beamDist, beamWidth);
-			} else if (this.player.angle == "up") {
+			} else if (this.player.angle == DIR.up) {
 				ctx.fillRect(this.player.x+this.player.width/2-beamWidth/2, this.player.y+this.player.height/2, beamWidth, -beamDist);
-			} else if (this.player.angle == "down") {
+			} else if (this.player.angle == DIR.down) {
 				ctx.fillRect(this.player.x+this.player.width/2-beamWidth/2, this.player.y+this.player.height/2, beamWidth, beamDist);
 			}
 
@@ -282,13 +282,13 @@ class Pellet extends Bullet {
 		}		
 	}
 	updateMovement() {
-		if (this.dir == "left") {
+		if (this.dir == DIR.left) {
 			this.x -= this.hspeed;
 			this.y -= this.vspeed;
-		} else if (this.dir == "right") {
+		} else if (this.dir == DIR.right) {
 			this.x += this.hspeed;
 			this.y += this.vspeed;
-		} else if (this.dir == "up") {
+		} else if (this.dir == DIR.up) {
 			this.x -= this.vspeed;
 			this.y -= this.hspeed;
 		} else {
@@ -390,39 +390,39 @@ class Snowball extends Bullet {
 	draw() {
 		if (this.breaking) {
 			var seq = [1, 2, 3, 4];
-			if (this.dir == "left") {
-				this.setAngle("up");
+			if (this.dir == DIR.left) {
+				this.setAngle(DIR.up);
 				this.drawAnimated(seq)
-			} else if (this.dir == "right") {
-				this.setAngle("down");
+			} else if (this.dir == DIR.right) {
+				this.setAngle(DIR.down);
 				this.drawAnimated(seq)
-			} else if (this.dir == "up") {
-				this.setAngle("left");
+			} else if (this.dir == DIR.up) {
+				this.setAngle(DIR.left);
 				this.drawAnimated(seq)
-			} else if (this.dir == "down") {
-				this.setAngle("right");
+			} else if (this.dir == DIR.down) {
+				this.setAngle(DIR.right);
 				this.drawAnimated(seq)
 			}
 			if (this.finishAnim) {
 				this.dead = true;
 			}
 		} else {
-			this.setAngle("right");
+			this.setAngle(DIR.right);
 			this.drawAnimated(this.frameSeq);
 		}
 	}
 
 	updateMovement() {
-		if (this.dir == "left") {
+		if (this.dir == DIR.left) {
 			this.x -= this.speed;
 			this.moveTimer = this.moveTime;
-		} else if (this.dir == "right") {
+		} else if (this.dir == DIR.right) {
 			this.x += this.speed;
 			this.moveTimer = this.moveTime;
-		} else if (this.dir == "up") {
+		} else if (this.dir == DIR.up) {
 			this.y -= this.speed;
 			this.moveTimer = this.moveTime;
-		} else if (this.dir == "down") {
+		} else if (this.dir == DIR.down) {
 			this.y += this.speed;
 			this.moveTimer = this.moveTime;
 		}	

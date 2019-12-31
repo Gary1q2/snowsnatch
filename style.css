@@ -12,6 +12,8 @@
 
 	top: 50px;
 	left: 50%;
+
+	visibility: hidden;
 }
 
 #banner {
@@ -20,6 +22,8 @@
 
 	top: 100px;
 	left: 50%;
+
+	visibility: hidden;
 }
 
 #titlescreen {

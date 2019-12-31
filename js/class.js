@@ -13,7 +13,7 @@ class Entity {
 		this.centerX = centerX;
 		this.centerY = centerY;
 
-		this.angle = "right"; // 0 = right, 90 = up, 180 = left, 270 = down
+		this.angle = DIR.right;
 
 		this.animIndex = 0;
 		this.animCurrFrame = 0;
@@ -32,16 +32,16 @@ class Entity {
 		var yPos = Math.floor(this.animCurrFrame / this.nCol) * this.img.height/this.nRow;
 	
 		// Draw animation depending on angle
-		if (this.angle == "right") {
+		if (this.angle == DIR.right) {
 			ctx.translate(this.x, this.y);
-		} else if (this.angle == "up") {
+		} else if (this.angle == DIR.up) {
 			ctx.translate(this.x, this.y);
 			ctx.rotate(-90*Math.PI/180);
 			ctx.translate(-this.img.width/this.nCol, 0);
-		} else if (this.angle == "left") {
+		} else if (this.angle == DIR.left) {
 			ctx.translate(this.x+this.img.width/this.nCol, this.y);
 			ctx.scale(-1, 1);
-		} else if (this.angle == "down") {
+		} else if (this.angle == DIR.down) {
 			ctx.translate(this.x, this.y);
 			ctx.rotate(90*Math.PI/180);
 			ctx.translate(0, -this.img.width/this.nCol);		
@@ -69,7 +69,7 @@ class Entity {
 
 		ctx.beginPath();
 
-		if (this.angle == "right" || this.angle == "left") {
+		if (this.angle == DIR.right || this.angle == DIR.left) {
 			x_anchor += this.img.width/this.nCol/2-this.width/2;
 		    y_anchor += this.img.height/this.nRow/2-this.height/2;
 
@@ -89,7 +89,7 @@ class Entity {
 			ctx.moveTo(x_anchor, y_anchor+this.height-0.5);
 			ctx.lineTo(x_anchor+this.width, y_anchor+this.height-0.5);
 
-		} else if (this.angle == "up" || this.angle == "down") {
+		} else if (this.angle == DIR.up || this.angle == DIR.down) {
 			x_anchor += this.img.width/this.nCol/2-this.height/2;
 		    y_anchor += this.img.height/this.nRow/2-this.width/2;
 
@@ -117,14 +117,14 @@ class Entity {
 	// Check collision with another object
 	collideWith(other) {
 		var rect1;
-		if (this.angle == "right" || this.angle == "left") {
+		if (this.angle == DIR.right || this.angle == DIR.left) {
 			rect1 = {
 				x: this.x-this.centerX+this.img.width/this.nCol/2-this.width/2,
 				y: this.y-this.centerY+this.img.height/this.nRow/2-this.height/2,
 				width: this.width,
 				height: this.height
 			};
-		} else if (this.angle == "up" || this.angle == "down") {
+		} else if (this.angle == DIR.up || this.angle == DIR.down) {
 			rect1 = {
 				x: this.x-this.centerX+this.img.width/this.nCol/2-this.height/2,
 				y: this.y-this.centerX+this.img.height/this.nRow/2-this.width/2,
@@ -134,14 +134,14 @@ class Entity {
 		}
 
 		var rect2;
-		if (other.angle == "right" || other.angle == "left") {
+		if (other.angle == DIR.right || other.angle == DIR.left) {
 			rect2 = {
 				x: other.x+other.img.width/other.nCol/2-other.width/2,
 				y: other.y+other.img.height/other.nRow/2-other.height/2,
 				width: other.width,
 				height: other.height
 			};
-		} else if (other.angle == "up" || other.angle == "down") {
+		} else if (other.angle == DIR.up || other.angle == DIR.down) {
 			rect2 = {
 				x: other.x+other.img.width/other.nCol/2-other.height/2,
 				y: other.y+other.img.height/other.nRow/2-other.width/2,
@@ -323,8 +323,8 @@ class Player extends Entity {
 
 		this.moving = false; // If player is moving or not
 
-		this.strafeDir = "none"; // Direction keep facing when strafing
-		this.firstKeyPress = "none";  // Key first pressed for strafing
+		this.strafeDir = DIR.none; // Direction keep facing when strafing
+		this.firstKeyPress = DIR.none;  // Key first pressed for strafing
 	}
 	update() {
 		if (!this.dead) {
@@ -366,17 +366,17 @@ class Player extends Entity {
 			}
 		} else {
 			this.moving = false;
-			this.firstKeyPress = "none";
+			this.firstKeyPress = DIR.none;
 		}
 
 		if (this.moving) {
 
 			// Start strafing
-			if (this.firstKeyPress == "none") {
-				if (this.leftKey) { this.firstKeyPress = "left"; }
-				if (this.rightKey) { this.firstKeyPress = "right"; }
-				if (this.upKey) { this.firstKeyPress = "up"; }
-				if (this.downKey) { this.firstKeyPress = "down"; }
+			if (this.firstKeyPress == DIR.none) {
+				if (this.leftKey) { this.firstKeyPress = DIR.left; }
+				if (this.rightKey) { this.firstKeyPress = DIR.right; }
+				if (this.upKey) { this.firstKeyPress = DIR.up; }
+				if (this.downKey) { this.firstKeyPress = DIR.down; }
 				this.setAngle(this.firstKeyPress);
 
 			// Change strafe direction mid-strafe
@@ -464,16 +464,16 @@ class Player extends Entity {
 		this.dead = true;
 		this.dying = true;
 
-		this.setAngle("right");
+		this.setAngle(DIR.right);
 		// Set direction for player to die
-		/*if (bulletDir == "left") {
-			this.setAngle("right");
-		} else if (bulletDir == "right") {
-			this.setAngle("left");
-		} else if (bulletDir == "up") {
-			this.setAngle("down");
-		} else if (bulletDir == "down") {
-			this.setAngle("up");
+		/*if (bulletDir == DIR.left) {
+			this.setAngle(DIR.right);
+		} else if (bulletDir == DIR.right) {
+			this.setAngle(DIR.left);
+		} else if (bulletDir == DIR.up) {
+			this.setAngle(DIR.down);
+		} else if (bulletDir == DIR.down) {
+			this.setAngle(DIR.up);
 		}*/
 		
 
@@ -499,10 +499,10 @@ class Player extends Entity {
 	// Return the current keys pressed
 	currKeysPressed() {
 		var keys = [];
-		if (this.rightKey) { keys.push("right"); }
-		if (this.leftKey) { keys.push("left");}
-		if (this.upKey) { keys.push("up"); }
-		if (this.downKey) { keys.push("down"); }
+		if (this.rightKey) { keys.push(DIR.right); }
+		if (this.leftKey) { keys.push(DIR.left);}
+		if (this.upKey) { keys.push(DIR.up); }
+		if (this.downKey) { keys.push(DIR.down); }
 		return keys;
 	}
 }
