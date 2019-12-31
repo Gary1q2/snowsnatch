@@ -67,7 +67,12 @@ var playerArr = [];               // Array of players
 var tempArr = new ObjectArray();  // Array of temporary objects eg. bullets
 var wallArr = [];                 // Array for walls
 var snowArr = new ObjectArray();  // Array for snow piles
-var game = new Game();
+var game;
+
+window.onload = function() {
+	game = new Game();
+	requestAnimationFrame(gameLoop);
+}
 
 // Game loop
 function gameLoop() {
@@ -79,6 +84,6 @@ function gameLoop() {
 	requestAnimationFrame(gameLoop);
 }
 
-requestAnimationFrame(gameLoop);
+
 
 </script>
