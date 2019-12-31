@@ -26,8 +26,10 @@
 
 	</body>
 	<script src="js/class.js"></script>
+	<script src="js/weapon.js"></script>
 	<script src="js/keyboard.js"></script>
 	<script src="js/helper.js"></script>
+	<script src="js/files.js"></script>
 </html>
 
 <script>
@@ -39,112 +41,52 @@ var ctx = canvas.getContext('2d');
 ctx.imageSmoothingEnabled = false;
 ctx.lineWidth = 1;
 
-// Global variables
-var gridLen = 20;                       // Each grid 20 pixels
-var numWidth = canvas.width/gridLen;    // Number of grids horizontal
+
+var gridLen = 20;          // Each grid 20 pixels wide/high
+var numWidth = canvas.width/gridLen;   // Number of grids horizontal
 var numHeight = canvas.height/gridLen;  // Number of grids vertical
 
+var playerArr = [];               // Array of players
+var tempArr = new ObjectArray();  // Array of temporary objects eg. bullets
+var wallArr = [];                 // Array for walls
+var snowArr = new ObjectArray();  // Array for snow piles
 
-var player;
-
-
-
-var peng = new Image();
-peng.src = "img/player.png";
-var peng2 = new Image();
-peng2.src = "img/player2.png";
-var block = new Image();
-block.src = "img/block.png";
-var gunImg = new Image();
-gunImg.src = "img/gun.png";
-var bg = new Image();
-bg.src = "img/bg.png";
-var snowball = new Image();
-snowball.src = "img/snowball.png";
-var wall = new Image();
-wall.src = "img/wall.png";
-var laserGun_img = new Image();
-laserGun_img.src = "img/laserGun.png";
-var laserBeam_img = new Image();
-laserBeam_img.src = "img/laserBeam.png";
-var shotgun_img = new Image();
-shotgun_img.src = "img/shotgun.png";
-var crate_img = new Image();
-crate_img.src = "img/crate.png";
-var snow_img = new Image();
-snow_img.src = "img/snow.png";
-var playerDie_img = new Image();
-playerDie_img.src = "img/playerDie.png";
-var pellet_img = new Image();
-pellet_img.src = "img/pellet.png";
-var ammo_img = new Image();
-ammo_img.src = "img/ammo.png";
-
-
-var shoot_snd = document.createElement("audio");
-shoot_snd.src = "sound/shoot.mp3";
-var die_snd = document.createElement("audio");
-die_snd.src = "sound/die.mp3";
-var die2_snd = document.createElement("audio");
-die2_snd.src = "sound/die2.mp3";
-var snowbreak_snd = document.createElement("audio");
-snowbreak_snd.src = "sound/snow_break.mp3";
-var lasershoot_snd = document.createElement("audio");
-lasershoot_snd.src = "sound/laserShoot.mp3";
-var lasercharge_snd = document.createElement("audio");
-lasercharge_snd.src = "sound/laserCharge.mp3";
-var crateOpen_snd = document.createElement("audio");
-crateOpen_snd.src = "sound/crateOpen.mp3";
-var shotgunShoot_snd = document.createElement("audio");
-shotgunShoot_snd.src = "sound/shotgunShoot.mp3";
-var shotgunReload_snd = document.createElement("audio");
-shotgunReload_snd.src = "sound/shotgunReload.mp3";
-
-
-
-var playerArr = [];
-var tempArr = new ObjectArray();
-var wallArr = [];
-var snowArr = new ObjectArray();
-
-var timer = 30;
 
 window.onload = function() {
 
 	// Create players
-	player = new Player(0, 100, 20, 20, peng, 4, 3, [0], 0,0, 1,  "right");
-	player2 = new Player(360, 100, 20, 20, peng, 4, 3, [0], 0,0, 2, "left");
-	playerArr.push(player);
-	playerArr.push(player2);
+	playerArr.push(new Player(0, 100, 1, "right"));
+	playerArr.push(new Player(360, 100, 2, "left"));
 
+	// Create snow piles
 	for (var i = 0; i < numHeight; i++) {
 		for (var j = 0; j < numWidth; j++) {
-			snowArr.add(new Snow(j*gridLen, i*gridLen, 20, 20, snow_img, 4, 3,[0], 6, 6));
+			snowArr.add(new Snow(j*gridLen, i*gridLen));
 		}
 	}
-	
 
-	// Player walls down
-	addWall(3, 3);
-	addWall(4, 3);
-	addWall(5, 3);
-	addWall(5, 4);
-	addWall(5, 5);
-	addWall(5, 6);
+	// Create walls
+	addWall(wallArr, 3, 3);
+	addWall(wallArr, 4, 3);
+	addWall(wallArr, 5, 3);
+	addWall(wallArr, 5, 4);
+	addWall(wallArr, 5, 5);
+	addWall(wallArr, 5, 6);
 
-	addWall(8, 6);
-	addWall(8, 5);
-	addWall(8, 4);
-	addWall(8, 3);
-	addWall(9, 3);
-	addWall(10, 3);
+	addWall(wallArr, 8, 6);
+	addWall(wallArr, 8, 5);
+	addWall(wallArr, 8, 4);
+	addWall(wallArr, 8, 3);
+	addWall(wallArr, 9, 3);
+	addWall(wallArr, 10, 3);
 
-	tempArr.add(new Crate(8*gridLen, 8*gridLen, 20, 20, crate_img, 1, 2, [0], 0,0));
+	// Add crate
+	tempArr.add(new Crate(8*gridLen, 8*gridLen));
 
 	requestAnimationFrame(gameLoop);
 }
 
-
+var timer = 30;
 var tickTimer = 0;
 
 // Game loop
@@ -153,18 +95,22 @@ function gameLoop() {
 	ctx.drawImage(bg, 0, 0);
 	//drawGrids();
 
+
+
+
 	snowArr.update();
 
-	player.update();
-	player2.update();
-	
-
-	tempArr.update();	
+	for (var i = 0; i < playerArr.length; i++) {
+		playerArr[i].update();
+	}
+	tempArr.update();
 
 	// Update all wall objects
 	for (var i = 0; i < wallArr.length; i++) {
 		wallArr[i].update();
 	}
+
+
 
 
 	tickTimer++;
