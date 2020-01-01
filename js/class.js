@@ -318,7 +318,7 @@ class Player extends Entity {
 		this.playerID = playerID;
 
 
-		this.gun = new Uzi(this);
+		this.gun = new RocketLauncher(this);
 
 
 		this.dead = false;

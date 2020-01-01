@@ -31,7 +31,12 @@ ammo_img.src = "img/ammo.png";
 
 var uzi_img = new Image();
 uzi_img.src = "img/uziGun.png";
-
+var rocketLauncher_img = new Image();
+rocketLauncher_img.src = "img/rocketLauncher.png";
+var missile_img = new Image();
+missile_img.src = "img/missile.png";
+var explosion_img = new Image();
+explosion_img.src = "img/explosion.png";
 
 var titleBack_img = new Image();
 titleBack_img.src = "img/titlescreen.png";
@@ -47,6 +52,8 @@ var winBack_img = new Image();
 winBack_img.src = "img/winBack.png";
 
 
+
+// Sounds
 var shoot_snd = document.createElement("audio");
 shoot_snd.src = "sound/shoot.mp3";
 var die_snd = document.createElement("audio");
@@ -71,3 +78,7 @@ readFight_snd.src = "sound/readyFight.mp3";
 
 var uziShoot_snd = document.createElement("audio");
 uziShoot_snd.src = "sound/uziShoot.mp3";
+var missileLaunch_snd = document.createElement("audio");
+missileLaunch_snd.src = "sound/missileLaunch.mp3"
+var explosion_snd = document.createElement("audio");
+explosion_snd.src = "sound/explosion.mp3";

@@ -26,6 +26,51 @@ class Gun extends Entity {
 	}
 }
 
+class RocketLauncher extends Gun {
+	constructor(player) {
+		super(0, 100, 22, 20, rocketLauncher_img, 1, 2, [0], 0, 0, player);
+		this.gunID = 5;
+ 
+		this.shootTime = 80;
+		this.ammo = 6;		
+	}
+	update() {
+		this.updateMovement();
+		this.checkAmmo();
+		this.draw();
+	}	
+	draw() {
+		this.setAngle(this.player.angle);
+
+		// Shooting animation in 4 directions
+		if (this.shooting) {
+			this.drawAnimated([1,1,1,1,1,1,1,1,1,1,1,1]);
+			if (this.finishAnim) {
+				this.shooting = false;
+			}
+
+		// Idle gun in 4 directions
+		} else {
+			this.drawAnimated(this.frameSeq);	
+		}	
+
+		ctx.drawImage(ammo_img, this.player.x, this.player.y-10);
+		ctx.fillText(this.ammo, this.player.x+12, this.player.y);
+	}
+
+	// Shoot the gun (create rocket)
+	shoot() {
+		this.shooting = true;
+		this.ammo--;
+		console.log("rocket ammo = " + this.ammo);
+		tempArr.add(new Missile(this.x, this.y, this.player.playerID, this.player.angle));
+
+		// Prepare for new animation
+		this.animIndex = 0;
+		this.animDelay = 0;
+	}
+}
+
 class Uzi extends Gun {
 	constructor(player) {
 		super(0, 100, 20, 20, uzi_img, 2, 2, [0], 0, 0, player);
@@ -279,8 +324,125 @@ class Bullet extends Entity {
 		this.owner = owner;
 		this.dead = false;
 	}
+	draw() {
+		this.drawAnimated(this.frameSeq);
+	}
 }
 
+class Explosion extends Bullet {
+	constructor(x, y, owner, dir) {
+		super(x, y, 50, 50, explosion_img, 1, 1, [0], 25, 25, owner, dir);
+
+		this.aliveTime = 100;
+		this.dmgTime = 10;     // Initial time that can damage you
+
+		explosion_snd.play();
+	}
+	update() {
+
+		// Player can only get damaged during damage time
+		if (this.dmgTime > 0) {
+			this.checkHit();
+		}
+		this.tickTimer();
+
+		this.drawCol();
+		this.draw();
+	}
+
+	// Check if hitting anyone
+	checkHit() {
+		for (var i of playerArr) {
+			if (this.owner != i.playerID && this.collideWith(i) && !i.dead) {
+				console.log("REKTT player " + i.playerID + "died...");
+				i.die(this.dir);
+			}
+		}
+	}
+	// Tick timer to get rid of explosion
+	tickTimer() {
+		if (this.aliveTime > 0) {
+			this.aliveTime--;
+			if (this.aliveTime == 0) {
+				this.dead = true;
+			}
+		}
+		if (this.dmgTime > 0) {
+			this.dmgTime--;
+		}
+	}
+}
+
+class Missile extends Bullet {
+	constructor(x, y, owner, dir) {
+		super(x, y, 20, 20, missile_img, 2, 2, [0,1,2,3], 0, 0, owner, dir);
+		this.speed = 1;
+		this.maxSpeed = 6;
+		this.setAngle(this.dir);
+
+		this.delayBeforeSpeed = 20;   // How long to wait before speeding up
+
+		this.speedTickTime = 5;       // Time interval to speed up
+		this.speedTickSpeed = 0.5;    // Speed interval to speed up
+		this.ticker = this.speedTickTime;  // Variable to count the ticking
+
+		missileLaunch_snd.play();
+	}
+	update() {
+		this.updateMovement();
+		this.checkHit();
+		this.checkDead();
+		this.draw();
+		this.drawCol();
+
+		if (this.delayBeforeSpeed <= 0) {
+			if (this.ticker > 0) {
+				this.ticker--;
+				if (this.ticker == 0) {
+					this.ticker = this.speedTickTime;
+					if (this.speed < this.maxSpeed) {
+						this.speed += this.speedTickSpeed;
+					}
+				}
+			}
+		}
+		this.delayBeforeSpeed--;
+	}
+
+	updateMovement() {
+		if (this.dir == DIR.left) {
+			this.x -= this.speed;
+		} else if (this.dir == DIR.right) {
+			this.x += this.speed;
+		} else if (this.dir == DIR.up) {
+			this.y -= this.speed;
+		} else {
+			this.y += this.speed;
+		}
+	}
+	// Create explosion
+	explode() {
+		this.dead = true;
+		tempArr.add(new Explosion(this.x, this.y, this.owner, this.dir));
+	}
+
+	// Check if hitting anyone
+	checkHit() {
+		for (var i of playerArr) {
+			if (this.owner != i.playerID && this.collideWith(i) && !i.dead) {
+				this.explode();
+			}
+		}
+	}
+	// Check if out of bounds or hit some terrain
+	checkDead() {
+		if (this.x < 0 || this.x > numWidth*gridLen-gridLen ||
+		      this.y < 0 || this.y > numHeight*gridLen-gridLen ||
+		        this.checkWallCol()) {
+			this.explode();
+		}
+	}
+}
 
 
 class Pellet extends Bullet {
