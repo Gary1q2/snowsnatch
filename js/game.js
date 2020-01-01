@@ -14,14 +14,14 @@ class Game {
 
 		this.level = [
 			[ 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ],
-			[ 0 , 1 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ],
+			[ 0 , 1 , 0 , 2 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ],
 			[ 0 , 0 ,"W","W","W","W","W","W", 0 , 0 , 0 , 0 ,"W","W","W","W","W","W", 0 , 0 ],
 			[ 0 , 0 ,"W", 0 , 0 , 0 , 0 , 0 ,"C", 0 , 0 ,"C", 0 , 0 , 0 , 0 , 0 ,"W", 0 , 0 ],
 			[ 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ],
 			[ 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ,"C", 0 ],
 			[ 0 , 0 ,"W", 0 , 0 , 0 , 0 , 0 ,"C", 0 , 0 ,"C", 0 , 0 , 0 , 0 , 0 ,"W", 0 , 0 ],
 			[ 0 , 0 ,"W","W","W","W","W","W", 0 , 0 , 0 , 0 ,"W","W","W","W","W","W", 0 , 0 ],
-			[ 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 2 , 0 ],
+			[ 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ],
 			[ 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ]
 		];
 	}
@@ -39,7 +39,6 @@ class Game {
 		document.getElementById("controlButton").style.visibility = "hidden";
 
 		document.getElementById("timer").style.visibility = "visible";
-		document.getElementById("backToMenuButton").style.visibility = "visible";
 
 		// Reset these variables
 		playerArr = [];               // Array of players
@@ -85,7 +84,7 @@ class Game {
 			ctx.drawImage(titleBack_img, 0, 0);
 		} else if (this.gamestate == GAMESTATE.controls) {
 			ctx.drawImage(controlBack_img, 0, 0);
-		} else if (this.gamestate == GAMESTATE.arena) {
+		} else if (this.gamestate == GAMESTATE.arena || this.gamestate == GAMESTATE.gameover) {
 			ctx.drawImage(bg, 0, 0);
 
 			// Update objects
@@ -110,6 +109,7 @@ class Game {
 				document.getElementById('timer').innerHTML = this.timer;
 			}
 
+			// Display ready, fight message
 			if (this.fightMsgTimer != 0) {
 				if (this.fightMsgTimer > 40) {
 					ctx.drawImage(msgReady_img, 140, 80);
@@ -117,9 +117,29 @@ class Game {
 					ctx.drawImage(msgFight_img, 140, 80);
 				}
 			}
-
 			if (this.fightMsgTimer > 0) {
 				this.fightMsgTimer--;
+			}
+
+			// Display winner
+			var numAlive = playerArr.length
+			var playerAlive;
+			for (var i = 0; i < playerArr.length; i++) {
+				if (!playerArr[i].dead) {
+					playerAlive = i;
+				} else {
+					numAlive--;
+				}
+			}
+			if (numAlive == 1) {
+				this.gamestate = GAMESTATE.gameover;
+			}
+
+			if (this.gamestate == GAMESTATE.gameover) {
+				ctx.drawImage(winBack_img, 130, 80);
+				ctx.fillText("Player " + playerAlive + " wins!", 150,110);
+
+				document.getElementById("backToMenuButton").style.visibility = "visible";
 			}
 		}
 	}

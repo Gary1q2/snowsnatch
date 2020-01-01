@@ -5,21 +5,28 @@
 	</head>
 
 	<body>
-		<!--Menu screen-->
-		<div>
-			<button id="playButton" onclick="game.toArenaScreen()">Play</button>
-			<button id="controlButton" onclick="game.toControlScreen()">Controls</button>
+		
+		<div id="timer">30</div>
+		
+		<div id="canvas-wrap">
+
+			<!--Game screen-->
+			<canvas id="canvas" width=400 height=200></canvas>
+			<div id="overlay">
+
+				<!--Menu screen-->
+				<button id="playButton" onclick="game.toArenaScreen()">Play</button>
+				<button id="controlButton" onclick="game.toControlScreen()">Controls</button>
+
+				<!--Control screen-->
+				<button id="backToMenuButton" onclick="game.toMenuScreen()">Menu</button>
+			</div>
 		</div>
 
-		<!--Control screen-->
-		<div>
-			<button id="backToMenuButton" onclick="game.toMenuScreen()">Menu</button>
-		</div>
+
+			
 
 
-		<!--Game screen-->
-		<<div id="timer">30</div>
-		<canvas id="canvas" width=400 height=200></canvas>
 
 	</body>
 	<script src="js/class.js"></script>
@@ -38,6 +45,7 @@ var canvas = document.getElementById('canvas');
 var ctx = canvas.getContext('2d');
 ctx.imageSmoothingEnabled = false;
 ctx.lineWidth = 1;
+//ctx.font = "30px Arial";
 
 
 

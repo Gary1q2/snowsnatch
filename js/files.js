@@ -29,6 +29,8 @@ pellet_img.src = "img/pellet.png";
 var ammo_img = new Image();
 ammo_img.src = "img/ammo.png";
 
+var uzi_img = new Image();
+uzi_img.src = "img/uziGun.png";
 
 
 var titleBack_img = new Image();
@@ -40,6 +42,9 @@ var msgReady_img = new Image();
 msgReady_img.src = "img/msg-ready.png";
 var msgFight_img = new Image();
 msgFight_img.src = "img/msg-fight.png";
+
+var winBack_img = new Image();
+winBack_img.src = "img/winBack.png";
 
 
 var shoot_snd = document.createElement("audio");
@@ -63,3 +68,6 @@ shotgunReload_snd.src = "sound/shotgunReload.mp3";
 
 var readFight_snd = document.createElement("audio");
 readFight_snd.src = "sound/readyFight.mp3";
+
+var uziShoot_snd = document.createElement("audio");
+uziShoot_snd.src = "sound/uziShoot.mp3";

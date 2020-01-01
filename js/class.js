@@ -269,17 +269,16 @@ class Crate extends Entity {
 				this.waitTimer = this.waitTime;
 				crateOpen_snd.play();
 
-				// Alternate guns
-				while (true) {
-					var rand = Math.random();
-					if (rand < 0.5 && i.gun.gunID != 2) {
-						i.gun = new LaserGun(i);
-						break;
-					} else if (rand >= 0.5 && i.gun.gunID != 3) {
-						i.gun = new Shotgun(i);
-						break;
-		     		}
+				// Give random gun
+				var rand = Math.random();
+				if (rand < 0.3) {
+					i.gun = new LaserGun(i);
+				} else if (rand < 0.5) {
+					i.gun = new Shotgun(i);
+	     		} else {
+	     			i.gun = new Uzi(i);
 	     		}
+	     		
 
 	     		// Spawn crate in random empty spawn
 	     		while (true) {
@@ -319,7 +318,7 @@ class Player extends Entity {
 		this.playerID = playerID;
 
 
-		this.gun = new SnowGun(this);
+		this.gun = new Uzi(this);
 
 
 		this.dead = false;

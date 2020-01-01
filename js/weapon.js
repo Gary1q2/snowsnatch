@@ -26,6 +26,56 @@ class Gun extends Entity {
 	}
 }
 
+class Uzi extends Gun {
+	constructor(player) {
+		super(0, 100, 20, 20, uzi_img, 2, 2, [0], 0, 0, player);
+		this.gunID = 4;
+ 
+		this.shootTime = 15;
+		this.ammo = 15;
+	}
+	update() {
+		this.updateMovement();
+		this.checkAmmo();
+		this.draw();
+	}	
+
+	draw() {
+		this.setAngle(this.player.angle);
+
+		// Shooting animation in 4 directions
+		if (this.shooting) {
+			this.drawAnimated([2,1]);
+			if (this.finishAnim) {
+				this.shooting = false;
+			}
+
+		// Idle gun in 4 directions
+		} else {
+			this.drawAnimated(this.frameSeq);	
+		}	
+
+		ctx.drawImage(ammo_img, this.player.x, this.player.y-10);
+		ctx.fillText(this.ammo, this.player.x+12, this.player.y);
+	}
+
+	// Shoot the gun (create bullet)
+	shoot() {
+		this.shooting = true;
+		this.ammo--;
+		console.log("smg ammo = " + this.ammo);
+		tempArr.add(new Pellet(this.x, this.y, this.player.playerID, this.player.angle, 999, 999, 3, 10));
+		
+		uziShoot_snd.play();
+
+
+		// Prepare for new animation
+		this.animIndex = 0;
+		this.animDelay = 0;
+	}
+}
+
+
 class Shotgun extends Gun {
 	constructor(player) {
 		super(0, 100, 20, 20, shotgun_img, 2, 3, [0], 0, 0, player);
@@ -65,7 +115,7 @@ class Shotgun extends Gun {
 		this.ammo--;
 		console.log("shotty ammo = " + this.ammo);
 		for (var i = 0; i < 6; i++) {
-			tempArr.add(new Pellet(this.x, this.y, this.player.playerID, this.player.angle));
+			tempArr.add(new Pellet(this.x, this.y, this.player.playerID, this.player.angle, 6+Math.floor(Math.random()*10), 17, 5, 40));
 		}
 		shotgunShoot_snd.play();
 
@@ -80,7 +130,7 @@ class SnowGun extends Gun {
 	constructor(player) {
 		super(0, 100, 20, 20, gunImg, 2, 2, [0], 0,0, player);
 		this.gunID = 1;
-		this.shootTime = 20;
+		this.shootTime = 30;
 	}
 
 	update() {
@@ -231,15 +281,16 @@ class Bullet extends Entity {
 	}
 }
 
+
+
 class Pellet extends Bullet {
-	constructor(x, y, owner, dir) {
+	constructor(x, y, owner, dir, moveTime, deadTime, speed, spread) {
 		super(x, y, 4, 4, pellet_img, 1, 1, [0], 0, 0, owner, dir);
-		this.moveTimer = 6 + Math.floor(Math.random()*10);
-		this.deadTimer = 17;
+		this.moveTimer = moveTime;
+		this.deadTimer = deadTime;
 
-
-		this.speed = 5;
-		this.spreadAngle = 40;
+		this.speed = speed;
+		this.spreadAngle = spread;
 
 		// Choose top or bottom spread
 		this.angle = Math.floor(Math.random()*this.spreadAngle/2) * Math.PI/180;
