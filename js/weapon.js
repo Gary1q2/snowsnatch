@@ -335,7 +335,7 @@ class Bullet extends Entity {
 class Explosion extends Bullet {
 	constructor(x, y, owner, dir) {
 		super(x, y, 40, 40, explosion_img, 4, 3, [0,1,2,3,4,5,6,7,8,9], 25, 25, owner, dir);
-		this.dmgTime = 10;     // Initial time that can damage you
+		this.dmgTime = 1;     // Initial time that can damage you
 
 		explosion_snd.play();
 	}
@@ -355,7 +355,7 @@ class Explosion extends Bullet {
 		}
 	}
 
-	// Check if hitting anyone
+	// Check if hitting anyone or any walls
 	checkHit() {
 		for (var i of playerArr) {
 			if (this.owner != i.playerID && this.collideWith(i) && !i.dead) {
@@ -363,7 +363,17 @@ class Explosion extends Bullet {
 				i.die(this.dir);
 			}
 		}
+
+		// Deal 2 damage to walls
+		for (var i = 0; i < wallArr.size(); i++) {
+			if (this.collideWith(wallArr.array[i])){
+				wallArr.array[i].damageWall(2);
+			}
+		}
 	}
+
+
+
 	// Tick timer to get rid of explosion
 	tickTimer() {
 		if (this.dmgTime > 0) {
@@ -509,13 +519,20 @@ class Pellet extends Bullet {
 	}
 	// Check if out of bounds or hit some terrain
 	checkDead() {
+		var wallHit = this.checkWallCol();
 		if (this.x < 0 || this.x > numWidth*gridLen-gridLen ||
 		      this.y < 0 || this.y > numHeight*gridLen-gridLen ||
-		        this.checkWallCol()) {
+		        wallHit) {
 			if (this.deadTimer == -1) {
 				this.dead = true;
 			} else {
 				this.moveTimer = 0;
+			}
+
+			// Damage wall and REMOVE pellet instantly to prevent wall instagib
+			if (wallHit) {
+				wallHit.damageWall(1);
+				this.dead = true;
 			}
 		}
 	}
@@ -535,14 +552,14 @@ class LaserBlast extends Bullet {
 	constructor(x, y, owner, dir) {
 		super(x, y, 20, 8, laserBeam_img, 2, 3, [0,1,2], 0, 0, owner, dir);
 		this.aliveTimer = 30;  // How long to stay alive for
-		this.hurtTimer = 10; // How long can deal damage
+		this.hurtTimer = 1; // How long can deal damage
 
 		this.setAngle(dir);
 	}
 
 	update() {
-		this.tickTimer();
 		this.checkHit();
+		this.tickTimer();
 		this.draw();
 	}
 
@@ -570,13 +587,21 @@ class LaserBlast extends Bullet {
 	}
 
 
-	// Check if hitting anyone
+	// Check if hitting anyone or walls
 	checkHit() {
 		if (this.hurtTimer > 0) {
 			for (var i of playerArr) {
 				if (this.owner != i.playerID && this.collideWith(i) && !i.dead) {
 					console.log("REKTT player " + i.playerID + "died...");
 					i.die(this.dir);
+				}
+			}
+
+			// Deal damage to walls
+			for (var i = 0; i < wallArr.size(); i++) {
+				if (this.collideWith(wallArr.array[i])){
+					// 0.5 because laser is big and 2 can hit 1 wall
+					wallArr.array[i].damageWall(0.5);  
 				}
 			}
 		}	
@@ -645,9 +670,13 @@ class Snowball extends Bullet {
 
 	// Check if out of bounds or hit some terrain
 	checkDead() {
+		var wallHit = this.checkWallCol();
 		if (this.x < 0 || this.x > numWidth*gridLen-gridLen ||
 		      this.y < 0 || this.y > numHeight*gridLen-gridLen ||
-		        this.checkWallCol()) {
+		        wallHit) {
+			if (wallHit) {
+				wallHit.damageWall(1);
+			}
 			this.break();
 		}
 	}

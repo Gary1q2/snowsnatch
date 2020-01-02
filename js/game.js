@@ -14,11 +14,11 @@ class Game {
 
 		this.level = [
 			[ 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ],
-			[ 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 2 , 0 ],
+			[ 0 , 1 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 2 , 0 ],
 			[ 0 , 0 ,"W","W","W","W","W","W", 0 , 0 , 0 , 0 ,"W","W","W","W","W","W", 0 , 0 ],
 			[ 0 , 0 ,"W", 0 , 0 , 0 , 0 , 0 ,"C", 0 , 0 ,"C", 0 , 0 , 0 , 0 , 0 ,"W", 0 , 0 ],
 			[ 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ],
-			[ 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 1 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ],
+			[ 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ],
 			[ 0 , 0 ,"W", 0 , 0 , 0 , 0 , 0 ,"C", 0 , 0 ,"C", 0 , 0 , 0 , 0 , 0 ,"W", 0 , 0 ],
 			[ 0 , 0 ,"W","W","W","W","W","W", 0 , 0 , 0 , 0 ,"W","W","W","W","W","W", 0 , 0 ],
 			[ 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ],
@@ -48,14 +48,14 @@ class Game {
 		// Reset these variables
 		playerArr = [];               // Array of players
 		tempArr = new ObjectArray();  // Array of temporary objects eg. bullets
-		wallArr = [];                 // Array for walls
+		wallArr = new ObjectArray();  // Array for walls
 		snowArr = new ObjectArray();  // Array for snow piles
 
 		// Create objects from level array
 		for (var i = 0; i < numHeight; i++) {
 			for (var j = 0; j < numWidth; j++) {
 				if (this.level[i][j] == "W") {
-					addWall(j, i);
+					wallArr.add(new Wall(j*gridLen, i*gridLen));
 				} else if (this.level[i][j] == 1) {
 					playerArr.push(new Player(j*gridLen, i*gridLen, 1, DIR.right));
 				} else if (this.level[i][j] == 2) {
@@ -89,6 +89,8 @@ class Game {
 	}
 
 	update() {
+
+		// Menu screen
 		if (this.gamestate == GAMESTATE.menu) {
 			ctx.drawImage(titleBack_img, 0, 0);
 
@@ -115,6 +117,9 @@ class Game {
 				shoot_snd.play();
 			}
 
+
+
+		// Control screen
 		} else if (this.gamestate == GAMESTATE.controls) {
 			ctx.drawImage(controlBack_img, 0, 0);
 			ctx.drawImage(arrow_img, 0, 78);
@@ -124,6 +129,8 @@ class Game {
 				this.toMenuScreen();
 			}
 
+
+		// Arena screen + gameover 
 		} else if (this.gamestate == GAMESTATE.arena || this.gamestate == GAMESTATE.gameover) {
 			ctx.drawImage(bg, 0, 0);
 
@@ -133,11 +140,8 @@ class Game {
 				playerArr[i].update();
 			}
 			tempArr.update();
-
-			// Update all wall objects
-			for (var i = 0; i < wallArr.length; i++) {
-				wallArr[i].update();
-			}
+			wallArr.update();
+			
 
 			// Tick down the timer
 			this.tickTimer++;

@@ -171,9 +171,11 @@ class Entity {
 
 	// Check collision with wall objects
 	checkWallCol() {
-		for (var i = 0; i < wallArr.length; i++) {
-			if (this.collideWith(wallArr[i])) {
-				return true;
+		for (var i = 0; i < wallArr.array.length; i++) {
+			if (!wallArr.array[i].dead) {
+				if (this.collideWith(wallArr.array[i])) {
+					return wallArr.array[i];
+				}
 			}
 		}
 		return false;
@@ -369,11 +371,36 @@ class Crate extends Entity {
 
 class Wall extends Entity {
 	constructor(x, y) {
-		super(x, y, 20, 20, wall, 1, 1, [0], 0,0);
+		super(x, y, 20, 20, wall, 4, 4, [0], 0,0);
+
+		this.dead = false;
+		this.maxHp = 10;
+		this.hp = this.maxHp;
 	}
 
 	update() {
-		super.update();
+		this.draw();
+	}
+
+	draw() {
+		if (this.hp > 0) {		
+			var temp = this.maxHp-this.hp;
+			this.drawAnimated([temp]);
+		} else {
+			this.drawAnimated([10,11,12,13]);
+			if (this.finishAnim) {
+				this.dead = true;
+			}
+		}
+	}
+
+	// Damage the wall
+	damageWall(dmg) {
+		iceCrack_snd.play();
+		if (this.hp <= dmg) {
+			wallBreak_snd.play();
+		}
+		this.hp -= dmg;
 	}
 }
 
@@ -389,7 +416,7 @@ class Player extends Entity {
 		this.playerID = playerID;
 
 
-		this.gun = new Uzi(this);
+		this.gun = new SnowGun(this);
 
 
 		this.dead = false;
@@ -573,9 +600,11 @@ class Player extends Entity {
 
 	// Check collision with wall objects at offset
 	checkWallColAt(xOff, yOff) {
-		for (var i = 0; i < wallArr.length; i++) {
-			if (this.collideWithAt(wallArr[i], xOff, yOff)) {
-				return true;
+		for (var i = 0; i < wallArr.array.length; i++) {
+			if (!wallArr.array[i].dead) {
+				if (this.collideWithAt(wallArr.array[i], xOff, yOff)) {
+					return wallArr.array[i];
+				}
 			}
 		}
 		return false;
@@ -616,5 +645,10 @@ class ObjectArray {
 			}
 		}
 		this.array.push(entity);
+	}
+
+	// Return size of array 
+	size() {
+		return this.array.length;
 	}
 }

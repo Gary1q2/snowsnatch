@@ -99,3 +99,8 @@ explosion_snd.src = "sound/explosion.mp3";
 
 var win_snd = document.createElement("audio");
 win_snd.src = "sound/winSound.mp3";
+
+var iceCrack_snd = document.createElement("audio");
+iceCrack_snd.src = "sound/iceCrack.mp3";
+var wallBreak_snd = document.createElement("audio");
+wallBreak_snd.src = "sound/wallBreak.mp3";

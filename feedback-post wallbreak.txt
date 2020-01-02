@@ -1,0 +1,22 @@
+Feedback:
+-menu button weird stop with arrow
+-explosions from below vs above is not centered properly
+-top line of walls started drawing weirdly
+
+-add smoke behind missle
+-ammo HUD is drawn under walls
+
+-lasergun last ammo dones't do anything
+-holding key and clicking off screen munts it
+-getting snow piles = getting ammo, but there is a cap?? :OOO
+   (force ppl to move around, but not just camp??)
+
+counters
+snowgun - all around
+shotgun - good short distance
+smg - good middle distance
+lasergun - good for behind walls
+rockets -
+
+buff rockets somehow - bigger explosion, faster?
+or allow remote detonation ooOooo

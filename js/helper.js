@@ -1,8 +1,3 @@
-// Create wall at grid position
-function addWall(xGrid, yGrid) {
-	wallArr.push(new Wall(xGrid*gridLen, yGrid*gridLen));
-}
-
 // Checks if two rectangles have a collision (true or false)
 function testCollisionRectRect(rect1, rect2) {
 	return rect1.x < rect2.x + rect2.width 
