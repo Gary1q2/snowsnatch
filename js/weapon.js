@@ -240,6 +240,9 @@ class LaserGun extends Gun {
 			this.chargeTimer--;
 			if (this.chargeTimer == 0) {
 				this.shooting = true;
+				
+				this.ammo--;
+				console.log("ammo = " + this.ammo);
 
 				console.log("SHOT LASERRR");
 				console.log("player angle = " + this.player.angle);
@@ -313,8 +316,6 @@ class LaserGun extends Gun {
 	shoot() {
 		if (this.chargeTimer == 0) {
 			this.chargeTimer = this.chargeTime;
-			this.ammo--;
-			console.log("ammo = " + this.ammo);
 			lasercharge_snd.play();
 		}
 	}
