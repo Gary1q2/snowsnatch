@@ -52,6 +52,10 @@ var winBack_img = new Image();
 winBack_img.src = "img/winBack.png";
 
 
+var arrow_img = new Image();
+arrow_img.src = "img/arrow.png";
+
+
 var confettiBlue_img = new Image();
 confettiBlue_img.src = "img/confetti_blue.png";
 var confettiGreen_img = new Image();
@@ -92,3 +96,6 @@ var missileLaunch_snd = document.createElement("audio");
 missileLaunch_snd.src = "sound/missileLaunch.mp3"
 var explosion_snd = document.createElement("audio");
 explosion_snd.src = "sound/explosion.mp3";
+
+var win_snd = document.createElement("audio");
+win_snd.src = "sound/winSound.mp3";

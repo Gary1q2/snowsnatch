@@ -24,6 +24,9 @@ class Game {
 			[ 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ],
 			[ 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ]
 		];
+
+		this.optionKey = "play";
+		this.holdSpace = Keys.space;
 	}
 
 	toControlScreen() {
@@ -32,6 +35,8 @@ class Game {
 
 		document.getElementById("backToMenuButton").style.visibility = "visible";
 		this.gamestate = GAMESTATE.controls;	
+
+		shoot_snd.play();
 	}
 
 	toArenaScreen() {
@@ -67,6 +72,8 @@ class Game {
 
 		this.fightMsgTimer = 100;
 		readFight_snd.play();
+
+		shoot_snd.play();
 	}
 
 	toMenuScreen() {
@@ -77,13 +84,46 @@ class Game {
 		document.getElementById("timer").style.visibility = "hidden";
 
 		this.gamestate = GAMESTATE.menu;
+
+		shoot_snd.play();
 	}
 
 	update() {
 		if (this.gamestate == GAMESTATE.menu) {
 			ctx.drawImage(titleBack_img, 0, 0);
+
+			if (this.optionKey == "play") {
+				ctx.drawImage(arrow_img, 165, 62)
+			} else {
+				ctx.drawImage(arrow_img, 165, 110);
+			}
+
+			// Key movements on the menu screen
+			if (Keys.space && !this.holdSpace) {
+				if (this.optionKey == "play") {
+					this.toArenaScreen();
+				} else {
+					this.toControlScreen();
+				}
+			}
+			if (Keys.down && this.optionKey != "control") {
+				this.optionKey = "control";
+				shoot_snd.play();
+			}
+			if (Keys.up && this.optionKey != "play") {
+				this.optionKey = "play";
+				shoot_snd.play();
+			}
+
 		} else if (this.gamestate == GAMESTATE.controls) {
 			ctx.drawImage(controlBack_img, 0, 0);
+			ctx.drawImage(arrow_img, 0, 78);
+
+			// Press button to go back to menu
+			if (Keys.space && !this.holdSpace) {
+				this.toMenuScreen();
+			}
+
 		} else if (this.gamestate == GAMESTATE.arena || this.gamestate == GAMESTATE.gameover) {
 			ctx.drawImage(bg, 0, 0);
 
@@ -134,6 +174,8 @@ class Game {
 			if ((numAlive == 1 || numAlive == 0) && this.gamestate == GAMESTATE.arena) {
 				this.gamestate = GAMESTATE.gameover;
 
+				win_snd.play()
+
 				for (var i = 0; i < 200; i++) {
 					tempArr.add(new Confetti(180, 180, 5, 9));
 				}
@@ -153,7 +195,18 @@ class Game {
 				ctx.restore();
 
 				document.getElementById("backToMenuButton").style.visibility = "visible";
+
+				// Draw arrow on menu screen
+				ctx.drawImage(arrow_img, 0, 78);
+
+				// Press button to  go back to menu
+				if (Keys.space && !this.holdSpace) {
+					this.toMenuScreen();
+				}
 			}
 		}
+
+		// Remember if you held space or not
+		this.holdSpace = Keys.space;
 	}
 }

@@ -17,8 +17,6 @@
 	margin-right: auto;
 	margin-top: 100px;
 
-	image-rendering: pixelated;
-
 	border: 4px solid black;
 }
 
@@ -51,31 +49,34 @@
 #titlescreen {
 	width: 1200px;
 	height: 600px;
-	image-rendering: pixelated;
 }
 
 #playButton {
 	position: absolute;
-	top: 300px;
+	top: 200px;
 	left: 50%;
 
-	font-size: 60px;
+	height: 80px;
+	width: auto;
 }
 
 #controlButton {
 	position: absolute;
-	top: 400px;
+	top: 350px;
 	left: 50%;
 
-	font-size: 60px;
+	height: 80px;
+	width: auto;
 }
 
 #backToMenuButton {
 	position: absolute;
-	bottom: 0px;
-	left: 50%;
+	top: 245px;
+	left: 10%;
 
-	font-size: 60px;
+	height: 80px;
+	width: auto;
+
 	visibility: hidden;
 }
 
@@ -89,4 +90,5 @@
 
 body {
 	background-color: #0b1021;
+	image-rendering: pixelated;
 }
