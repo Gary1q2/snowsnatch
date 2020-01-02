@@ -196,6 +196,75 @@ class Entity {
 	}
 }
 
+class Confetti extends Entity {
+	constructor(x, y, xSpread, ySpread) {
+
+		// Pick random confetti color
+		var imgColor;
+		var temp = Math.random()*5;
+		if (temp < 1) {
+			imgColor = confettiBlue_img;
+		} else if (temp < 2) {
+			imgColor = confettiGreen_img;
+		} else if (temp < 3) {
+			imgColor = confettiPurple_img;
+		} else if (temp < 4) {
+			imgColor = confettiRed_img;
+		} else {
+			imgColor = confettiYellow_img;
+		}
+
+		super(x, y, 10, 10, imgColor, 2, 2, [0,1,2,3], 0, 0);
+		this.dead = false;
+
+		this.alignTime = 20;// + Math.random()*20;
+
+		this.vspeed = -(Math.random()*ySpread)
+		this.hspeed = Math.random()*xSpread;
+		if (Math.random() > 0.5) {
+			this.hspeed = -this.hspeed;
+		}
+
+		this.fallSpeed = 1;
+		this.friction = 0.1
+	
+	}	
+	update() {
+		this.updateMovement();
+		this.checkDead();
+
+		this.draw();
+
+		if (this.alignTime > 0) {
+			this.alignTime--;
+		}
+	}
+	updateMovement() {
+		if (this.alignTime == 0) {
+			this.vspeed = this.fallSpeed
+			if (this.hspeed > 0) {
+				this.hspeed -= this.friction;
+			} else if (this.hspeed < 0) {
+				this.hspeed += this.friction;
+			}
+		}
+		this.x += this.hspeed;
+		this.y += this.vspeed;
+	}
+
+	draw() {
+		this.drawAnimated(this.frameSeq);
+	}
+
+	// Check if out of bounds or hit some terrain
+	checkDead() {
+		if (this.x < 0 || this.x > numWidth*gridLen-gridLen ||
+		      this.y < 0 || this.y > numHeight*gridLen-gridLen) {
+			this.dead = true;
+		}
+	}
+}
+
 class Snow extends Entity {
 	constructor(x, y) {
 		super(x, y, 20, 20, snow_img, 4, 3, [0], 6, 6);
@@ -271,12 +340,14 @@ class Crate extends Entity {
 
 				// Give random gun
 				var rand = Math.random();
-				if (rand < 0.3) {
+				if (rand < 0.25) {
 					i.gun = new LaserGun(i);
 				} else if (rand < 0.5) {
 					i.gun = new Shotgun(i);
-	     		} else {
+	     		} else if (rand < 0.75) {
 	     			i.gun = new Uzi(i);
+	     		} else {
+	     			i.gun = new RocketLauncher(i);
 	     		}
 	     		
 
@@ -318,7 +389,7 @@ class Player extends Entity {
 		this.playerID = playerID;
 
 
-		this.gun = new RocketLauncher(this);
+		this.gun = new Uzi(this);
 
 
 		this.dead = false;

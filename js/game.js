@@ -14,11 +14,11 @@ class Game {
 
 		this.level = [
 			[ 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ],
-			[ 0 , 1 , 0 , 2 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ],
+			[ 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 2 , 0 ],
 			[ 0 , 0 ,"W","W","W","W","W","W", 0 , 0 , 0 , 0 ,"W","W","W","W","W","W", 0 , 0 ],
 			[ 0 , 0 ,"W", 0 , 0 , 0 , 0 , 0 ,"C", 0 , 0 ,"C", 0 , 0 , 0 , 0 , 0 ,"W", 0 , 0 ],
 			[ 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ],
-			[ 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ,"C", 0 ],
+			[ 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 1 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ],
 			[ 0 , 0 ,"W", 0 , 0 , 0 , 0 , 0 ,"C", 0 , 0 ,"C", 0 , 0 , 0 , 0 , 0 ,"W", 0 , 0 ],
 			[ 0 , 0 ,"W","W","W","W","W","W", 0 , 0 , 0 , 0 ,"W","W","W","W","W","W", 0 , 0 ],
 			[ 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ],
@@ -121,7 +121,7 @@ class Game {
 				this.fightMsgTimer--;
 			}
 
-			// Display winner
+			// Set gamestate to gameover if 1 player left
 			var numAlive = playerArr.length
 			var playerAlive;
 			for (var i = 0; i < playerArr.length; i++) {
@@ -131,13 +131,26 @@ class Game {
 					numAlive--;
 				}
 			}
-			if (numAlive == 1) {
+			if ((numAlive == 1 || numAlive == 0) && this.gamestate == GAMESTATE.arena) {
 				this.gamestate = GAMESTATE.gameover;
-			}
 
+				for (var i = 0; i < 200; i++) {
+					tempArr.add(new Confetti(180, 180, 5, 9));
+				}
+			} 
+
+			// Display winner 
 			if (this.gamestate == GAMESTATE.gameover) {
-				ctx.drawImage(winBack_img, 130, 80);
-				ctx.fillText("Player " + playerAlive + " wins!", 150,110);
+				ctx.drawImage(winBack_img, 140, 80);
+
+				ctx.save();
+				ctx.font = "bold 15px Arial";
+				if (numAlive == 1) {
+					ctx.fillText("Player " + playerAlive + " wins!", 150,110);
+				} else {
+					ctx.fillText("Stalemate!", 150, 110);
+				}
+				ctx.restore();
 
 				document.getElementById("backToMenuButton").style.visibility = "visible";
 			}

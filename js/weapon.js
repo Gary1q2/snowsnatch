@@ -109,10 +109,13 @@ class Uzi extends Gun {
 		this.shooting = true;
 		this.ammo--;
 		console.log("smg ammo = " + this.ammo);
-		tempArr.add(new Pellet(this.x, this.y, this.player.playerID, this.player.angle, 999, 999, 3, 10));
+		tempArr.add(new Pellet(this.x, this.y, this.player.playerID, this.player.angle, -1, -1, 2, 10));
 		
 		uziShoot_snd.play();
 
+		for (var i = 0; i < 10; i++) {
+			tempArr.add(new Confetti(this.x, this.y, 3, 4));
+		}
 
 		// Prepare for new animation
 		this.animIndex = 0;
@@ -331,9 +334,7 @@ class Bullet extends Entity {
 
 class Explosion extends Bullet {
 	constructor(x, y, owner, dir) {
-		super(x, y, 50, 50, explosion_img, 1, 1, [0], 25, 25, owner, dir);
-
-		this.aliveTime = 100;
+		super(x, y, 40, 40, explosion_img, 4, 3, [0,1,2,3,4,5,6,7,8,9], 25, 25, owner, dir);
 		this.dmgTime = 10;     // Initial time that can damage you
 
 		explosion_snd.play();
@@ -348,6 +349,10 @@ class Explosion extends Bullet {
 
 		this.drawCol();
 		this.draw();
+
+		if (this.finishAnim) {
+			this.dead = true;
+		}
 	}
 
 	// Check if hitting anyone
@@ -361,12 +366,6 @@ class Explosion extends Bullet {
 	}
 	// Tick timer to get rid of explosion
 	tickTimer() {
-		if (this.aliveTime > 0) {
-			this.aliveTime--;
-			if (this.aliveTime == 0) {
-				this.dead = true;
-			}
-		}
 		if (this.dmgTime > 0) {
 			this.dmgTime--;
 		}
@@ -375,7 +374,7 @@ class Explosion extends Bullet {
 
 class Missile extends Bullet {
 	constructor(x, y, owner, dir) {
-		super(x, y, 20, 20, missile_img, 2, 2, [0,1,2,3], 0, 0, owner, dir);
+		super(x, y, 10, 7, missile_img, 2, 2, [0,1,2,3], 0, 0, owner, dir);
 		this.speed = 1;
 		this.maxSpeed = 6;
 		this.setAngle(this.dir);
@@ -468,7 +467,7 @@ class Pellet extends Bullet {
 	}	
 
 	update() {
-		if (this.moveTimer > 0) {
+		if (this.moveTimer > 0 || this.moveTimer == -1) {
 			this.updateMovement();	
 		}
 		this.tickTimers();
@@ -513,7 +512,11 @@ class Pellet extends Bullet {
 		if (this.x < 0 || this.x > numWidth*gridLen-gridLen ||
 		      this.y < 0 || this.y > numHeight*gridLen-gridLen ||
 		        this.checkWallCol()) {
-			this.moveTimer = 0;
+			if (this.deadTimer == -1) {
+				this.dead = true;
+			} else {
+				this.moveTimer = 0;
+			}
 		}
 	}
 

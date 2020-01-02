@@ -52,6 +52,16 @@ var winBack_img = new Image();
 winBack_img.src = "img/winBack.png";
 
 
+var confettiBlue_img = new Image();
+confettiBlue_img.src = "img/confetti_blue.png";
+var confettiGreen_img = new Image();
+confettiGreen_img.src = "img/confetti_red.png";
+var confettiPurple_img = new Image();
+confettiPurple_img.src = "img/confetti_purple.png";
+var confettiRed_img = new Image();
+confettiRed_img.src = "img/confetti_red.png";
+var confettiYellow_img = new Image();
+confettiYellow_img.src = "img/confetti_yellow.png";
 
 // Sounds
 var shoot_snd = document.createElement("audio");
