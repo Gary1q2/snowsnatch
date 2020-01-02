@@ -531,6 +531,13 @@ class Player extends Entity {
 				this.drawAnimated([8]);
 			}
 		}
+
+		// Draw AMMO hud
+		if (!(this.gun instanceof SnowGun)) {
+			ctx.drawImage(ammo_img, this.x, this.y-10);
+			ctx.fillText(this.gun.ammo, this.x+12, this.y);
+		}
+
 		this.drawCol();
 	}
 

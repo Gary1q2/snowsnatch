@@ -134,13 +134,15 @@ class Game {
 		} else if (this.gamestate == GAMESTATE.arena || this.gamestate == GAMESTATE.gameover) {
 			ctx.drawImage(bg, 0, 0);
 
-			// Update objects
+			
 			snowArr.update();
+			wallArr.update();
+
 			for (var i = 0; i < playerArr.length; i++) {
 				playerArr[i].update();
 			}
 			tempArr.update();
-			wallArr.update();
+			
 			
 
 			// Tick down the timer

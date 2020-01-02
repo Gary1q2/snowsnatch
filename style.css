@@ -1,11 +1,15 @@
 #canvas-wrap {
 	position: relative;
-
-	/*border: 3px red solid;*/
 }
 
 #overlay {
+	position: relative;
+	width: 1200px;
+	height: 600px;
 
+	margin-left: auto;
+	margin-right: auto;
+	margin-top: -608px;
 }
 #canvas {
 	position: static;
@@ -70,9 +74,9 @@
 }
 
 #backToMenuButton {
-	position: absolute;
+	position: relative;
 	top: 245px;
-	left: 10%;
+	left: 90px;
 
 	height: 80px;
 	width: auto;

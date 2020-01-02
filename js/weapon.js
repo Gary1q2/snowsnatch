@@ -53,9 +53,6 @@ class RocketLauncher extends Gun {
 		} else {
 			this.drawAnimated(this.frameSeq);	
 		}	
-
-		ctx.drawImage(ammo_img, this.player.x, this.player.y-10);
-		ctx.fillText(this.ammo, this.player.x+12, this.player.y);
 	}
 
 	// Shoot the gun (create rocket)
@@ -99,9 +96,6 @@ class Uzi extends Gun {
 		} else {
 			this.drawAnimated(this.frameSeq);	
 		}	
-
-		ctx.drawImage(ammo_img, this.player.x, this.player.y-10);
-		ctx.fillText(this.ammo, this.player.x+12, this.player.y);
 	}
 
 	// Shoot the gun (create bullet)
@@ -152,9 +146,6 @@ class Shotgun extends Gun {
 		} else {
 			this.drawAnimated(this.frameSeq);	
 		}	
-
-		ctx.drawImage(ammo_img, this.player.x, this.player.y-10);
-		ctx.fillText(this.ammo, this.player.x+12, this.player.y);
 	}
 
 	// Shoot the gun (create bullet + recoil)
@@ -240,7 +231,7 @@ class LaserGun extends Gun {
 			this.chargeTimer--;
 			if (this.chargeTimer == 0) {
 				this.shooting = true;
-				
+
 				this.ammo--;
 				console.log("ammo = " + this.ammo);
 
@@ -307,9 +298,6 @@ class LaserGun extends Gun {
 			ctx.fillStyle = "black";
 			ctx.globalAlpha = 1;
 		}
-
-		ctx.drawImage(ammo_img, this.player.x, this.player.y-10);
-		ctx.fillText(this.ammo, this.player.x+12, this.player.y);
 	}
 
 	// Charge the gun + shoot it
