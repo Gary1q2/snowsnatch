@@ -17,9 +17,9 @@ class Game {
 		this.holdSpace = Keys.space;   // Store if last step was pressed or not
 
 
-		this.mode = "CTF";
+		this.mode = "DM";
 		this.level;
-		if (this.mode == "Deathmatch") {
+		if (this.mode == "DM") {
 			this.level = [
 				[ 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ],
 				[ 0 , 1 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ],
@@ -101,14 +101,15 @@ class Game {
 			}
 		}
 
-		// Player 1 goal  + flag that he need to get
-		tempArr.add(new Flag(5*gridLen, 3*gridLen, playerArr[1]));
-		tempArr.add(new Goal(5*gridLen, 5*gridLen, playerArr[0]));
+		if (this.mode == "CTF") {
+			// Player 1 goal  + flag that he need to get
+			tempArr.add(new Flag(5*gridLen, 3*gridLen, playerArr[1]));
+			tempArr.add(new Goal(5*gridLen, 5*gridLen, playerArr[0]));
 
-		// Player 2 goal  + flag that he need to get
-		tempArr.add(new Flag(14*gridLen, 3*gridLen, playerArr[0]));
-		tempArr.add(new Goal(14*gridLen, 5*gridLen, playerArr[1]));
-		
+			// Player 2 goal  + flag that he need to get
+			tempArr.add(new Flag(14*gridLen, 3*gridLen, playerArr[0]));
+			tempArr.add(new Goal(14*gridLen, 5*gridLen, playerArr[1]));
+		}
 		
 
 		this.gamestate = GAMESTATE.arena;
@@ -210,25 +211,48 @@ class Game {
 				this.fightMsgTimer--;
 			}
 
+
+			// Draw score for CTF
+			if (this.mode == "CTF") {
+				ctx.save();
+				ctx.font = "20px Arial";
+				ctx.fillText("P1: "+playerArr[0].score+"   P2: "+playerArr[1].score, 150, 20);
+				ctx.restore();
+			}
+
 			// Set gamestate to gameover if 1 player left
-			/*var numAlive = playerArr.length
-			var playerAlive;
-			for (var i = 0; i < playerArr.length; i++) {
-				if (!playerArr[i].dead) {
-					playerAlive = i;
-				} else {
-					numAlive--;
+			if (this.mode == "DM") {
+				var numAlive = playerArr.length
+				var playerAlive;
+				for (var i = 0; i < playerArr.length; i++) {
+					if (!playerArr[i].dead) {
+						playerAlive = i;
+					} else {
+						numAlive--;
+					}
+				}
+				if ((numAlive == 1 || numAlive == 0) && this.gamestate == GAMESTATE.arena) {
+					this.gamestate = GAMESTATE.gameover;
+
+					win_snd.play()
+
+					for (var i = 0; i < 200; i++) {
+						tempArr.add(new Confetti(180, 180, 5, 9));
+					}
+				} 
+
+			// Set gamestate to gameover if someone gets 3 points
+			} else if (this.mode == "CTF") {
+				var winner;
+				for (var i = 0; i < playerArr.length; i++) {
+					if (playerArr[i].score >= 3) {
+						winner = playerArr[i].playerID;
+						this.gamestate = GAMESTATE.gameover;
+						console.log(winner);
+						break;
+					}
 				}
 			}
-			if ((numAlive == 1 || numAlive == 0) && this.gamestate == GAMESTATE.arena) {
-				this.gamestate = GAMESTATE.gameover;
-
-				win_snd.play()
-
-				for (var i = 0; i < 200; i++) {
-					tempArr.add(new Confetti(180, 180, 5, 9));
-				}
-			} 
 
 			// Display winner 
 			if (this.gamestate == GAMESTATE.gameover) {
@@ -236,10 +260,14 @@ class Game {
 
 				ctx.save();
 				ctx.font = "bold 15px Arial";
-				if (numAlive == 1) {
-					ctx.fillText("Player " + playerAlive + " wins!", 150,110);
-				} else {
-					ctx.fillText("Stalemate!", 150, 110);
+				if (this.mode == "DM") {
+					if (numAlive == 1) {
+						ctx.fillText("Player " + playerAlive + " wins!", 150,110);
+					} else {
+						ctx.fillText("Stalemate!", 150, 110);
+					}
+				} else if (this.mode == "CTF") {
+					ctx.fillText("Player " + winner + " wins!", 150, 110);
 				}
 				ctx.restore();
 
@@ -252,7 +280,7 @@ class Game {
 				if (Keys.space && !this.holdSpace) {
 					this.toMenuScreen();
 				}
-			}*/
+			}
 		}
 
 		// Remember if you held space or not

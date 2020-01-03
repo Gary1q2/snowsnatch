@@ -553,6 +553,8 @@ class Goal extends Entity {
 		this.checkGoal();
 		this.draw();
 	}
+
+	// Check if flag is returned to goal
 	checkGoal() {
 		for (var i of tempArr.array) {
 			if (i instanceof Flag) {
@@ -560,6 +562,7 @@ class Goal extends Entity {
 					for (var j = 0; j < 100; j++) {
 						tempArr.add(new Confetti(180, 180, 5, 9));
 					}
+					this.owner.score++;
 					i.respawn();
 					win_snd.play();
 					console.log("winner");
