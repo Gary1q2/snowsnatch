@@ -383,7 +383,7 @@ class Flag extends Entity {
 
 		// player 1 = green, player 2 = blue
 		var flagColor;
-		if (owner == 1) {
+		if (owner.playerID == 1) {
 			flagColor = flagGreen_img;
 		} else {
 			flagColor = flagBlue_img
@@ -392,6 +392,9 @@ class Flag extends Entity {
 		this.dead = false;
 		this.owner = owner;
 		this.acquired = false;
+
+		this.initX = x;
+		this.initY = y;
 	}
 	update() {
 		if (!this.acquired) {
@@ -417,20 +420,9 @@ class Flag extends Entity {
 	// Check if player got it
 	checkGet() {
 		for (var i of playerArr) {
-			if (this.owner != i.playerID && this.collideWith(i)) {
-				console.log("Player " + i + " acquired flag...");
+			if (this.owner == i && this.collideWith(i) && !i.dead) {
+				console.log("Player " + i.playerID + " acquired flag... player" +this.owner.playerID + "'s flag gg");
 				this.acquired = true;
-				this.connectToOwner();
-				break;
-			}
-		}
-	}
-
-	// Connect flag to the owner!!!!
-	connectToOwner() {
-		for (var i of playerArr) {
-			if (this.owner != i.playerID) {
-				this.owner = i;
 				break;
 			}
 		}
@@ -439,6 +431,12 @@ class Flag extends Entity {
 	draw() {
 		this.drawAnimated(this.frameSeq);
 		this.drawCol();
+	}
+
+	respawn() {
+		this.x = this.initX;
+		this.y = this.initY;
+		this.acquired = false;
 	}
 }
 
@@ -546,6 +544,35 @@ class Crate extends Entity {
 	}
 }
 
+class Goal extends Entity {
+	constructor(x, y, owner) {
+		super(x, y, 20, 20, goal_img, 1, 1, [0], 0,0);
+		this.owner = owner;
+	}
+	update() {
+		this.checkGoal();
+		this.draw();
+	}
+	checkGoal() {
+		for (var i of tempArr.array) {
+			if (i instanceof Flag) {
+				if (this.owner.playerID == i.owner.playerID && i.acquired && this.collideWith(i)) {
+					for (var j = 0; j < 100; j++) {
+						tempArr.add(new Confetti(180, 180, 5, 9));
+					}
+					i.respawn();
+					win_snd.play();
+					console.log("winner");
+				}
+			}
+
+		}
+	}
+	draw() {
+		this.drawAnimated(this.frameSeq);
+	}
+}
+
 class Wall extends Entity {
 	constructor(x, y) {
 		super(x, y, 20, 20, wall, 4, 4, [0], 0,0);
@@ -618,6 +645,8 @@ class Player extends Entity {
 
 		this.respawnTimer = 0;
 		this.respawnTime = 100;
+
+		this.score = 0;
 
 	}
 	update() {
