@@ -67,6 +67,25 @@ confettiRed_img.src = "img/confetti_red.png";
 var confettiYellow_img = new Image();
 confettiYellow_img.src = "img/confetti_yellow.png";
 
+var shell_img = new Image();
+shell_img.src = "img/shell.png";
+var shellShotgun_img = new Image();
+shellShotgun_img.src = "img/shellShotgun.png";
+
+var smoke_img = new Image();
+smoke_img.src = "img/smoke.png";
+
+var mine_img = new Image();
+mine_img.src = "img/mine.png";
+
+var flagGreen_img = new Image();
+flagGreen_img.src = "img/flagGreen.png";
+var flagBlue_img = new Image();
+flagBlue_img.src = "img/flagBlue.png";
+
+var goal_img = new Image();
+goal_img.src = "img/goal.png";
+
 // Sounds
 var shoot_snd = document.createElement("audio");
 shoot_snd.src = "sound/shoot.mp3";
@@ -104,3 +123,7 @@ var iceCrack_snd = document.createElement("audio");
 iceCrack_snd.src = "sound/iceCrack.mp3";
 var wallBreak_snd = document.createElement("audio");
 wallBreak_snd.src = "sound/wallBreak.mp3";
+
+
+var mineDrop_snd = document.createElement("audio");
+mineDrop_snd.src = "sound/mineDrop.mp3";

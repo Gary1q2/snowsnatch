@@ -11,18 +11,33 @@ class Game {
 		// Display ready, fight! images
 		this.fightMsgTimer = 0;
 
-
+		/*
 		this.level = [
 			[ 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ],
-			[ 0 , 1 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 2 , 0 ],
+			[ 0 , 1 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ],
 			[ 0 , 0 ,"W","W","W","W","W","W", 0 , 0 , 0 , 0 ,"W","W","W","W","W","W", 0 , 0 ],
 			[ 0 , 0 ,"W", 0 , 0 , 0 , 0 , 0 ,"C", 0 , 0 ,"C", 0 , 0 , 0 , 0 , 0 ,"W", 0 , 0 ],
 			[ 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ],
 			[ 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ],
 			[ 0 , 0 ,"W", 0 , 0 , 0 , 0 , 0 ,"C", 0 , 0 ,"C", 0 , 0 , 0 , 0 , 0 ,"W", 0 , 0 ],
 			[ 0 , 0 ,"W","W","W","W","W","W", 0 , 0 , 0 , 0 ,"W","W","W","W","W","W", 0 , 0 ],
-			[ 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ],
+			[ 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 2 , 0 ],
 			[ 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ]
+		];*/
+
+
+
+		this.level = [
+			[  , 0 , 0 , 0 , 0 , 0 , 0 ,"W","W","W","W","W","W", 0 , 0 , 0 , 0 , 0 , 0 , 0 ],
+			[ 0 ,"W","W", 0 , 0 , 0 , 0 ,"W","W","W","W","W","W", 0 , 0 , 0 , 0 ,"W","W", 0 ],
+			[ 0 ,"W", 0 , 0 , 0 , 0 , 0 , 0 , 0 ,"W","W", 0 , 0 , 0 , 0 , 0 , 0 , 0 ,"W", 0 ],
+			[ 0 ,"W", 0 ,"W","W", 0 , 0 ,"W", 0 , 0 , 0 , 0 ,"W", 0 , 0 ,"W","W", 0 ,"W", 0 ],
+			["F", 0 , 0 ,"W","W", 0 , 0 ,"W","W","C","C","W","W", 0 , 0 ,"W","W", 0 , 0 ,"G"],
+			[ 0 , 0 , 0 ,"W","W", 0 , 0 ,"W","W","C","C","W","W", 0 , 0 ,"W","W", 0 , 0 , 0 ],
+			[ 0 ,"W", 0 ,"W","W", 0 , 0 ,"W", 0 , 0 , 0 , 0 ,"W", 0 , 0 ,"W","W", 0 ,"W", 1 ],
+			[ 0 ,"W", 0 , 0 , 0 , 0 , 0 , 0 , 0 ,"W","W", 0 , 0 , 0 , 0 , 0 , 0 , 0 ,"W", 0 ],
+			[ 0 ,"W","W", 0 , 0 , 0 , 0 ,"W","W","W","W","W","W", 0 , 0 , 0 , 0 ,"W","W", 0 ],
+			[ 0 , 0 , 0 , 0 , 0 , 0 , 0 ,"W","W","W","W","W","W", 0 , 0 , 2 , 0 , 0 , 0 , 0 ]
 		];
 
 		this.optionKey = "play";
@@ -62,6 +77,10 @@ class Game {
 					playerArr.push(new Player(j*gridLen, i*gridLen, 2, DIR.left));
 				} else if (this.level[i][j] == "C") {
 					tempArr.add(new Crate(j*gridLen, i*gridLen));
+				} else if (this.level[i][j] == "F") {
+					tempArr.add(new Flag(j*gridLen, i*gridLen, 1))
+				} else if (this.level[i][j] == "G") {
+					tempArr.add(new Flag(j*gridLen, i*gridLen, 2))
 				} else {
 					snowArr.add(new Snow(j*gridLen, i*gridLen));
 				}
@@ -168,7 +187,7 @@ class Game {
 			}
 
 			// Set gamestate to gameover if 1 player left
-			var numAlive = playerArr.length
+			/*var numAlive = playerArr.length
 			var playerAlive;
 			for (var i = 0; i < playerArr.length; i++) {
 				if (!playerArr[i].dead) {
@@ -209,7 +228,7 @@ class Game {
 				if (Keys.space && !this.holdSpace) {
 					this.toMenuScreen();
 				}
-			}
+			}*/
 		}
 
 		// Remember if you held space or not

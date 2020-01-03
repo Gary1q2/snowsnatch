@@ -1,6 +1,8 @@
 class Gun extends Entity {
 	constructor(x, y, width, height, img, nRow, nCol, frameSeq, centerX, centerY, player) {
-		super(x, y, width, height, img, nRow, nCol, frameSeq, centerX, centerY);
+		super(player.x, player.y, width, height, img, nRow, nCol, frameSeq, centerX, centerY);
+
+		// All guns stick to play regardless of passed in x & y coordinates
 
 		this.shooting = false;
 		this.player = player;
@@ -9,8 +11,25 @@ class Gun extends Entity {
 	update() {
 		this.updateMovement();
 		this.checkAmmo();
+		this.draw([0]);
 	}
 
+	// Draw the gun on the player + shooting animation
+	draw(shootingSeq) {
+		this.setAngle(this.player.angle);
+
+		// Shooting animation in 4 directions
+		if (this.shooting) {
+			this.drawAnimated(shootingSeq);
+			if (this.finishAnim) {
+				this.shooting = false;
+			}
+
+		// Idle gun in 4 directions
+		} else {
+			this.drawAnimated(this.frameSeq);	
+		}	
+	}
 
 	// Stick with the player
 	updateMovement() {
@@ -19,10 +38,51 @@ class Gun extends Entity {
 		this.setAngle(this.player.angle);
 	}
 
+	// Check if out of ammo
 	checkAmmo() {
 		if (this.ammo == 0) {
 			this.player.gun = new SnowGun(this.player);
 		}
+	}
+}
+
+class Mine extends Gun {
+	constructor(player) {
+		super(0, 100, 20, 20, mine_img, 3, 3, [0], 0, 0, player);
+		this.gunID = 6;
+
+		this.shootTime = 1;
+		this.ammo = 2;
+
+		this.shootTime = 20;
+		this.animDelayTime = 20;
+	}
+	update() {
+		this.updateMovement();
+		this.checkAmmo();
+		this.draw([8]);
+	}
+
+	// Draw the mine on the player 
+	draw() {
+
+		// Shooting animation in 4 directions
+		if (this.shooting) {
+			this.drawAnimated([8]);
+			if (this.finishAnim) {
+				this.shooting = false;
+				this.ammo--;
+			}
+
+		// Idle gun in 4 directions
+		} else {
+			this.drawAnimated(this.frameSeq);	
+		}	
+	}
+	shoot() {
+		this.shooting = true;
+		tempArr.add(new MineBomb(this.x, this.y, this.player.playerID));
+		mineDrop_snd.play();
 	}
 }
 
@@ -37,23 +97,8 @@ class RocketLauncher extends Gun {
 	update() {
 		this.updateMovement();
 		this.checkAmmo();
-		this.draw();
+		this.draw([1,1,1,1,1,1,1,1,1,1,1,1]);
 	}	
-	draw() {
-		this.setAngle(this.player.angle);
-
-		// Shooting animation in 4 directions
-		if (this.shooting) {
-			this.drawAnimated([1,1,1,1,1,1,1,1,1,1,1,1]);
-			if (this.finishAnim) {
-				this.shooting = false;
-			}
-
-		// Idle gun in 4 directions
-		} else {
-			this.drawAnimated(this.frameSeq);	
-		}	
-	}
 
 	// Shoot the gun (create rocket)
 	shoot() {
@@ -79,37 +124,21 @@ class Uzi extends Gun {
 	update() {
 		this.updateMovement();
 		this.checkAmmo();
-		this.draw();
+		this.draw([2,1]);
 	}	
 
-	draw() {
-		this.setAngle(this.player.angle);
-
-		// Shooting animation in 4 directions
-		if (this.shooting) {
-			this.drawAnimated([2,1]);
-			if (this.finishAnim) {
-				this.shooting = false;
-			}
-
-		// Idle gun in 4 directions
-		} else {
-			this.drawAnimated(this.frameSeq);	
-		}	
-	}
 
 	// Shoot the gun (create bullet)
 	shoot() {
 		this.shooting = true;
-		this.ammo--;
 		console.log("smg ammo = " + this.ammo);
 		tempArr.add(new Pellet(this.x, this.y, this.player.playerID, this.player.angle, -1, -1, 2, 10));
 		
 		uziShoot_snd.play();
 
-		for (var i = 0; i < 10; i++) {
-			tempArr.add(new Confetti(this.x, this.y, 3, 4));
-		}
+		tempArr.add(new Shell(this.x, this.y, shell_img, this.player.angle));
+
+		this.ammo--;
 
 		// Prepare for new animation
 		this.animIndex = 0;
@@ -140,6 +169,8 @@ class Shotgun extends Gun {
 			if (this.finishAnim) {
 				this.shooting = false;
 				shotgunReload_snd.play();
+				tempArr.add(new Shell(this.x, this.y, shellShotgun_img, this.player.angle));
+				this.ammo--;
 			}
 
 		// Idle gun in 4 directions
@@ -151,7 +182,6 @@ class Shotgun extends Gun {
 	// Shoot the gun (create bullet + recoil)
 	shoot() {
 		this.shooting = true;
-		this.ammo--;
 		console.log("shotty ammo = " + this.ammo);
 		for (var i = 0; i < 6; i++) {
 			tempArr.add(new Pellet(this.x, this.y, this.player.playerID, this.player.angle, 6+Math.floor(Math.random()*10), 17, 5, 40));
@@ -170,30 +200,15 @@ class SnowGun extends Gun {
 		super(0, 100, 20, 20, gunImg, 2, 2, [0], 0,0, player);
 		this.gunID = 1;
 		this.shootTime = 30;
+		this.shooting = false;
 	}
 
 	update() {
 		this.updateMovement();
-		this.draw();
+		this.draw([2,1]);
 	}	
 
-	draw() {
-		this.setAngle(this.player.angle);
 
-		// Shooting animation in 4 directions
-		if (this.shooting) {
-			this.drawAnimated([2, 1]);
-			if (this.finishAnim) {
-				this.shooting = false;
-			}
-
-		// Idle gun in 4 directions
-		} else {
-			this.drawAnimated(this.frameSeq);		
-		}	
-
-		//ctx.fillText("Ammo: "+this.ammo, this.player.x, this.player.y);
-	}
 	// Shoot the gun (create bullet + recoil)
 	shoot() {
 		this.shooting = true;
@@ -321,9 +336,10 @@ class Bullet extends Entity {
 	}
 }
 
+
 class Explosion extends Bullet {
 	constructor(x, y, owner, dir) {
-		super(x, y, 40, 40, explosion_img, 4, 3, [0,1,2,3,4,5,6,7,8,9], 25, 25, owner, dir);
+		super(x, y, 60, 60, explosion_img, 4, 3, [0,1,2,3,4,5,6,7,8,9], 25, 25, owner, dir);
 		this.dmgTime = 1;     // Initial time that can damage you
 
 		explosion_snd.play();
@@ -370,6 +386,45 @@ class Explosion extends Bullet {
 		}
 	}
 }
+class MineBomb extends Bullet {
+	constructor(x, y, owner) {
+		super(x, y, 20, 20, mine_img, 3, 3, [0,1,2,3,0,1,2,3,4,5,6], 0,0, owner);
+		this.armed = false;
+	}
+	update() {
+		if (this.armed) {
+			this.checkHit();
+		}
+		this.draw();
+		this.drawCol();
+	}
+
+	draw() {
+		if (!this.armed) {
+			this.drawAnimated(this.frameSeq);
+			if (this.finishAnim) {
+				this.armed = true;
+			}
+		} else {
+			this.animDelayTime = 10;
+			this.drawAnimated([6,6,6,7]);
+		}
+	}
+
+	// Check if hitting anyone
+	checkHit() {
+		for (var i of playerArr) {
+			if (this.owner != i.playerID && this.collideWith(i) && !i.dead) {
+				this.explode();
+			}
+		}
+	}
+	// Create explosion
+	explode() {
+		this.dead = true;
+		tempArr.add(new Explosion(this.x, this.y, this.owner, this.dir));
+	}
+}
 
 class Missile extends Bullet {
 	constructor(x, y, owner, dir) {
@@ -383,6 +438,8 @@ class Missile extends Bullet {
 		this.speedTickTime = 5;       // Time interval to speed up
 		this.speedTickSpeed = 0.5;    // Speed interval to speed up
 		this.ticker = this.speedTickTime;  // Variable to count the ticking
+
+		this.smokeTicker = 5;
 
 		missileLaunch_snd.play();
 	}
@@ -402,6 +459,14 @@ class Missile extends Bullet {
 						this.speed += this.speedTickSpeed;
 					}
 				}
+			}
+		}
+
+		if (this.smokeTicker > 0) {
+			this.smokeTicker--;
+			if (this.smokeTicker == 0) {
+				tempArr.add(new Smoke(this.x, this.y, this.dir));
+				this.smokeTicker = 7+Math.ceil(Math.random()*4);
 			}
 		}
 		this.delayBeforeSpeed--;

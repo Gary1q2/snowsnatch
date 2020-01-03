@@ -18,6 +18,7 @@ class Entity {
 		this.animIndex = 0;
 		this.animCurrFrame = 0;
 		this.animDelay = 0;
+		this.animDelayTime = 4;
 		this.finishAnim = false;
 	}
 	update() {
@@ -50,7 +51,7 @@ class Entity {
 					  this.img.width/this.nCol, this.img.height/this.nRow);
 		ctx.setTransform(1, 0, 0, 1, 0, 0);
 
-		if (this.animDelay <= 4) {
+		if (this.animDelay <= this.animDelayTime) {
 			this.animDelay++;
 		} else {
 			this.animDelay = 0;
@@ -198,6 +199,116 @@ class Entity {
 	}
 }
 
+
+
+
+class Smoke extends Entity {
+	constructor(x, y, dir) {
+		super(x, y, 20, 20, smoke_img, 2, 3, [0,1,2,3,4,5], 0, 0);
+		this.animDelayTime = 8;
+		this.dead = false;
+
+		this.vspeed = 0.5;
+		this.hspeed = 0.5;
+		if (Math.random() > 0.5) {
+			this.vspeed = -this.vspeed;
+		}
+		if (Math.random() > 0.5) {
+			this.hspeed = -this.hspeed;
+		}
+
+		this.friction = 0.05;
+	}
+	update() {
+		this.updateMovement();
+		this.draw();
+	}
+	updateMovement() {
+		if (this.vspeed > 0) {
+			this.vspeed -= this.friction;
+		} else if (this.vspeed < 0) {
+			this.vspeed += this.friction;
+		}
+		if (this.hspeed > 0) {
+			this.hspeed -= this.friction;
+		} else if (this.hspeed < 0) {
+			this.hspeed += this.friction;
+		}
+		this.x += this.hspeed;
+		this.y += this.vspeed;
+	}
+	draw() {
+		this.drawAnimated(this.frameSeq);
+		if (this.finishAnim) {
+			this.dead = true;
+		}
+	}
+}
+
+class Shell extends Entity {
+	constructor(x, y, img, dir) {
+		super(x, y, 4, 3, img, 1, 1, [0], 0,0);
+		this.dead = false;
+
+		this.dir = dir;
+		this.stopTime = 30+Math.random()*10;
+		this.deadTime = 200;
+
+		this.vspeed = -1;
+		this.hspeed = 1.5+Math.random();
+
+		// Set direction of shell (if left or right otherwise random)
+		if (this.dir == DIR.up || this.dir == DIR.down) {
+			if (Math.random() > 0.5) {
+				this.hspeed = -this.hspeed;
+			}
+		} else {
+			if (this.dir == DIR.left) {
+				this.hspeed = this.hspeed;
+			} else {
+				this.hspeed = -this.hspeed;
+			}
+		}
+		this.fallSpeed = 1;
+		this.friction = 0.1
+	}
+
+	update() {
+		this.updateMovement();
+		this.draw();
+
+		if (this.stopTime > 0) {
+			this.stopTime--;
+		}
+		if (this.deadTime > 0) {
+			this.deadTime--;
+			if (this.deadTime == 0) {
+				this.dead = true;
+			}
+		}
+	}
+	updateMovement() {
+		if (this.stopTime > 0) {
+
+			if (this.vspeed < this.fallSpeed) {
+				this.vspeed += this.friction;
+			}
+			if (this.hspeed > 0) {
+				this.hspeed -= this.friction;
+			} else if (this.hspeed < 0) {
+				this.hspeed += this.friction;
+			}
+
+			this.x += this.hspeed;
+			this.y += this.vspeed;
+		}
+	}
+
+	draw() {
+		this.drawAnimated(this.frameSeq);
+	}
+}
+
 class Confetti extends Entity {
 	constructor(x, y, xSpread, ySpread) {
 
@@ -264,6 +375,70 @@ class Confetti extends Entity {
 		      this.y < 0 || this.y > numHeight*gridLen-gridLen) {
 			this.dead = true;
 		}
+	}
+}
+
+class Flag extends Entity {
+	constructor(x, y, owner) {
+
+		// player 1 = green, player 2 = blue
+		var flagColor;
+		if (owner == 1) {
+			flagColor = flagGreen_img;
+		} else {
+			flagColor = flagBlue_img
+		}
+		super(x, y, 20, 30, flagColor, 1, 1, [0], 0,0);
+		this.dead = false;
+		this.owner = owner;
+		this.acquired = false;
+	}
+	update() {
+		if (!this.acquired) {
+			this.checkGet();
+		} else {
+			this.checkDead();
+			this.updateMovement();
+		}
+		
+		this.draw()
+	}
+
+	updateMovement() {
+		this.x = this.owner.x;
+		this.y = this.owner.y-10;
+	}
+	// Check if player is dead or not
+	checkDead() {
+		if (this.owner.dead) {
+			this.acquired = false;
+		}
+	}
+	// Check if player got it
+	checkGet() {
+		for (var i of playerArr) {
+			if (this.owner != i.playerID && this.collideWith(i)) {
+				console.log("Player " + i + " acquired flag...");
+				this.acquired = true;
+				this.connectToOwner();
+				break;
+			}
+		}
+	}
+
+	// Connect flag to the owner!!!!
+	connectToOwner() {
+		for (var i of playerArr) {
+			if (this.owner != i.playerID) {
+				this.owner = i;
+				break;
+			}
+		}
+	}
+
+	draw() {
+		this.drawAnimated(this.frameSeq);
+		this.drawCol();
 	}
 }
 
@@ -342,14 +517,16 @@ class Crate extends Entity {
 
 				// Give random gun
 				var rand = Math.random();
-				if (rand < 0.25) {
+				if (rand < 0.2) {
 					i.gun = new LaserGun(i);
-				} else if (rand < 0.5) {
+				} else if (rand < 0.4) {
 					i.gun = new Shotgun(i);
-	     		} else if (rand < 0.75) {
+	     		} else if (rand < 0.6) {
 	     			i.gun = new Uzi(i);
-	     		} else {
+	     		} else if (rand < 0.8) {
 	     			i.gun = new RocketLauncher(i);
+	     		} else {
+	     			i.gun = new Mine(i);
 	     		}
 	     		
 
@@ -435,6 +612,13 @@ class Player extends Entity {
 		
 
 		this.canMoveTimer = 100;
+
+		this.initX = x;   // Remember initial spawn location
+		this.initY = y;
+
+		this.respawnTimer = 0;
+		this.respawnTime = 100;
+
 	}
 	update() {
 		if (!this.dead && this.canMoveTimer <= 0) {
@@ -446,6 +630,16 @@ class Player extends Entity {
 
 		if (!this.dead) {
 			this.gun.update();
+		} else {
+			console.log("resTime" +this.respawnTimer);
+			if (this.respawnTimer > 0) {
+				this.respawnTimer--;
+				if (this.respawnTimer == 0) {
+					this.respawnTimer = this.respawnTime;
+					console.log("respawned");
+					this.respawn();
+				}
+			}
 		}
 
 		this.canMoveTimer--;
@@ -582,6 +776,7 @@ class Player extends Entity {
 	die(bulletDir) {
 		this.dead = true;
 		this.dying = true;
+		this.respawnTimer = this.respawnTime;
 
 		this.setAngle(DIR.right);
 		// Set direction for player to die
@@ -625,6 +820,19 @@ class Player extends Entity {
 		if (this.upKey) { keys.push(DIR.up); }
 		if (this.downKey) { keys.push(DIR.down); }
 		return keys;
+	}
+
+	// Respawn the player
+	respawn() {
+		this.gun = new SnowGun(this);
+		this.dead = false;
+		this.dying = false;
+
+		// Back to original spot
+		this.x = this.initX;
+		this.y = this.initY;
+
+		this.changeSprite(peng, 20, 20, 4, 3, [0], 0,0);
 	}
 }
 
