@@ -25,6 +25,8 @@ class Game {
 		} else {
 			this.level = levels[1];
 		}
+
+		this.winner = 0;
 	}
 
 	// Head to control screen
@@ -50,46 +52,17 @@ class Game {
 		tempArr = new ObjectArray();  // Array of temporary objects eg. bullets
 		wallArr = new ObjectArray();  // Array for walls
 		snowArr = new ObjectArray();  // Array for snow piles
+		this.winner = 0;
 
-		// Create players first to have reference
-		for (var i = 0; i < numHeight; i++) {
-			for (var j = 0; j < numWidth; j++) {
-				if (this.level[i][j] == 1) {
-					playerArr.push(new Player(j*gridLen, i*gridLen, 1, DIR.right));
-				} else if (this.level[i][j] == 2) {
-					playerArr.push(new Player(j*gridLen, i*gridLen, 2, DIR.left));
-				}
-			}
-		}	
-
-		// Create objects from level array
-		for (var i = 0; i < numHeight; i++) {
-			for (var j = 0; j < numWidth; j++) {
-				if (this.level[i][j] == "W") {
-					wallArr.add(new Wall(j*gridLen, i*gridLen));
-				} else if (this.level[i][j] == "C") {
-					tempArr.add(new Crate(j*gridLen, i*gridLen));
-				} else if (this.level[i][j] == "F") {
-					tempArr.add(new Flag(j*gridLen, i*gridLen, getPlayer(1)));
-				} else if (this.level[i][j] == "G") {
-					tempArr.add(new Goal(j*gridLen, i*gridLen, getPlayer(1)));
-				} else if (this.level[i][j] == "R") {
-					tempArr.add(new Flag(j*gridLen, i*gridLen, getPlayer(2)));
-				} else if (this.level[i][j] == "T") {
-					tempArr.add(new Goal(j*gridLen, i*gridLen, getPlayer(2)));
-				} else {
-					snowArr.add(new Snow(j*gridLen, i*gridLen));
-				}
-			}
-		}
+		// Load all the level & player data
+		this.generateLevel();
 
 		this.gamestate = GAMESTATE.arena;
-
 		this.fightMsgTimer = 100;
 		readFight_snd.play();
-
 		shoot_snd.play();
 	}
+
 
 	// Head to menu screen
 	toMenuScreen() {
@@ -149,8 +122,7 @@ class Game {
 		// Arena screen + gameover 
 		} else if (this.gamestate == GAMESTATE.arena || this.gamestate == GAMESTATE.gameover) {
 			ctx.drawImage(bg, 0, 0);
-
-			 
+ 
 			snowArr.update();
 			wallArr.update();
 
@@ -159,27 +131,12 @@ class Game {
 			}
 			tempArr.update();
 			
-			// Tick down the timer
-			this.tickTimer++;
-			if (this.tickTimer == 60) {
-				this.tickTimer = 0;
-				if (this.timer > 0) {
-					this.timer--;
-				}
-				document.getElementById('timer').innerHTML = this.timer;
-			}
 
-			// Display ready, fight message
-			if (this.fightMsgTimer != 0) {
-				if (this.fightMsgTimer > 40) {
-					ctx.drawImage(msgReady_img, 140, 80);
-				} else {
-					ctx.drawImage(msgFight_img, 140, 80);
-				}
-			}
-			if (this.fightMsgTimer > 0) {
-				this.fightMsgTimer--;
-			}
+			// Tick down and display the timer
+			this.displayTimer();
+
+			// Tick down and display the "Ready, fight!" message
+			this.displayFightMsg();
 
 
 			// Draw score for CTF
@@ -190,37 +147,15 @@ class Game {
 				ctx.restore();
 			}
 
-			// Set gamestate to gameover if 1 player left
-			if (this.mode == "DM") {
-				var numAlive = playerArr.length
-				var playerAlive;
-				for (var i = 0; i < playerArr.length; i++) {
-					if (!playerArr[i].dead) {
-						playerAlive = i;
-					} else {
-						numAlive--;
-					}
-				}
-				if ((numAlive == 1 || numAlive == 0) && this.gamestate == GAMESTATE.arena) {
-					this.gamestate = GAMESTATE.gameover;
-
-					win_snd.play()
-
+			// Check if anybody has won yet - if yes, set to gameover
+			if (this.winner == 0) {
+				this.winner = this.checkWinner();
+				if (this.winner != 0) {
+					win_snd.play();
 					for (var i = 0; i < 200; i++) {
 						tempArr.add(new Confetti(180, 180, 5, 9));
 					}
-				} 
-
-			// Set gamestate to gameover if someone gets 3 points
-			} else if (this.mode == "CTF") {
-				var winner;
-				for (var i = 0; i < playerArr.length; i++) {
-					if (playerArr[i].score >= 3) {
-						winner = playerArr[i].playerID;
-						this.gamestate = GAMESTATE.gameover;
-						console.log(winner);
-						break;
-					}
+					this.gamestate = GAMESTATE.gameover;
 				}
 			}
 
@@ -230,14 +165,10 @@ class Game {
 
 				ctx.save();
 				ctx.font = "bold 15px Arial";
-				if (this.mode == "DM") {
-					if (numAlive == 1) {
-						ctx.fillText("Player " + playerAlive + " wins!", 150,110);
-					} else {
-						ctx.fillText("Stalemate!", 150, 110);
-					}
-				} else if (this.mode == "CTF") {
-					ctx.fillText("Player " + winner + " wins!", 150, 110);
+				if (this.winner == "Stalemate") {
+					ctx.fillText("Stalemate!", 150, 110);
+				} else {
+					ctx.fillText("Player " + this.winner + " wins!", 150,110);
 				}
 				ctx.restore();
 
@@ -255,5 +186,105 @@ class Game {
 
 		// Remember if you held space or not
 		this.holdSpace = Keys.space;
+	}
+
+
+	// Load the levels and players and all objects into their arrays
+	generateLevel() {
+		// Create players first to have reference
+		for (var i = 0; i < numHeight; i++) {
+			for (var j = 0; j < numWidth; j++) {
+				if (this.level[i][j] == 1) {
+					playerArr.push(new Player(j*gridLen, i*gridLen, 1, DIR.right));
+				} else if (this.level[i][j] == 2) {
+					playerArr.push(new Player(j*gridLen, i*gridLen, 2, DIR.left));
+				}
+			}
+		}	
+
+		// Create objects from level array
+		for (var i = 0; i < numHeight; i++) {
+			for (var j = 0; j < numWidth; j++) {
+				if (this.level[i][j] == "W") {
+					wallArr.add(new Wall(j*gridLen, i*gridLen));
+				} else if (this.level[i][j] == "C") {
+					tempArr.add(new Crate(j*gridLen, i*gridLen));
+				} else if (this.level[i][j] == "F") {
+					tempArr.add(new Flag(j*gridLen, i*gridLen, getPlayer(1)));
+				} else if (this.level[i][j] == "G") {
+					tempArr.add(new Goal(j*gridLen, i*gridLen, getPlayer(1)));
+				} else if (this.level[i][j] == "R") {
+					tempArr.add(new Flag(j*gridLen, i*gridLen, getPlayer(2)));
+				} else if (this.level[i][j] == "T") {
+					tempArr.add(new Goal(j*gridLen, i*gridLen, getPlayer(2)));
+				} else {
+					snowArr.add(new Snow(j*gridLen, i*gridLen));
+				}
+			}
+		}
+	}
+
+	// Display ready, fight message
+	displayFightMsg() {
+		if (this.fightMsgTimer != 0) {
+			if (this.fightMsgTimer > 40) {
+				ctx.drawImage(msgReady_img, 140, 80);
+			} else {
+				ctx.drawImage(msgFight_img, 140, 80);
+			}
+		}
+		if (this.fightMsgTimer > 0) {
+			this.fightMsgTimer--;
+		}
+	}
+
+	// Display timer
+	displayTimer() {
+		this.tickTimer++;
+		if (this.tickTimer == 60) {
+			this.tickTimer = 0;
+			if (this.timer > 0) {
+				this.timer--;
+			}
+			document.getElementById('timer').innerHTML = this.timer;
+		}
+	}
+
+	// Return the winner otherwise return 0
+	checkWinner() {
+		if (this.mode == "DM") {
+			var numAlive = playerArr.length
+			var playerAlive;
+
+			// Count how many players alive
+			var numAlive = 0;
+			for (var i = 0; i < playerArr.length; i++) {
+				if (!playerArr[i].dead) {
+					numAlive++;
+				}
+			}
+
+			// Get the last person standing
+			if (numAlive == 1) {
+				for (var i = 0; i < playerArr.length; i++) {
+					if (!playerArr[i].dead) {
+						return playerArr[i].playerID;
+					}
+				}
+			} else if (numAlive == 0) {
+				return "Stalemate";
+			} else {
+				return 0;
+			}
+		
+		} else {
+			for (var i = 0; i < playerArr.length; i++) {
+				if (playerArr[i].score >= 3) {
+					return playerArr[i].playerID;
+					break;
+				}
+			}
+			return 0;
+		}
 	}
 }

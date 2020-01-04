@@ -562,18 +562,24 @@ class Goal extends Entity {
 		for (var i of tempArr.array) {
 			if (i instanceof Flag) {
 				if (this.owner.playerID == i.owner.playerID && i.acquired && this.collideWith(i)) {
-					for (var j = 0; j < 100; j++) {
-						tempArr.add(new Confetti(180, 180, 5, 9));
-					}
-					this.owner.score++;
-					i.respawn();
-					win_snd.play();
-					console.log("winner");
+					this.giveGoal(i);
 				}
 			}
 
 		}
 	}
+
+	// Give the goal to the player
+	giveGoal(flag) {
+		for (var j = 0; j < 100; j++) {
+			tempArr.add(new Confetti(180, 180, 5, 9));
+		}
+		this.owner.score++;
+		flag.respawn();
+		win_snd.play();
+		console.log("winner");
+	}
+
 	draw() {
 		this.drawAnimated(this.frameSeq);
 	}
@@ -666,12 +672,10 @@ class Player extends Entity {
 		if (!this.dead) {
 			this.gun.update();
 		} else {
-			console.log("resTime" +this.respawnTimer);
 			if (this.respawnTimer > 0) {
 				this.respawnTimer--;
 				if (this.respawnTimer == 0) {
 					this.respawnTimer = this.respawnTime;
-					console.log("respawned");
 					this.respawn();
 				}
 			}
@@ -811,7 +815,11 @@ class Player extends Entity {
 	die(bulletDir) {
 		this.dead = true;
 		this.dying = true;
-		this.respawnTimer = this.respawnTime;
+
+		// Respawn only if CTF
+		if (game.mode == "CTF") {
+			this.respawnTimer = this.respawnTime;
+		}
 
 		this.setAngle(DIR.right);
 		// Set direction for player to die
