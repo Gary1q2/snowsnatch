@@ -86,6 +86,9 @@ flagBlue_img.src = "img/flagBlue.png";
 var goal_img = new Image();
 goal_img.src = "img/goal.png";
 
+var selectionScreen_img = new Image();
+selectionScreen_img.src = "img/selectionScreen.png";
+
 // Sounds
 var shoot_snd = document.createElement("audio");
 shoot_snd.src = "sound/shoot.mp3";

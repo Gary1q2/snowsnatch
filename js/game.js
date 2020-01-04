@@ -19,14 +19,19 @@ class Game {
 
 		// Select gamemode and map
 		this.level;
-		this.mode = "CTF";
-		if (this.mode == "DM") {
-			this.level = levels[0];
-		} else {
-			this.level = levels[1];
-		}
-
+		this.mode = "DM";
 		this.winner = 0;
+	}
+
+	// Head to selection screen
+	toSelectionScreen() {
+		document.getElementById("playButton").style.visibility = "hidden";
+		document.getElementById("controlButton").style.visibility = "hidden";
+
+		this.optionKey = "mode";
+
+		this.gamestate = GAMESTATE.selection;
+
 	}
 
 	// Head to control screen
@@ -53,6 +58,7 @@ class Game {
 		wallArr = new ObjectArray();  // Array for walls
 		snowArr = new ObjectArray();  // Array for snow piles
 		this.winner = 0;
+
 
 		// Load all the level & player data
 		this.generateLevel();
@@ -88,11 +94,11 @@ class Game {
 			} else {
 				ctx.drawImage(arrow_img, 165, 110);
 			}
-
 			// Key movements on the menu screen
 			if (Keys.space && !this.holdSpace) {
+				console.log("ya man");
 				if (this.optionKey == "play") {
-					this.toArenaScreen();
+					this.toSelectionScreen();
 				} else {
 					this.toControlScreen();
 				}
@@ -106,7 +112,70 @@ class Game {
 				shoot_snd.play();
 			}
 
+		// Selection screen
+		}  else if (this.gamestate == GAMESTATE.selection) {
+			ctx.drawImage(selectionScreen_img, 0, 0);
 
+			
+			// Draw the mode selection
+			ctx.save();
+			ctx.fillStyle = "#717e82"
+			if (this.optionKey == "mode") {
+				if (this.mode == "DM") {
+					ctx.fillRect(170, 120, 80, 40);
+				} else {
+					ctx.fillRect(250, 120, 80, 40);
+				}				
+			} else {
+				ctx.beginPath();
+				if (this.mode == "DM") {
+					ctx.rect(170, 120, 80, 40);
+				} else {
+					ctx.rect(250, 120, 80, 40);
+				}					
+				ctx.stroke();
+			}
+
+
+			if (this.optionKey == "play") {
+				ctx.fillRect(190, 160, 70, 40);
+			}
+			ctx.fillStyle = "black";
+			ctx.font = "20px Arial";
+			ctx.fillText("DM", 190, 150);
+			ctx.fillText("CTF", 270, 150);
+			ctx.fillText("Play", 210, 190);
+			ctx.restore();
+
+			// Switching from DM to CTF
+			if (this.optionKey == "mode") {
+				if (Keys.left && this.mode != "DM") {
+					this.mode = "DM";
+					shoot_snd.play();
+				}
+				if (Keys.right && this.mode != "CTF") {
+					this.mode = "CTF";
+					shoot_snd.play();
+				}
+			}
+
+			// Switch from modes to play
+			if (Keys.down && this.optionKey != "play") {
+				this.optionKey = "play";
+				shoot_snd.play();
+			}
+			if (Keys.up && this.optionKey != "mode") {
+				this.optionKey = "mode";
+				shoot_snd.play();
+			}
+
+			
+			// Press enter to play
+			if (Keys.space && !this.holdSpace) {
+				if (this.optionKey == "play") {
+					this.toArenaScreen();
+				}
+			}
 
 		// Control screen
 		} else if (this.gamestate == GAMESTATE.controls) {
@@ -191,6 +260,12 @@ class Game {
 
 	// Load the levels and players and all objects into their arrays
 	generateLevel() {
+		if (this.mode == "DM") {
+			this.level = levels[0];
+		} else {
+			this.level = levels[1];
+		}
+
 		// Create players first to have reference
 		for (var i = 0; i < numHeight; i++) {
 			for (var j = 0; j < numWidth; j++) {
