@@ -127,3 +127,6 @@ wallBreak_snd.src = "sound/wallBreak.mp3";
 
 var mineDrop_snd = document.createElement("audio");
 mineDrop_snd.src = "sound/mineDrop.mp3";
+
+var flagGot_snd = document.createElement("audio");
+flagGot_snd.src = "sound/flagGot.mp3";

@@ -36,3 +36,14 @@ function drawGrids() {
 
 	ctx.globalAlpha = 1;
 }
+
+// Return the player object given their ID
+// Otherwise return FALSE
+function getPlayer(playerID) {
+	for (var i of playerArr) {
+		if (playerID == i.playerID) {
+			return i;
+		}
+	}
+	return false;
+}

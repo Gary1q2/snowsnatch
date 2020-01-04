@@ -17,51 +17,17 @@ class Game {
 		this.holdSpace = Keys.space;   // Store if last step was pressed or not
 
 
-		this.mode = "DM";
+		// Select gamemode and map
 		this.level;
+		this.mode = "CTF";
 		if (this.mode == "DM") {
-			this.level = [
-				[ 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ],
-				[ 0 , 1 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ],
-				[ 0 , 0 ,"W","W","W","W","W","W", 0 , 0 , 0 , 0 ,"W","W","W","W","W","W", 0 , 0 ],
-				[ 0 , 0 ,"W", 0 , 0 , 0 , 0 , 0 ,"C", 0 , 0 ,"C", 0 , 0 , 0 , 0 , 0 ,"W", 0 , 0 ],
-				[ 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ],
-				[ 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ],
-				[ 0 , 0 ,"W", 0 , 0 , 0 , 0 , 0 ,"C", 0 , 0 ,"C", 0 , 0 , 0 , 0 , 0 ,"W", 0 , 0 ],
-				[ 0 , 0 ,"W","W","W","W","W","W", 0 , 0 , 0 , 0 ,"W","W","W","W","W","W", 0 , 0 ],
-				[ 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 2 , 0 ],
-				[ 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ]
-			];
+			this.level = levels[0];
 		} else {
-			this.level = [
-				["C", 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ,"C"],
-				[ 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ],
-				[ 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ,"W","W","W","W", 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ],
-				[ 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ,"W","W","W","W", 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ],
-				[ 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ,"W","W","W","W", 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ],
-				[ 0 , 0 , 0 , 0 , 0 , 1 , 0 , 0 ,"W","W","W","W", 0 , 0 , 2 , 0 , 0 , 0 , 0 , 0 ],
-				[ 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ,"W","W","W","W", 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ],
-				[ 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ,"W","W","W","W", 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ],
-				[ 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ],
-				["C", 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ,"C"]
-			];			
-			/*
-			this.level = [
-				[  , 0 , 0 , 0 , 0 , 0 , 0 ,"W","W","W","W","W","W", 0 , 0 , 0 , 0 , 0 , 0 , 0 ],
-				[ 0 ,"W","W", 0 , 0 , 0 , 0 ,"W","W","W","W","W","W", 0 , 0 , 0 , 0 ,"W","W", 0 ],
-				[ 0 ,"W", 0 , 0 , 0 , 0 , 0 , 0 , 0 ,"W","W", 0 , 0 , 0 , 0 , 0 , 0 , 0 ,"W", 0 ],
-				[ 0 ,"W", 0 ,"W","W", 0 , 0 ,"W", 0 , 0 , 0 , 0 ,"W", 0 , 0 ,"W","W", 0 ,"W", 0 ],
-				[ 0 , 0 , 0 ,"W","W", 0 , 0 ,"W","W","C","C","W","W", 0 , 0 ,"W","W", 0 , 0 , 0 ],
-				[ 0 , 0 , 0 ,"W","W", 0 , 0 ,"W","W","C","C","W","W", 0 , 0 ,"W","W", 0 , 0 , 0 ],
-				[ 0 ,"W", 0 ,"W","W", 0 , 0 ,"W", 0 , 0 , 0 , 0 ,"W", 0 , 0 ,"W","W", 0 ,"W", 0 ],
-				[ 0 ,"W", 0 , 0 , 0 , 0 , 0 , 0 , 0 ,"W","W", 0 , 0 , 0 , 0 , 0 , 0 , 0 ,"W", 0 ],
-				[ 0 ,"W","W", 0 , 0 , 0 , 0 ,"W","W","W","W","W","W", 0 , 0 , 0 , 0 ,"W","W", 0 ],
-				[ 0 , 0 , 0 , 1 , 0 , 2 , 0 ,"W","W","W","W","W","W", 0 , 0 , 0 , 0 , 0 , 0 , 0 ]
-			];	*/	
+			this.level = levels[1];
 		}
-
 	}
 
+	// Head to control screen
 	toControlScreen() {
 		document.getElementById("playButton").style.visibility = "hidden";
 		document.getElementById("controlButton").style.visibility = "hidden";	
@@ -72,6 +38,7 @@ class Game {
 		shoot_snd.play();
 	}
 
+	// Head to arena screen
 	toArenaScreen() {
 		document.getElementById("playButton").style.visibility = "hidden";
 		document.getElementById("controlButton").style.visibility = "hidden";
@@ -84,33 +51,37 @@ class Game {
 		wallArr = new ObjectArray();  // Array for walls
 		snowArr = new ObjectArray();  // Array for snow piles
 
+		// Create players first to have reference
+		for (var i = 0; i < numHeight; i++) {
+			for (var j = 0; j < numWidth; j++) {
+				if (this.level[i][j] == 1) {
+					playerArr.push(new Player(j*gridLen, i*gridLen, 1, DIR.right));
+				} else if (this.level[i][j] == 2) {
+					playerArr.push(new Player(j*gridLen, i*gridLen, 2, DIR.left));
+				}
+			}
+		}	
+
 		// Create objects from level array
 		for (var i = 0; i < numHeight; i++) {
 			for (var j = 0; j < numWidth; j++) {
 				if (this.level[i][j] == "W") {
 					wallArr.add(new Wall(j*gridLen, i*gridLen));
-				} else if (this.level[i][j] == 1) {
-					playerArr.push(new Player(j*gridLen, i*gridLen, 1, DIR.right));
-				} else if (this.level[i][j] == 2) {
-					playerArr.push(new Player(j*gridLen, i*gridLen, 2, DIR.left));
 				} else if (this.level[i][j] == "C") {
 					tempArr.add(new Crate(j*gridLen, i*gridLen));
+				} else if (this.level[i][j] == "F") {
+					tempArr.add(new Flag(j*gridLen, i*gridLen, getPlayer(1)));
+				} else if (this.level[i][j] == "G") {
+					tempArr.add(new Goal(j*gridLen, i*gridLen, getPlayer(1)));
+				} else if (this.level[i][j] == "R") {
+					tempArr.add(new Flag(j*gridLen, i*gridLen, getPlayer(2)));
+				} else if (this.level[i][j] == "T") {
+					tempArr.add(new Goal(j*gridLen, i*gridLen, getPlayer(2)));
 				} else {
 					snowArr.add(new Snow(j*gridLen, i*gridLen));
 				}
 			}
 		}
-
-		if (this.mode == "CTF") {
-			// Player 1 goal  + flag that he need to get
-			tempArr.add(new Flag(5*gridLen, 3*gridLen, playerArr[1]));
-			tempArr.add(new Goal(5*gridLen, 5*gridLen, playerArr[0]));
-
-			// Player 2 goal  + flag that he need to get
-			tempArr.add(new Flag(14*gridLen, 3*gridLen, playerArr[0]));
-			tempArr.add(new Goal(14*gridLen, 5*gridLen, playerArr[1]));
-		}
-		
 
 		this.gamestate = GAMESTATE.arena;
 
@@ -120,6 +91,7 @@ class Game {
 		shoot_snd.play();
 	}
 
+	// Head to menu screen
 	toMenuScreen() {
 		document.getElementById("playButton").style.visibility = "visible";
 		document.getElementById("controlButton").style.visibility = "visible";
@@ -178,7 +150,7 @@ class Game {
 		} else if (this.gamestate == GAMESTATE.arena || this.gamestate == GAMESTATE.gameover) {
 			ctx.drawImage(bg, 0, 0);
 
-			
+			 
 			snowArr.update();
 			wallArr.update();
 
@@ -187,8 +159,6 @@ class Game {
 			}
 			tempArr.update();
 			
-			
-
 			// Tick down the timer
 			this.tickTimer++;
 			if (this.tickTimer == 60) {

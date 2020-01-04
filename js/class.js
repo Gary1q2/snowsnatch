@@ -388,13 +388,15 @@ class Flag extends Entity {
 		} else {
 			flagColor = flagBlue_img
 		}
-		super(x, y, 20, 30, flagColor, 1, 1, [0], 0,0);
+		super(x, y, 20, 30, flagColor, 1, 2, [0,1], 0,0);
 		this.dead = false;
 		this.owner = owner;
 		this.acquired = false;
 
 		this.initX = x;
 		this.initY = y;
+
+		this.animDelayTime = 10;
 	}
 	update() {
 		if (!this.acquired) {
@@ -423,6 +425,7 @@ class Flag extends Entity {
 			if (this.owner == i && this.collideWith(i) && !i.dead) {
 				console.log("Player " + i.playerID + " acquired flag... player" +this.owner.playerID + "'s flag gg");
 				this.acquired = true;
+				flagGot_snd.play();
 				break;
 			}
 		}
@@ -430,7 +433,7 @@ class Flag extends Entity {
 
 	draw() {
 		this.drawAnimated(this.frameSeq);
-		this.drawCol();
+		//this.drawCol();
 	}
 
 	respawn() {
@@ -764,7 +767,7 @@ class Player extends Entity {
 			ctx.fillText(this.gun.ammo, this.x+12, this.y);
 		}
 
-		this.drawCol();
+		//this.drawCol();
 	}
 
 	// Update movement based on key presses
