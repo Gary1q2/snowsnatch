@@ -339,8 +339,27 @@ class Bullet extends Entity {
 
 class Explosion extends Bullet {
 	constructor(x, y, owner, dir) {
-		super(x, y, 60, 60, explosion_img, 4, 3, [0,1,2,3,4,5,6,7,8,9], 25, 25, owner, dir);
-		this.dmgTime = 1;     // Initial time that can damage you
+
+		// Realign the explosion depending on missle direction
+		// Realign by 1 grid... :)
+		var tempX = x;
+		var tempY = y;
+
+		if (dir == DIR.right) {
+			tempX += gridLen;
+			tempY += gridLen/2;
+		} else if (dir == DIR.left) {
+			tempY += gridLen/2;
+		} else if (dir == DIR.up) {
+			tempX += gridLen/2;
+		} else {
+			tempX += gridLen/2;
+			tempY += gridLen;
+		}
+
+		super(tempX, tempY, 60, 60, explosion_img, 4, 3, [0,1,2,3,4,5,6,7,8,9], 25, 25, owner, dir);
+		this.dmgTime = 1;     // awInitial time that can damage you
+		console.log("Created @ "+tempX+","+tempY);
 
 		explosion_snd.play();
 	}
@@ -421,14 +440,15 @@ class MineBomb extends Bullet {
 	}
 	// Create explosion
 	explode() {
-		this.dead = true;
+		console.log("WIDTH = "+ this.width);
 		tempArr.add(new Explosion(this.x, this.y, this.owner, this.dir));
+		this.dead = true;
 	}
 }
 
 class Missile extends Bullet {
 	constructor(x, y, owner, dir) {
-		super(x, y, 10, 7, missile_img, 2, 2, [0,1,2,3], 0, 0, owner, dir);
+		super(x, y, 10, 10, missile_img, 2, 2, [0,1,2,3], 0, 0, owner, dir);
 		this.speed = 1;
 		this.maxSpeed = 6;
 		this.setAngle(this.dir);
@@ -485,8 +505,9 @@ class Missile extends Bullet {
 	}
 	// Create explosion
 	explode() {
-		this.dead = true;
+		console.log("exploded at "+this.x+","+this.y);
 		tempArr.add(new Explosion(this.x, this.y, this.owner, this.dir));
+		this.dead = true;
 	}
 
 	// Check if hitting anyone

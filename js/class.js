@@ -632,7 +632,7 @@ class Player extends Entity {
 		this.playerID = playerID;
 
 
-		this.gun = new SnowGun(this);
+		this.gun = new RocketLauncher(this);
 
 
 		this.dead = false;
@@ -771,7 +771,7 @@ class Player extends Entity {
 			ctx.fillText(this.gun.ammo, this.x+12, this.y);
 		}
 
-		//this.drawCol();
+		this.drawCol();
 	}
 
 	// Update movement based on key presses
