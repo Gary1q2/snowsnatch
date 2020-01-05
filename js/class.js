@@ -70,46 +70,24 @@ class Entity {
 
 		ctx.beginPath();
 
-		if (this.angle == DIR.right || this.angle == DIR.left) {
-			x_anchor += this.img.width/this.nCol/2-this.width/2;
-		    y_anchor += this.img.height/this.nRow/2-this.height/2;
+		x_anchor += this.img.width/this.nCol/2-this.width/2;
+	    y_anchor += this.img.height/this.nRow/2-this.height/2;
 
-			// Left vertical
-			ctx.moveTo(x_anchor+0.5, y_anchor);
-			ctx.lineTo(x_anchor+0.5, y_anchor+this.height);
+		// Left vertical
+		ctx.moveTo(x_anchor+0.5, y_anchor);
+		ctx.lineTo(x_anchor+0.5, y_anchor+this.height);
 
-			// Right vertical
-			ctx.moveTo(x_anchor+this.width-0.5, y_anchor);
-			ctx.lineTo(x_anchor+this.width-0.5, y_anchor+this.height);
+		// Right vertical
+		ctx.moveTo(x_anchor+this.width-0.5, y_anchor);
+		ctx.lineTo(x_anchor+this.width-0.5, y_anchor+this.height);
 
-			// Top horizontal
-			ctx.moveTo(x_anchor, y_anchor+0.5);
-			ctx.lineTo(x_anchor+this.width, y_anchor+0.5);
+		// Top horizontal
+		ctx.moveTo(x_anchor, y_anchor+0.5);
+		ctx.lineTo(x_anchor+this.width, y_anchor+0.5);
 
-			// Bottom horizontal
-			ctx.moveTo(x_anchor, y_anchor+this.height-0.5);
-			ctx.lineTo(x_anchor+this.width, y_anchor+this.height-0.5);
-
-		} else if (this.angle == DIR.up || this.angle == DIR.down) {
-			x_anchor += this.img.width/this.nCol/2-this.height/2;
-		    y_anchor += this.img.height/this.nRow/2-this.width/2;
-
-			// Left vertical
-			ctx.moveTo(x_anchor+0.5, y_anchor);
-			ctx.lineTo(x_anchor+0.5, y_anchor+this.width);
-
-			// Right vertical
-			ctx.moveTo(x_anchor+this.height-0.5, y_anchor);
-			ctx.lineTo(x_anchor+this.height-0.5, y_anchor+this.width);
-
-			// Top horizontal
-			ctx.moveTo(x_anchor, y_anchor+0.5);
-			ctx.lineTo(x_anchor+this.height, y_anchor+0.5);
-
-			// Bottom horizontal
-			ctx.moveTo(x_anchor, y_anchor+this.width-0.5);
-			ctx.lineTo(x_anchor+this.height, y_anchor+this.width-0.5);
-		}
+		// Bottom horizontal
+		ctx.moveTo(x_anchor, y_anchor+this.height-0.5);
+		ctx.lineTo(x_anchor+this.width, y_anchor+this.height-0.5);
 
 		ctx.stroke();
 	}
@@ -117,53 +95,34 @@ class Entity {
 
 	// Check collision with another object
 	collideWith(other) {
-		var rect1;
-		if (this.angle == DIR.right || this.angle == DIR.left) {
-			rect1 = {
-				x: this.x-this.centerX+this.img.width/this.nCol/2-this.width/2,
-				y: this.y-this.centerY+this.img.height/this.nRow/2-this.height/2,
-				width: this.width,
-				height: this.height
-			};
-		} else if (this.angle == DIR.up || this.angle == DIR.down) {
-			rect1 = {
-				x: this.x-this.centerX+this.img.width/this.nCol/2-this.height/2,
-				y: this.y-this.centerX+this.img.height/this.nRow/2-this.width/2,
-				width: this.height,
-				height: this.width
-			};
-		}
+		var rect1 = {
+			x: this.x-this.centerX+this.img.width/this.nCol/2-this.width/2,
+			y: this.y-this.centerY+this.img.height/this.nRow/2-this.height/2,
+			width: this.width,
+			height: this.height
+		};
 
-		var rect2;
-		if (other.angle == DIR.right || other.angle == DIR.left) {
-			rect2 = {
-				x: other.x+other.img.width/other.nCol/2-other.width/2,
-				y: other.y+other.img.height/other.nRow/2-other.height/2,
-				width: other.width,
-				height: other.height
-			};
-		} else if (other.angle == DIR.up || other.angle == DIR.down) {
-			rect2 = {
-				x: other.x+other.img.width/other.nCol/2-other.height/2,
-				y: other.y+other.img.height/other.nRow/2-other.width/2,
-				width: other.height,
-				height: other.width
-			};
-		}
+		var rect2 = {
+			x: other.x-other.centerX+other.img.width/other.nCol/2-other.width/2,
+			y: other.y-other.centerY+other.img.height/other.nRow/2-other.height/2,
+			width: other.width,
+			height: other.height
+		};
+
 		return testCollisionRectRect(rect1, rect2);
 	}
 
 	// Check collision with another object @ certain offset
 	collideWithAt(other, xOff, yOff) {
 		var rect1 = {
-			x: this.x + xOff,
-			y: this.y + yOff,
+			x: this.x-this.centerX+this.img.width/this.nCol/2-this.width/2 + xOff,
+			y: this.y-this.centerY+this.img.height/this.nRow/2-this.height/2 + yOff,
 			width: this.width,
 			height: this.height
 		};
 		var rect2 = {
-			x: other.x,
-			y: other.y,
+			x: other.x-other.centerX+other.img.width/other.nCol/2-other.width/2,
+			y: other.y-other.centerY+other.img.height/other.nRow/2-other.height/2,
 			width: other.width,
 			height: other.height
 		};
@@ -181,6 +140,37 @@ class Entity {
 		}
 		return false;
 	}
+
+	// Check collision with the edge
+	checkEdgeCol() {
+		var leftX = this.x-this.centerX+this.img.width/this.nCol/2-this.width/2;
+		var topY = this.y-this.centerY+this.img.height/this.nRow/2-this.height/2;
+		var rightX = leftX + this.width;
+		var bottomY = topY + this.height;
+
+		// Check if any edge is outside the room
+		if (leftX < 0 || topY < 0 || rightX >= numWidth*gridLen || bottomY >= numWidth*gridLen) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	// Check collision with edge at offset
+	checkEdgeColAt(xOff, yOff) {
+		var leftX = this.x-this.centerX+this.img.width/this.nCol/2-this.width/2 + xOff;
+		var topY = this.y-this.centerY+this.img.height/this.nRow/2-this.height/2 + yOff;
+		var rightX = leftX + this.width;
+		var bottomY = topY + this.height;
+
+		// Check if any edge is outside the room
+		if (leftX < 0 || topY < 0 || rightX > numWidth*gridLen || bottomY > numHeight*gridLen) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
 
 	setAngle(angle) {
 		this.angle = angle;
@@ -623,7 +613,7 @@ class Wall extends Entity {
 
 class Player extends Entity {
 	constructor(x, y, playerID, startFace) {
-		super(x, y, 20, 20, peng, 4, 3, [0], 0,0);
+		super(x, y, 14, 14, peng, 4, 3, [0], 0,0);
 
 		this.speed = 1;
 
@@ -777,23 +767,23 @@ class Player extends Entity {
 	// Update movement based on key presses
 	updateMovement() {
 		if (this.leftKey) {
-			if (this.x > 0 && !this.checkWallColAt(-this.speed, 0)) {
+			if (!this.checkEdgeColAt(-this.speed, 0) && !this.checkWallColAt(-this.speed, 0)) {
 				this.x -= this.speed;
 			}
 		}
 		if (this.rightKey) {
-			if (this.x < numWidth*gridLen-gridLen && !this.checkWallColAt(this.speed, 0)) {
+			if (!this.checkEdgeColAt(this.speed, 0) && !this.checkWallColAt(this.speed, 0)) {
 				this.x += this.speed;
 			}
 		}
 		if (this.upKey) {
-			if (this.y > 0 && !this.checkWallColAt(0, -this.speed)) {
+			if (!this.checkEdgeColAt(0, -this.speed) && !this.checkWallColAt(0, -this.speed)) {
 				this.y -= this.speed;
 			}	
 		}
 			
 		if (this.downKey) {
-			if (this.y < numHeight*gridLen-gridLen && !this.checkWallColAt(0, this.speed)) {
+			if (!this.checkEdgeColAt(0, this.speed) && !this.checkWallColAt(0, this.speed)) {
 				this.y += this.speed;
 			}	
 		}
