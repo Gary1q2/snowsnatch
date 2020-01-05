@@ -141,6 +141,19 @@ class Entity {
 		return false;
 	}
 
+	// Check collision with wall objects at offset
+	checkWallColAt(xOff, yOff) {
+		for (var i = 0; i < wallArr.array.length; i++) {
+			if (!wallArr.array[i].dead) {
+				if (this.collideWithAt(wallArr.array[i], xOff, yOff)) {
+					return wallArr.array[i];
+				}
+			}
+		}
+		return false;
+	}
+
+
 	// Check collision with the edge
 	checkEdgeCol() {
 		var leftX = this.x-this.centerX+this.img.width/this.nCol/2-this.width/2;
@@ -149,7 +162,7 @@ class Entity {
 		var bottomY = topY + this.height;
 
 		// Check if any edge is outside the room
-		if (leftX < 0 || topY < 0 || rightX >= numWidth*gridLen || bottomY >= numWidth*gridLen) {
+		if (leftX < 0 || topY < 0 || rightX > numWidth*gridLen || bottomY > numHeight*gridLen) {
 			return true;
 		} else {
 			return false;
@@ -317,7 +330,7 @@ class Confetti extends Entity {
 			imgColor = confettiYellow_img;
 		}
 
-		super(x, y, 10, 10, imgColor, 2, 2, [0,1,2,3], 0, 0);
+		super(x, y, 2, 2, imgColor, 2, 2, [0,1,2,3], 0, 0);
 		this.dead = false;
 
 		this.alignTime = 20;// + Math.random()*20;
@@ -361,8 +374,7 @@ class Confetti extends Entity {
 
 	// Check if out of bounds or hit some terrain
 	checkDead() {
-		if (this.x < 0 || this.x > numWidth*gridLen-gridLen ||
-		      this.y < 0 || this.y > numHeight*gridLen-gridLen) {
+		if (this.checkEdgeCol()) {
 			this.dead = true;
 		}
 	}
@@ -622,7 +634,7 @@ class Player extends Entity {
 		this.playerID = playerID;
 
 
-		this.gun = new RocketLauncher(this);
+		this.gun = new SnowGun(this);
 
 
 		this.dead = false;
@@ -831,18 +843,6 @@ class Player extends Entity {
 
 		die_snd.play();
 		die2_snd.play();
-	}
-
-	// Check collision with wall objects at offset
-	checkWallColAt(xOff, yOff) {
-		for (var i = 0; i < wallArr.array.length; i++) {
-			if (!wallArr.array[i].dead) {
-				if (this.collideWithAt(wallArr.array[i], xOff, yOff)) {
-					return wallArr.array[i];
-				}
-			}
-		}
-		return false;
 	}
 
 	// Return the current keys pressed

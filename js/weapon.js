@@ -520,9 +520,7 @@ class Missile extends Bullet {
 	}
 	// Check if out of bounds or hit some terrain
 	checkDead() {
-		if (this.x < 0 || this.x > numWidth*gridLen-gridLen ||
-		      this.y < 0 || this.y > numHeight*gridLen-gridLen ||
-		        this.checkWallCol()) {
+		if (this.checkEdgeCol() || this.checkWallCol()) {
 			this.explode();
 		}
 	}
@@ -595,20 +593,19 @@ class Pellet extends Bullet {
 	// Check if out of bounds or hit some terrain
 	checkDead() {
 		var wallHit = this.checkWallCol();
-		if (this.x < 0 || this.x > numWidth*gridLen-gridLen ||
-		      this.y < 0 || this.y > numHeight*gridLen-gridLen ||
-		        wallHit) {
-			if (this.deadTimer == -1) {
-				this.dead = true;
-			} else {
-				this.moveTimer = 0;
-			}
+		if (this.checkEdgeCol() || wallHit) {
 
 			// Damage wall and REMOVE pellet instantly to prevent wall instagib
 			if (wallHit) {
 				wallHit.damageWall(1);
 				this.dead = true;
 			}
+
+			if (this.deadTime == -1) {
+				this.dead = true;
+			} else {
+				this.moveTimer = 0;
+			}	
 		}
 	}
 
@@ -725,6 +722,8 @@ class Snowball extends Bullet {
 			this.setAngle(DIR.right);
 			this.drawAnimated(this.frameSeq);
 		}
+
+		this.drawCol();
 	}
 
 	updateMovement() {
@@ -746,9 +745,7 @@ class Snowball extends Bullet {
 	// Check if out of bounds or hit some terrain
 	checkDead() {
 		var wallHit = this.checkWallCol();
-		if (this.x < 0 || this.x > numWidth*gridLen-gridLen ||
-		      this.y < 0 || this.y > numHeight*gridLen-gridLen ||
-		        wallHit) {
+		if (this.checkEdgeCol() || wallHit) {
 			if (wallHit) {
 				wallHit.damageWall(1);
 			}
