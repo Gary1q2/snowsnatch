@@ -622,7 +622,18 @@ class Pellet extends Bullet {
 
 class LaserBlast extends Bullet {
 	constructor(x, y, owner, dir) {
-		super(x, y, 20, 8, laserBeam_img, 2, 3, [0,1,2], 0, 0, owner, dir);
+
+		// Setting rectangular hitbox depending on direction of player
+		var wide;
+		var tall;
+		if (dir == DIR.left || dir == DIR.right) {
+			wide = 20;
+			tall = 8;
+		} else {
+			wide = 8;
+			tall = 20;
+		}
+		super(x, y, wide, tall, laserBeam_img, 2, 3, [0,1,2], 0, 0, owner, dir);
 		this.aliveTimer = 30;  // How long to stay alive for
 		this.hurtTimer = 1; // How long can deal damage
 
@@ -633,6 +644,7 @@ class LaserBlast extends Bullet {
 		this.checkHit();
 		this.tickTimer();
 		this.draw();
+		this.drawCol();
 	}
 
 	// Count down until the beam disappears
