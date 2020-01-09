@@ -245,6 +245,10 @@ class Smoke extends Entity {
 		if (this.finishAnim) {
 			this.dead = true;
 		}
+
+		if (debug) {
+			this.drawCol();
+		}
 	}
 }
 
@@ -288,6 +292,10 @@ class Shell extends Entity {
 			if (this.deadTime == 0) {
 				this.dead = true;
 			}
+		}
+
+		if (debug) {
+			this.drawCol();
 		}
 	}
 	updateMovement() {
@@ -350,6 +358,9 @@ class Confetti extends Entity {
 		this.checkDead();
 
 		this.draw();
+		if (debug) {
+			this.drawCol();
+		}
 
 		if (this.alignTime > 0) {
 			this.alignTime--;
@@ -409,7 +420,9 @@ class Flag extends Entity {
 		}
 		
 		this.draw()
-		this.drawCol();
+		if (debug) {
+			this.drawCol();
+		}
 	}
 
 	updateMovement() {
@@ -492,6 +505,9 @@ class Crate extends Entity {
 	update() {
 		this.checkGot();
 		this.draw();
+		if (debug) {
+			this.drawCol();
+		}
 
 		if (this.waitTimer > 0) {
 			this.waitTimer--;
@@ -558,6 +574,9 @@ class Goal extends Entity {
 	update() {
 		this.checkGoal();
 		this.draw();
+		if (debug) {
+			this.drawCol();
+		}
 	}
 
 	// Check if flag is returned to goal
@@ -671,6 +690,9 @@ class Player extends Entity {
 			this.updateMovement();
 		}
 		this.draw();
+		if (debug) {
+			this.drawCol();
+		}
 
 		if (!this.dead) {
 			this.gun.update();

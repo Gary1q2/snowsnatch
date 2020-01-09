@@ -48,7 +48,7 @@ class Gun extends Entity {
 
 class Mine extends Gun {
 	constructor(player) {
-		super(0, 100, 20, 20, mine_img, 3, 3, [0], 0, 0, player);
+		super(0, 100, 8, 8, mine_img, 3, 3, [0], 0, 0, player);
 		this.gunID = 6;
 
 		this.shootTime = 1;
@@ -61,6 +61,9 @@ class Mine extends Gun {
 		this.updateMovement();
 		this.checkAmmo();
 		this.draw([8]);
+		if (debug) {
+			this.drawCol();
+		}
 	}
 
 	// Draw the mine on the player 
@@ -88,7 +91,7 @@ class Mine extends Gun {
 
 class RocketLauncher extends Gun {
 	constructor(player) {
-		super(0, 100, 22, 20, rocketLauncher_img, 1, 2, [0], 0, 0, player);
+		super(0, 100, 8, 8, rocketLauncher_img, 1, 2, [0], 0, 0, player);
 		this.gunID = 5;
  
 		this.shootTime = 80;
@@ -98,6 +101,9 @@ class RocketLauncher extends Gun {
 		this.updateMovement();
 		this.checkAmmo();
 		this.draw([1,1,1,1,1,1,1,1,1,1,1,1]);
+		if (debug) {
+			this.drawCol();
+		}
 	}	
 
 	// Shoot the gun (create rocket)
@@ -115,7 +121,7 @@ class RocketLauncher extends Gun {
 
 class Uzi extends Gun {
 	constructor(player) {
-		super(0, 100, 20, 20, uzi_img, 2, 2, [0], 0, 0, player);
+		super(0, 100, 8, 8, uzi_img, 2, 2, [0], 0, 0, player);
 		this.gunID = 4;
  
 		this.shootTime = 15;
@@ -125,6 +131,9 @@ class Uzi extends Gun {
 		this.updateMovement();
 		this.checkAmmo();
 		this.draw([2,1]);
+		if (debug) {
+			this.drawCol();
+		}
 	}	
 
 
@@ -149,7 +158,7 @@ class Uzi extends Gun {
 
 class Shotgun extends Gun {
 	constructor(player) {
-		super(0, 100, 20, 20, shotgun_img, 2, 3, [0], 0, 0, player);
+		super(0, 100, 8, 8, shotgun_img, 2, 3, [0], 0, 0, player);
 		this.gunID = 3;
 		this.shootTime = 60;
 		this.ammo = 10;
@@ -159,6 +168,9 @@ class Shotgun extends Gun {
 		this.updateMovement();
 		this.checkAmmo();
 		this.draw();
+		if (debug) {
+			this.drawCol();
+		}
 	}	
 	draw() {
 		this.setAngle(this.player.angle);
@@ -197,7 +209,7 @@ class Shotgun extends Gun {
 
 class SnowGun extends Gun {
 	constructor(player) {
-		super(0, 100, 20, 20, gunImg, 2, 2, [0], 0,0, player);
+		super(0, 100, 8, 8, gunImg, 2, 2, [0], 0,0, player);
 		this.gunID = 1;
 		this.shootTime = 30;
 		this.shooting = false;
@@ -206,6 +218,9 @@ class SnowGun extends Gun {
 	update() {
 		this.updateMovement();
 		this.draw([2,1]);
+		if (debug) {
+			this.drawCol();
+		}
 	}	
 
 
@@ -223,7 +238,7 @@ class SnowGun extends Gun {
 	 
 class LaserGun extends Gun {
 	constructor(player) {
-		super(0, 100, 20, 20, laserGun_img, 2, 2, [0], 0, 0, player);
+		super(0, 100, 8, 8, laserGun_img, 2, 2, [0], 0, 0, player);
 		this.gunID = 2;
 		this.shootTime = 90;
 
@@ -237,6 +252,9 @@ class LaserGun extends Gun {
 		this.updateMovement();
 		this.checkAmmo();
 		this.draw();
+		if (debug) {
+			this.drawCol();
+		}
 		this.chargeGun();
 	}
 
@@ -336,6 +354,9 @@ class Bullet extends Entity {
 	}
 	draw() {
 		this.drawAnimated(this.frameSeq);
+		if (debug) {
+			this.drawCol();
+		}
 	}
 }
 
@@ -374,8 +395,10 @@ class Explosion extends Bullet {
 		}
 		this.tickTimer();
 
-		this.drawCol();
 		this.draw();
+		if (debug) {
+			this.drawCol();
+		}
 
 		if (this.finishAnim) {
 			this.dead = true;
@@ -418,7 +441,9 @@ class MineBomb extends Bullet {
 			this.checkHit();
 		}
 		this.draw();
-		this.drawCol();
+		if (debug) {
+			this.drawCol();
+		}
 	}
 
 	draw() {
@@ -471,7 +496,9 @@ class Missile extends Bullet {
 		this.checkHit();
 		this.checkDead();
 		this.draw();
-		this.drawCol();
+		if (debug) {
+			this.drawCol();
+		}
 
 		if (this.delayBeforeSpeed <= 0) {
 			if (this.ticker > 0) {
@@ -560,6 +587,9 @@ class Pellet extends Bullet {
 		this.checkDead();
 		this.checkHit();
 		this.draw();
+		if (debug) {
+			this.drawCol();
+		}
 	}
 	draw() {
 		this.drawAnimated(this.frameSeq);
@@ -647,7 +677,9 @@ class LaserBlast extends Bullet {
 		this.checkHit();
 		this.tickTimer();
 		this.draw();
-		this.drawCol();
+		if (debug) {
+			this.drawCol();
+		}
 	}
 
 	// Count down until the beam disappears
@@ -709,7 +741,9 @@ class Snowball extends Bullet {
 			this.checkDead();
 		}
 		if (!this.dead) {
-			this.draw();
+			if (debug) {
+				this.drawCol();
+			}
 		}
 	}
 

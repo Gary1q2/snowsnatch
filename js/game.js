@@ -141,6 +141,7 @@ class Game {
 				ctx.fillRect(190, 160, 70, 40);
 			}
 			ctx.fillStyle = "black";
+			ctx.font = "20px '8BITWONDER'";
 			ctx.fillText("DM", 190, 150);
 			ctx.fillText("CTF", 270, 150);
 			ctx.fillText("Play", 210, 190);
@@ -221,7 +222,7 @@ class Game {
 			// Draw score for CTF
 			if (this.mode == "CTF") {
 				ctx.save();
-				ctx.font = "20px 8BITWONDER";
+				ctx.font = "15px '8BITWONDER'";
 				ctx.fillText("P1: "+playerArr[0].score+"   P2: "+playerArr[1].score, 150, 20);
 				ctx.restore();
 			}
@@ -243,7 +244,7 @@ class Game {
 				ctx.drawImage(winBack_img, 140, 80);
 
 				ctx.save();
-				ctx.font = "bold 15px 8BITWONDER";
+				ctx.font = "15px 8BITWONDER";
 				if (this.winner == "Stalemate") {
 					ctx.fillText("Stalemate!", 150, 110);
 				} else {

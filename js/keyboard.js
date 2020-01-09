@@ -33,6 +33,11 @@ var KeyCode = {
 document.onkeydown = function(event) {
 	switch (event.keyCode) {
 
+		// Press number 0 for debug mode
+		case 48:
+			debug = !debug;
+			break;
+
 		// Press left
 		case KeyCode.left:
 			Keys.left = true;

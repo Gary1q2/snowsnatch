@@ -29,11 +29,6 @@
 	src: url('./8-BITWONDER.TTF');
 }
 
-#test {
-	font-family: '8BITWONDER';
-	font-size: 60px;
-}
-
 #timer {
 	position: absolute;
 	font-size: 60px;
