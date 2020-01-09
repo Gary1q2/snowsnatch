@@ -409,6 +409,7 @@ class Flag extends Entity {
 		}
 		
 		this.draw()
+		this.drawCol();
 	}
 
 	updateMovement() {
@@ -562,12 +563,13 @@ class Goal extends Entity {
 	// Check if flag is returned to goal
 	checkGoal() {
 		for (var i of tempArr.array) {
-			if (i instanceof Flag) {
-				if (this.owner.playerID == i.owner.playerID && i.acquired && this.collideWith(i)) {
-					this.giveGoal(i);
+			for (var j of i) {
+				if (j instanceof Flag) {
+					if (this.owner.playerID == j.owner.playerID && j.acquired && this.collideWith(j.owner)) {
+						this.giveGoal(j);
+					}
 				}
 			}
-
 		}
 	}
 
