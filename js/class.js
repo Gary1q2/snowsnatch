@@ -634,7 +634,7 @@ class Player extends Entity {
 		this.playerID = playerID;
 
 
-		this.gun = new LaserGun(this);
+		this.gun = new Uzi(this);
 
 
 		this.dead = false;
@@ -865,6 +865,98 @@ class Player extends Entity {
 		this.changeSprite(peng, 20, 20, 4, 3, [0], 0,0);
 	}
 }
+
+
+// Array containing all the temp objects in the game with layers
+class ObjectArrayLayered {
+	constructor(layers) {
+		this.array = [];
+		this.numLayer = layers;
+
+		for (var i = 0; i < this.numLayer; i++) {
+			this.array.push([]);
+		}
+	}
+
+	// Update and draw all objects in certain layer
+	updateLayer(layer) {
+		for (var i = 0; i < this.array[layer].length; i++) {
+			if (!this.array[layer][i].dead) {
+				this.array[layer][i].update();
+			}
+		}
+	}
+
+	// Add entity to layer in array
+	add(entity) {
+
+		var layer = this.determineLayer(entity);
+		//console.log("put " + entity.constructor.name + " in layer " + layer);
+
+		for (var i = 0; i < this.array[layer].length; i++) {
+			if (this.array[layer][i].dead) {
+				this.array[layer][i] = entity;
+				return;
+			}
+		}
+		this.array[layer].push(entity);
+	}
+
+	// Determines what layer this entity belongs in
+	determineLayer(entity) {
+		switch(entity.constructor.name) {
+			//case "Snow":
+			//	return 0;
+
+			case "Goal":
+				return 0;
+
+			case "Crate":
+				return 1;
+
+			//case "Wall":
+			//	return 3;
+
+			//	return 4;
+
+			case "Shell":
+			case "Flag":
+			case "MineBomb":
+				return 2;
+
+			//case "Player":
+			//	return 6;
+
+
+			case "Bullet":
+			case "Missile":
+			case "Pellet":
+			case "LaserBlast":
+			case "Snowball":
+				return 3;
+
+			case "Gun":
+			case "RocketLauncher":
+			case "Uzi":
+			case "Shotgun":
+			case "SnowGun":
+			case "LaserGun":
+			case "Mine":
+				return 4;
+
+			case "Smoke":
+			case "Explosion":
+			case "Confetti":
+				return 5;
+		}
+	}
+
+	// Return size of array at certain layer
+	size(layer) {
+		return this.array[layer].length;
+	}
+}
+
 
 // Array containing all the objects in the game
 class ObjectArray {

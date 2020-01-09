@@ -604,7 +604,7 @@ class Pellet extends Bullet {
 				this.dead = true;
 			}
 
-			if (this.deadTime == -1) {
+			if (this.deadTimer == -1) {
 				this.dead = true;
 			} else {
 				this.moveTimer = 0;

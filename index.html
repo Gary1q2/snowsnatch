@@ -67,15 +67,17 @@ const GAMESTATE = {
 }
 
 
+
 var gridLen = 20;          // Each grid 20 pixels wide/high
 var numWidth = canvas.width/gridLen;   // Number of grids horizontal
 var numHeight = canvas.height/gridLen;  // Number of grids vertical
 
-var playerArr = [];               // Array of players
-var tempArr = new ObjectArray();  // Array of temporary objects eg. bullets
-var wallArr = new ObjectArray();  // Array for walls
-var snowArr = new ObjectArray();  // Array for snow piles
+var playerArr;  // Array of players
+var tempArr;    // Array of temporary objects eg. bullets
+var wallArr;    // Array for walls
+var snowArr;    // Array for snow piles
 var game;
+
 
 window.onload = function() {
 	game = new Game();

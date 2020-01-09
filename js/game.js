@@ -54,7 +54,7 @@ class Game {
 
 		// Reset these variables
 		playerArr = [];               // Array of players
-		tempArr = new ObjectArray();  // Array of temporary objects eg. bullets
+		tempArr = new ObjectArrayLayered(6);  // Array of temporary objects eg. bullets
 		wallArr = new ObjectArray();  // Array for walls
 		snowArr = new ObjectArray();  // Array for snow piles
 		this.winner = 0;
@@ -193,12 +193,23 @@ class Game {
 			ctx.drawImage(bg, 0, 0);
  
 			snowArr.update();
-			wallArr.update();
+
+			tempArr.updateLayer(0);
+			tempArr.updateLayer(1);
+
+
+
+			tempArr.updateLayer(2);
 
 			for (var i = 0; i < playerArr.length; i++) {
 				playerArr[i].update();
 			}
-			tempArr.update();
+			
+			wallArr.update();
+
+			tempArr.updateLayer(3);
+			tempArr.updateLayer(4);
+			tempArr.updateLayer(5);
 			
 
 			// Tick down and display the timer
