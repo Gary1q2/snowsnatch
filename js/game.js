@@ -42,7 +42,7 @@ class Game {
 		document.getElementById("backToMenuButton").style.visibility = "visible";
 		this.gamestate = GAMESTATE.controls;	
 
-		shoot_snd.play();
+		playSound(shoot_snd);
 	}
 
 	// Head to arena screen
@@ -65,8 +65,8 @@ class Game {
 
 		this.gamestate = GAMESTATE.arena;
 		this.fightMsgTimer = 100;
-		readFight_snd.play();
-		shoot_snd.play();
+		playSound(readFight_snd);
+		playSound(shoot_snd);
 	}
 
 
@@ -80,7 +80,7 @@ class Game {
 
 		this.gamestate = GAMESTATE.menu;
 
-		shoot_snd.play();
+		playSound(shoot_snd);
 	}
 
 	update() {
@@ -105,11 +105,11 @@ class Game {
 			}
 			if (Keys.down && this.optionKey != "control") {
 				this.optionKey = "control";
-				shoot_snd.play();
+				playSound(shoot_snd);
 			}
 			if (Keys.up && this.optionKey != "play") {
 				this.optionKey = "play";
-				shoot_snd.play();
+				playSound(shoot_snd);
 			}
 
 		// Selection screen
@@ -151,22 +151,22 @@ class Game {
 			if (this.optionKey == "mode") {
 				if (Keys.left && this.mode != "DM") {
 					this.mode = "DM";
-					shoot_snd.play();
+					playSound(shoot_snd);
 				}
 				if (Keys.right && this.mode != "CTF") {
 					this.mode = "CTF";
-					shoot_snd.play();
+					playSound(shoot_snd);
 				}
 			}
 
 			// Switch from modes to play
 			if (Keys.down && this.optionKey != "play") {
 				this.optionKey = "play";
-				shoot_snd.play();
+				playSound(shoot_snd);
 			}
 			if (Keys.up && this.optionKey != "mode") {
 				this.optionKey = "mode";
-				shoot_snd.play();
+				playSound(shoot_snd);
 			}
 
 			
@@ -220,7 +220,7 @@ class Game {
 			if (this.winner == 0) {
 				this.winner = this.checkWinner();
 				if (this.winner != 0) {
-					win_snd.play();
+					playSound(win_snd);
 					for (var i = 0; i < 200; i++) {
 						tempArr.add(new Confetti(180, 180, 5, 9));
 					}

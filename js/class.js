@@ -427,7 +427,7 @@ class Flag extends Entity {
 			if (this.owner == i && this.collideWith(i) && !i.dead) {
 				console.log("Player " + i.playerID + " acquired flag... player" +this.owner.playerID + "'s flag gg");
 				this.acquired = true;
-				flagGot_snd.play();
+				playSound(flagGot_snd);
 				break;
 			}
 		}
@@ -471,7 +471,7 @@ class Snow extends Entity {
 			if (this.collideWith(i)) {
 				if (!this.breaking) {
 					this.breaking = true;
-					snowbreak_snd.play();
+					playSound(snowbreak_snd);
 				}
 				break;
 			}
@@ -516,7 +516,7 @@ class Crate extends Entity {
 			if (this.collideWith(i) && !this.dead && !this.broken) {
 				this.broken = true;
 				this.waitTimer = this.waitTime;
-				crateOpen_snd.play();
+				playSound(crateOpen_snd);
 
 				// Give random gun
 				var rand = Math.random();
@@ -578,7 +578,7 @@ class Goal extends Entity {
 		}
 		this.owner.score++;
 		flag.respawn();
-		win_snd.play();
+		playSound(win_snd);
 		console.log("winner");
 	}
 
@@ -614,9 +614,9 @@ class Wall extends Entity {
 
 	// Damage the wall
 	damageWall(dmg) {
-		iceCrack_snd.play();
+		playSound(iceCrack_snd);
 		if (this.hp <= dmg) {
-			wallBreak_snd.play();
+			playSound(wallBreak_snd);
 		}
 		this.hp -= dmg;
 	}
@@ -634,7 +634,7 @@ class Player extends Entity {
 		this.playerID = playerID;
 
 
-		this.gun = new LaserGun(this);
+		this.gun = new SnowGun(this);
 
 
 		this.dead = false;
@@ -661,7 +661,6 @@ class Player extends Entity {
 		this.respawnTime = 100;
 
 		this.score = 0;
-
 	}
 	update() {
 		if (!this.dead && this.canMoveTimer <= 0) {
@@ -772,8 +771,6 @@ class Player extends Entity {
 			ctx.drawImage(ammo_img, this.x, this.y-10);
 			ctx.fillText(this.gun.ammo, this.x+12, this.y);
 		}
-
-		this.drawCol();
 	}
 
 	// Update movement based on key presses
@@ -841,8 +838,8 @@ class Player extends Entity {
 		this.animDelay = 0;
 		this.changeSprite(playerDie_img, 60, 60, 3, 3, [0], 20, 20);
 
-		die_snd.play();
-		die2_snd.play();
+		playSound(die_snd);
+		playSound(die2_snd);
 	}
 
 	// Return the current keys pressed

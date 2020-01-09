@@ -1,3 +1,10 @@
+// Clones audio node and plays the sound
+function playSound(audioNode) {
+	var clone = audioNode.cloneNode(true);
+	clone.play();
+}
+
+
 // Checks if two rectangles have a collision (true or false)
 function testCollisionRectRect(rect1, rect2) {
 	return rect1.x < rect2.x + rect2.width 

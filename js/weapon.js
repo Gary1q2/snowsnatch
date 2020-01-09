@@ -82,7 +82,7 @@ class Mine extends Gun {
 	shoot() {
 		this.shooting = true;
 		tempArr.add(new MineBomb(this.x, this.y, this.player.playerID));
-		mineDrop_snd.play();
+		playSound(mineDrop_snd);
 	}
 }
 
@@ -134,7 +134,7 @@ class Uzi extends Gun {
 		console.log("smg ammo = " + this.ammo);
 		tempArr.add(new Pellet(this.x, this.y, this.player.playerID, this.player.angle, -1, -1, 2, 10));
 		
-		uziShoot_snd.play();
+		playSound(uziShoot_snd);
 
 		tempArr.add(new Shell(this.x, this.y, shell_img, this.player.angle));
 
@@ -168,7 +168,7 @@ class Shotgun extends Gun {
 			this.drawAnimated([1,2,4,3,4,0]);
 			if (this.finishAnim) {
 				this.shooting = false;
-				shotgunReload_snd.play();
+				playSound(shotgunReload_snd);
 				tempArr.add(new Shell(this.x, this.y, shellShotgun_img, this.player.angle));
 				this.ammo--;
 			}
@@ -186,7 +186,7 @@ class Shotgun extends Gun {
 		for (var i = 0; i < 6; i++) {
 			tempArr.add(new Pellet(this.x, this.y, this.player.playerID, this.player.angle, 6+Math.floor(Math.random()*10), 17, 5, 40));
 		}
-		shotgunShoot_snd.play();
+		playSound(shotgunShoot_snd);
 
 
 		// Prepare for new animation
@@ -213,7 +213,7 @@ class SnowGun extends Gun {
 	shoot() {
 		this.shooting = true;
 		tempArr.add(new Snowball(this.x, this.y, this.player.playerID, this.player.angle));
-		shoot_snd.play();
+		playSound(shoot_snd);
 
 		// Prepare for new animation
 		this.animIndex = 0;
@@ -269,7 +269,7 @@ class LaserGun extends Gun {
 						tempArr.add(new LaserBlast(this.x, i, this.player.playerID, this.player.angle));
 					}
 				}
-				lasershoot_snd.play();
+				playSound(lasershoot_snd);
 
 				// Prepare for new animation
 				this.animIndex = 0;
@@ -319,7 +319,7 @@ class LaserGun extends Gun {
 	shoot() {
 		if (this.chargeTimer == 0) {
 			this.chargeTimer = this.chargeTime;
-			lasercharge_snd.play();
+			playSound(lasercharge_snd);
 		}
 	}
 }
@@ -361,7 +361,7 @@ class Explosion extends Bullet {
 		this.dmgTime = 1;     // awInitial time that can damage you
 		console.log("Created @ "+tempX+","+tempY);
 
-		explosion_snd.play();
+		playSound(explosion_snd);
 	}
 	update() {
 
@@ -461,7 +461,7 @@ class Missile extends Bullet {
 
 		this.smokeTicker = 5;
 
-		missileLaunch_snd.play();
+		playSound(missileLaunch_snd);
 	}
 	update() {
 		this.updateMovement();
@@ -779,7 +779,7 @@ class Snowball extends Bullet {
 	// Snowball break apart after hitting object
 	break() {
 		this.breaking = true;
-		snowbreak_snd.play();
+		playSound(snowbreak_snd);
 
 		// Prepare for new animation
 		this.animIndex = 0;
