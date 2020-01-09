@@ -300,14 +300,17 @@ class LaserGun extends Gun {
 			var beamWidth = 4;
 			var beamDist = 400;
 
+			var anchorX = this.player.x-this.player.centerX+this.player.img.width/this.player.nCol/2-this.player.width/2;
+			var anchorY = this.player.y-this.player.centerY+this.player.img.height/this.player.nRow/2-this.player.height/2;
+
 			if (this.player.angle == DIR.left) {
-				ctx.fillRect(this.player.x+this.player.width/2, this.player.y+this.player.height/2-beamWidth/2, -beamDist, beamWidth);
+				ctx.fillRect(anchorX+this.player.width/2, anchorY+this.player.height/2-beamWidth/2, -beamDist, beamWidth);
 			} else if (this.player.angle == DIR.right) {
-				ctx.fillRect(this.player.x+this.player.width/2, this.player.y+this.player.height/2-beamWidth/2, beamDist, beamWidth);
+				ctx.fillRect(anchorX+this.player.width/2, anchorY+this.player.height/2-beamWidth/2, beamDist, beamWidth);
 			} else if (this.player.angle == DIR.up) {
-				ctx.fillRect(this.player.x+this.player.width/2-beamWidth/2, this.player.y+this.player.height/2, beamWidth, -beamDist);
-			} else if (this.player.angle == DIR.down) {
-				ctx.fillRect(this.player.x+this.player.width/2-beamWidth/2, this.player.y+this.player.height/2, beamWidth, beamDist);
+				ctx.fillRect(anchorX+this.player.width/2-beamWidth/2, anchorY+this.player.height/2, beamWidth, -beamDist);
+			} else {
+				ctx.fillRect(anchorX+this.player.width/2-beamWidth/2, anchorY+this.player.height/2, beamWidth, beamDist);
 			}
 
 			ctx.fillStyle = "black";
