@@ -207,7 +207,7 @@ class Entity {
 
 class Smoke extends Entity {
 	constructor(x, y, dir) {
-		super(x, y, 20, 20, smoke_img, 2, 3, [0,1,2,3,4,5], 0, 0);
+		super(x, y, 20, 20, smoke_img, 3, 3, [0,1,2,3,4,5], 0, 0);
 		this.animDelayTime = 8;
 		this.dead = false;
 
@@ -615,6 +615,8 @@ class Wall extends Entity {
 		this.dead = false;
 		this.maxHp = 10;
 		this.hp = this.maxHp;
+
+		this.invuln = false;
 	}
 
 	update() {
@@ -624,7 +626,7 @@ class Wall extends Entity {
 	draw() {
 		if (this.hp > 0) {		
 			var temp = this.maxHp-this.hp;
-			this.drawAnimated([temp]);
+			this.drawAnimated([Math.ceil(temp)]);
 		} else {
 			this.drawAnimated([10,11,12,13]);
 			if (this.finishAnim) {
@@ -647,13 +649,13 @@ class Wall extends Entity {
 class Player extends Entity {
 	constructor(x, y, playerID, startFace) {
 		var pengColor;
-		if (playerID == 1) {
+		//if (playerID == 1) {
 			pengColor = peng;
-		} else {
-			pengColor = peng2;
-		}
+		//} else {
+		//	pengColor = peng2;
+		//}
 
-		super(x, y, 14, 14, pengColor, 4, 3, [0], 0,0);
+		super(x, y, 14, 14, pengColor, 1, 3, [0,1], 0,0);
 
 		this.speed = 1;
 
@@ -752,6 +754,7 @@ class Player extends Entity {
 				// Prepare for new animation
 				this.animIndex = 0;
 				this.animDelay = 0;
+				this.animDelayTime = 6;
 			}
 		} else {
 			this.moving = false;
@@ -785,11 +788,11 @@ class Player extends Entity {
 
 			// Walking animation
 			if (this.moving) {
-				this.drawAnimated([0, 9]);
+				this.drawAnimated([0, 2]);
 
 			// Idle animation
 			} else {
-				this.animIndex = 0;
+				this.animDelayTime = 20;
 				this.drawAnimated(this.frameSeq);
 			}
 
@@ -856,6 +859,7 @@ class Player extends Entity {
 	die(bulletDir) {
 		this.dead = true;
 		this.dying = true;
+		this.animDelayTime = 4;
 
 		// Respawn only if CTF
 		if (game.mode == "CTF") {
@@ -881,12 +885,12 @@ class Player extends Entity {
 
 		// Player 1 vs player 2
 		var temp;
-		if (this.playerID == 1) {
+		//if (this.playerID == 1) {
 			temp = playerDie_img;
-		} else {
-			temp = player2Die_img;
-		}
-		this.changeSprite(temp, 60, 60, 3, 3, [0], 20, 20);
+		//} else {
+		//	temp = player2Die_img;
+		//}
+		this.changeSprite(temp, 14, 14, 3, 3, [0], 20, 20);
 
 		playSound(die_snd);
 		playSound(die2_snd);
@@ -913,12 +917,12 @@ class Player extends Entity {
 		this.y = this.initY;
 
 		var temp;
-		if (this.playerID == 1) {
+		//if (this.playerID == 1) {
 			temp = peng;
-		} else {
-			temp = peng2;
-		}
-		this.changeSprite(temp, 20, 20, 4, 3, [0], 0,0);
+		//} else {
+		//	temp = peng2;
+		//}
+		this.changeSprite(temp, 14, 14, 1, 3, [0, 1], 0,0);
 	}
 }
 

@@ -91,6 +91,12 @@ goal_img.src = "img/goal.png";
 var selectionScreen_img = new Image();
 selectionScreen_img.src = "img/selectionScreen.png";
 
+var menuButton_img = new Image();
+menuButton_img.src = "img/menuButton.png";
+var menuButtonFlash_img = new Image();
+menuButtonFlash_img.src = "img/menuButtonFlash.png";
+
+
 // Sounds
 var shoot_snd = document.createElement("audio");
 shoot_snd.src = "sound/shoot.mp3";
@@ -135,3 +141,7 @@ mineDrop_snd.src = "sound/mineDrop.mp3";
 
 var flagGot_snd = document.createElement("audio");
 flagGot_snd.src = "sound/flagGot.mp3";
+
+
+var arenaBGM_snd = document.createElement("audio");
+arenaBGM_snd.src = "sound/arenaBGM.mp3";

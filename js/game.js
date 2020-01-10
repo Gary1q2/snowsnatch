@@ -81,6 +81,8 @@ class Game {
 		this.fightMsgTimer = 100;
 		playSound(readFight_snd);
 		playSound(shoot_snd);
+
+		playSound(arenaBGM_snd);
 	}
 
 	// Head to DM screen
@@ -153,23 +155,23 @@ class Game {
 		ctx.fillStyle = "#717e82"
 		if (this.optionKey == "mode") {
 			if (this.mode == "DM") {
-				ctx.fillRect(170, 120, 80, 40);
+				ctx.fillRect(160, 120, 100, 40);
 			} else {
-				ctx.fillRect(250, 120, 80, 40);
+				ctx.fillRect(260, 120, 130, 40);
 			}				
 		} else {
 			ctx.beginPath();
 			if (this.mode == "DM") {
-				ctx.rect(170, 120, 80, 40);
+				ctx.rect(160, 120, 100, 40);
 			} else {
-				ctx.rect(250, 120, 80, 40);
+				ctx.rect(260, 120, 140, 40);
 			}					
 			ctx.stroke();
 		}
 
 
 		if (this.optionKey == "play") {
-			ctx.fillRect(190, 160, 70, 40);
+			ctx.fillRect(205, 155, 50, 40);
 		}
 		ctx.restore();
 
@@ -211,7 +213,6 @@ class Game {
 	// Update the control screen loop
 	updateControl() {
 		ctx.drawImage(controlBack_img, 0, 0);
-		ctx.drawImage(arrow_img, 0, 78);
 
 		// Press button to go back to menu
 		if (Keys.space && !this.holdSpace) {
@@ -219,9 +220,8 @@ class Game {
 		}
 	}
 
-	// Update the deathmatch game loop
-	updateDM() {
-
+	// Main arena update
+	updateArena() {
 		// Update and draw EVERYTHING
 		ctx.drawImage(bg, 0, 0);
 		snowArr.update();
@@ -242,18 +242,12 @@ class Game {
 		
 		tempArr.renderHUD();
 
-
-
-
 		// Tick down and display the timer
 		this.displayTimer();
 
 		// Tick down and display the "Ready, fight!" message
 		this.displayFightMsg();
 
-
-
- 
 		// Check if anybody has won yet - if yes, set to gameover
 		if (this.winner == -1) {
 			this.winner = this.checkWinner();
@@ -265,6 +259,11 @@ class Game {
 				this.gameover = true;
 			}
 		}
+	}
+
+	// Update the deathmatch game loop
+	updateDM() {
+		this.updateArena();
 
 		// Display gameover screen
 		if (this.gameover) {
@@ -290,48 +289,10 @@ class Game {
 
 	// Update the capture the flag game loop
 	updateCTF() {
-		ctx.drawImage(bg, 0, 0);
-
-		snowArr.update();
-
-		tempArr.updateLayer(0);
-		tempArr.updateLayer(1);
-		tempArr.updateLayer(2);
-
-		for (var i = 0; i < playerArr.length; i++) {
-			playerArr[i].update();
-		}
-
-		wallArr.update();
-
-		tempArr.updateLayer(3);
-		tempArr.updateLayer(4);
-		tempArr.updateLayer(5);
-		
-		tempArr.renderHUD();
-
-		// Tick down and display the timer
-		this.displayTimer();
-
-		// Tick down and display the "Ready, fight!" message
-		this.displayFightMsg();
+		this.updateArena();
 
 		// Update score element
 		document.getElementById("scoreCTF").innerHTML = "P1: "+playerArr[0].score+"   P2: "+playerArr[1].score;
-
-
-		// Check if anybody has won yet - if yes, set to gameover
-		if (this.winner == -1) {
-			this.winner = this.checkWinner();
-			if (this.winner != -1) {
-				playSound(win_snd);
-				for (var i = 0; i < 200; i++) {
-					tempArr.add(new Confetti(180, 180, 5, 9));
-				}
-				this.gameover = true;
-			}
-		}
-
 
 		if (this.gameover) {
 			var winnerBoard = document.getElementById("winnerBoard");

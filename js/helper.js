@@ -1,3 +1,16 @@
+function changeImage(curr, img) {
+	curr.src = img.src;
+}
+
+function stretchImage(img) {
+	img.style.width = img.width-10; 
+	console.log(img.style.left);
+}
+
+function unstretchImage(img) {
+	img.style.width = img.width+10;
+}
+
 // Clones audio node and plays the sound
 function playSound(audioNode) {
 	var clone = audioNode.cloneNode(true);

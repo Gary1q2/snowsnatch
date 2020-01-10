@@ -442,7 +442,7 @@ class Explosion extends Bullet {
 }
 class MineBomb extends Bullet {
 	constructor(x, y, owner) {
-		super(x, y, 20, 20, mine_img, 3, 3, [0,1,2,3,0,1,2,3,4,5,6], 0,0, owner);
+		super(x, y, 16, 16, mine_img, 3, 3, [8,1,2,3,8,1,2,3,4,5,6], 0,0, owner);
 		this.armed = false;
 	}
 	update() {
@@ -485,7 +485,12 @@ class MineBomb extends Bullet {
 
 class Missile extends Bullet {
 	constructor(x, y, owner, dir) {
-		super(x, y, 10, 10, missile_img, 2, 2, [0,1,2,3], 0, 0, owner, dir);
+		if (dir == DIR.left || dir == DIR.right) {
+			super(x, y, 14, 6, missile_img, 2, 2, [0,1,2,3], 0, 0, owner, dir);
+		} else {
+			super(x, y, 6, 14, missile_img, 2, 2, [0,1,2,3], 0, 0, owner, dir);
+		}
+		
 		this.speed = 1;
 		this.maxSpeed = 6;
 		this.setAngle(this.dir);
@@ -725,10 +730,9 @@ class LaserBlast extends Bullet {
 				}
 			}
 
-			// Deal damage to walls
+			// Deal damage to ALIVE walls (allowed multiple walls to be hit)
 			for (var i = 0; i < wallArr.size(); i++) {
-				if (this.collideWith(wallArr.array[i])){
-					// 0.5 because laser is big and 2 can hit 1 wall
+				if (this.collideWith(wallArr.array[i]) && !wallArr.array[i].dead){
 					wallArr.array[i].damageWall(0.5);  
 				}
 			}
@@ -738,7 +742,7 @@ class LaserBlast extends Bullet {
 }
 class Snowball extends Bullet {
 	constructor(x, y, owner, dir) {
-		super(x, y, 8, 8, snowball, 3, 2, [0], 0,0, owner, dir);
+		super(x, y, 6, 6, snowball, 3, 2, [0], 0,0, owner, dir);
 		this.speed = 2;
 		this.breaking = false;   // Showing breaking animation
 	}
