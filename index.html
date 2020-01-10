@@ -10,12 +10,19 @@
 		
 		<div id="canvas-wrap">
 
-			<!--Game screen-->
+			<!--Game canvas-->
 			<canvas id="canvas" width=400 height=200></canvas>
 			<div id="overlay">
 
+				<!--Arena screen-->
 				<div id="ammo1"></div>
 				<div id="ammo2"></div>
+				<div id="scoreCTF">Score</div>
+				<div id="winnerBoard">
+					<img id="winnerImg" src="img/winBack.png" alt="Winner">
+					<div id="winnerText">Winner</div>
+				</div>
+
 
 				<!--Menu screen-->
 				<img id="playButton" src="img/playButton.png" alt="playButton">
@@ -71,11 +78,12 @@ const DIR = {
 
 const GAMESTATE = {
 	menu: 0,
-	arena: 1,
-	paused: 2,
-	gameover: 3,
-	controls: 4,
-	selection: 5
+	dm: 1,
+	ctf: 2,
+	paused: 3,
+	gameover: 4,
+	controls: 5,
+	selection: 6
 }
 
 

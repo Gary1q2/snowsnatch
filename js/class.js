@@ -646,7 +646,14 @@ class Wall extends Entity {
 
 class Player extends Entity {
 	constructor(x, y, playerID, startFace) {
-		super(x, y, 14, 14, peng, 4, 3, [0], 0,0);
+		var pengColor;
+		if (playerID == 1) {
+			pengColor = peng;
+		} else {
+			pengColor = peng2;
+		}
+
+		super(x, y, 14, 14, pengColor, 4, 3, [0], 0,0);
 
 		this.speed = 1;
 
@@ -716,7 +723,7 @@ class Player extends Entity {
 		if (!(this.gun instanceof SnowGun)) {
 			var ammoHUD = document.getElementById("ammo"+this.playerID);
 			ammoHUD.style.left = canvasScaling*this.x+35;
-			ammoHUD.style.top = canvasScaling*this.y-30;
+			ammoHUD.style.top = canvasScaling*this.y-25;
 			ammoHUD.innerHTML = this.gun.ammo;
 		}
 	}
@@ -871,7 +878,15 @@ class Player extends Entity {
 		// Prepare for new animation
 		this.animIndex = 0;
 		this.animDelay = 0;
-		this.changeSprite(playerDie_img, 60, 60, 3, 3, [0], 20, 20);
+
+		// Player 1 vs player 2
+		var temp;
+		if (this.playerID == 1) {
+			temp = playerDie_img;
+		} else {
+			temp = player2Die_img;
+		}
+		this.changeSprite(temp, 60, 60, 3, 3, [0], 20, 20);
 
 		playSound(die_snd);
 		playSound(die2_snd);
@@ -897,7 +912,13 @@ class Player extends Entity {
 		this.x = this.initX;
 		this.y = this.initY;
 
-		this.changeSprite(peng, 20, 20, 4, 3, [0], 0,0);
+		var temp;
+		if (this.playerID == 1) {
+			temp = peng;
+		} else {
+			temp = peng2;
+		}
+		this.changeSprite(temp, 20, 20, 4, 3, [0], 0,0);
 	}
 }
 

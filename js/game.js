@@ -20,7 +20,9 @@ class Game {
 		// Select gamemode and map
 		this.level;
 		this.mode = "DM";
-		this.winner = 0;
+		this.winner = -1;
+
+		this.gameover = false;
 	}
 
 	// Head to selection screen
@@ -50,8 +52,8 @@ class Game {
 		playSound(shoot_snd);
 	}
 
-	// Head to arena screen
-	toArenaScreen() {
+	// Setup the arena screen
+	setupArena() {
 		document.getElementById("playButton").style.visibility = "hidden";
 		document.getElementById("controlButton").style.visibility = "hidden";
 
@@ -68,209 +70,316 @@ class Game {
 		tempArr = new ObjectArrayLayered(6);  // Array of temporary objects eg. bullets
 		wallArr = new ObjectArray();  // Array for walls
 		snowArr = new ObjectArray();  // Array for snow piles
-		this.winner = 0;
+		this.winner = -1;
+		this.gameover = false;
 
 
 		// Load all the level & player data
 		this.generateLevel();
 
-		this.gamestate = GAMESTATE.arena;
+		
 		this.fightMsgTimer = 100;
 		playSound(readFight_snd);
 		playSound(shoot_snd);
 	}
 
+	// Head to DM screen
+	toDMScreen() {
+		this.setupArena();
+		this.gamestate = GAMESTATE.dm;
+	}
+
+	// Head to CTF screen
+	toCTFScreen() {
+		this.setupArena();
+
+		document.getElementById("scoreCTF").style.visibility = "visible";
+
+		this.gamestate = GAMESTATE.ctf;
+	}
 
 	// Head to menu screen
 	toMenuScreen() {
 		document.getElementById("playButton").style.visibility = "visible";
 		document.getElementById("controlButton").style.visibility = "visible";
 
+		document.getElementById("ammo1").style.visibility = "hidden";
+		document.getElementById("ammo2").style.visibility = "hidden";
 		document.getElementById("backToMenuButton").style.visibility = "hidden";
 		document.getElementById("timer").style.visibility = "hidden";
+		document.getElementById("scoreCTF").style.visibility = "hidden";
+		document.getElementById("winnerBoard").style.visibility = "hidden";
+
 
 		this.gamestate = GAMESTATE.menu;
 
 		playSound(shoot_snd);
 	}
 
+	// Update the menu loop
+	updateMenu() {
+		ctx.drawImage(titleBack_img, 0, 0);
+
+		if (this.optionKey == "play") {
+			ctx.drawImage(arrow_img, 165, 62)
+		} else {
+			ctx.drawImage(arrow_img, 165, 110);
+		}
+		// Key movements on the menu screen
+		if (Keys.space && !this.holdSpace) {
+			console.log("ya man");
+			if (this.optionKey == "play") {
+				this.toSelectionScreen();
+			} else {
+				this.toControlScreen();
+			}
+		}
+		if (Keys.down && this.optionKey != "control") {
+			this.optionKey = "control";
+			playSound(shoot_snd);
+		}
+		if (Keys.up && this.optionKey != "play") {
+			this.optionKey = "play";
+			playSound(shoot_snd);
+		}		
+	}
+
+	// Update the selection screen loop
+	updateSelect() {
+		ctx.drawImage(selectionScreen_img, 0, 0);
+		
+		// Draw the mode selection
+		ctx.save();
+		ctx.fillStyle = "#717e82"
+		if (this.optionKey == "mode") {
+			if (this.mode == "DM") {
+				ctx.fillRect(170, 120, 80, 40);
+			} else {
+				ctx.fillRect(250, 120, 80, 40);
+			}				
+		} else {
+			ctx.beginPath();
+			if (this.mode == "DM") {
+				ctx.rect(170, 120, 80, 40);
+			} else {
+				ctx.rect(250, 120, 80, 40);
+			}					
+			ctx.stroke();
+		}
+
+
+		if (this.optionKey == "play") {
+			ctx.fillRect(190, 160, 70, 40);
+		}
+		ctx.restore();
+
+		// Switching from DM to CTF
+		if (this.optionKey == "mode") {
+			if (Keys.left && this.mode != "DM") {
+				this.mode = "DM";
+				playSound(shoot_snd);
+			}
+			if (Keys.right && this.mode != "CTF") {
+				this.mode = "CTF";
+				playSound(shoot_snd);
+			}
+		}
+
+		// Switch from modes to play
+		if (Keys.down && this.optionKey != "play") {
+			this.optionKey = "play";
+			playSound(shoot_snd);
+		}
+		if (Keys.up && this.optionKey != "mode") {
+			this.optionKey = "mode";
+			playSound(shoot_snd);
+		}
+
+		
+		// Press enter to play
+		if (Keys.space && !this.holdSpace) {
+			if (this.optionKey == "play") {
+				if (this.mode == "DM") {
+					this.toDMScreen();
+				} else {
+					this.toCTFScreen();
+				}
+			}
+		}		
+	}
+
+	// Update the control screen loop
+	updateControl() {
+		ctx.drawImage(controlBack_img, 0, 0);
+		ctx.drawImage(arrow_img, 0, 78);
+
+		// Press button to go back to menu
+		if (Keys.space && !this.holdSpace) {
+			this.toMenuScreen();
+		}
+	}
+
+	// Update the deathmatch game loop
+	updateDM() {
+
+		// Update and draw EVERYTHING
+		ctx.drawImage(bg, 0, 0);
+		snowArr.update();
+
+		tempArr.updateLayer(0);
+		tempArr.updateLayer(1);
+		tempArr.updateLayer(2);
+
+		for (var i = 0; i < playerArr.length; i++) {
+			playerArr[i].update();
+		}
+
+		wallArr.update();
+
+		tempArr.updateLayer(3);
+		tempArr.updateLayer(4);
+		tempArr.updateLayer(5);
+		
+		tempArr.renderHUD();
+
+
+
+
+		// Tick down and display the timer
+		this.displayTimer();
+
+		// Tick down and display the "Ready, fight!" message
+		this.displayFightMsg();
+
+
+
+ 
+		// Check if anybody has won yet - if yes, set to gameover
+		if (this.winner == -1) {
+			this.winner = this.checkWinner();
+			if (this.winner != -1) {
+				playSound(win_snd);
+				for (var i = 0; i < 200; i++) {
+					tempArr.add(new Confetti(180, 180, 5, 9));
+				}
+				this.gameover = true;
+			}
+		}
+
+		// Display gameover screen
+		if (this.gameover) {
+			var winnerBoard = document.getElementById("winnerBoard");
+			winnerBoard.style.visibility = "visible";
+
+			if (this.winner == "Stalemate") {
+				winnerBoard.childNodes[3].innerHTML = "Stalemate!";
+			} else {
+				winnerBoard.childNodes[3].innerHTML = "Player " + this.winner + " wins!";
+			}			
+			
+			// Draw arrow on menu screen
+			ctx.drawImage(arrow_img, 0, 78);
+			document.getElementById("backToMenuButton").style.visibility = "visible";
+
+			// Press button to  go back to menu
+			if (Keys.space && !this.holdSpace) {
+				this.toMenuScreen();
+			}	
+		}
+	}
+
+	// Update the capture the flag game loop
+	updateCTF() {
+		ctx.drawImage(bg, 0, 0);
+
+		snowArr.update();
+
+		tempArr.updateLayer(0);
+		tempArr.updateLayer(1);
+		tempArr.updateLayer(2);
+
+		for (var i = 0; i < playerArr.length; i++) {
+			playerArr[i].update();
+		}
+
+		wallArr.update();
+
+		tempArr.updateLayer(3);
+		tempArr.updateLayer(4);
+		tempArr.updateLayer(5);
+		
+		tempArr.renderHUD();
+
+		// Tick down and display the timer
+		this.displayTimer();
+
+		// Tick down and display the "Ready, fight!" message
+		this.displayFightMsg();
+
+		// Update score element
+		document.getElementById("scoreCTF").innerHTML = "P1: "+playerArr[0].score+"   P2: "+playerArr[1].score;
+
+
+		// Check if anybody has won yet - if yes, set to gameover
+		if (this.winner == -1) {
+			this.winner = this.checkWinner();
+			if (this.winner != -1) {
+				playSound(win_snd);
+				for (var i = 0; i < 200; i++) {
+					tempArr.add(new Confetti(180, 180, 5, 9));
+				}
+				this.gameover = true;
+			}
+		}
+
+
+		if (this.gameover) {
+			var winnerBoard = document.getElementById("winnerBoard");
+			winnerBoard.style.visibility = "visible";
+			winnerBoard.childNodes[3].innerHTML = "Player " + this.winner + " wins!";
+					
+			// Draw arrow on menu screen
+			ctx.drawImage(arrow_img, 0, 78);
+			document.getElementById("backToMenuButton").style.visibility = "visible";
+
+			// Press button to  go back to menu
+			if (Keys.space && !this.holdSpace) {
+				this.toMenuScreen();
+			}		
+		}		
+	}
+
+
+
+
+	// Main game loop
 	update() {
 
 		// Menu screen
 		if (this.gamestate == GAMESTATE.menu) {
-			ctx.drawImage(titleBack_img, 0, 0);
-
-			if (this.optionKey == "play") {
-				ctx.drawImage(arrow_img, 165, 62)
-			} else {
-				ctx.drawImage(arrow_img, 165, 110);
-			}
-			// Key movements on the menu screen
-			if (Keys.space && !this.holdSpace) {
-				console.log("ya man");
-				if (this.optionKey == "play") {
-					this.toSelectionScreen();
-				} else {
-					this.toControlScreen();
-				}
-			}
-			if (Keys.down && this.optionKey != "control") {
-				this.optionKey = "control";
-				playSound(shoot_snd);
-			}
-			if (Keys.up && this.optionKey != "play") {
-				this.optionKey = "play";
-				playSound(shoot_snd);
-			}
+			this.updateMenu();
 
 		// Selection screen
 		}  else if (this.gamestate == GAMESTATE.selection) {
-			ctx.drawImage(selectionScreen_img, 0, 0);
-
-			
-			// Draw the mode selection
-			ctx.save();
-			ctx.fillStyle = "#717e82"
-			if (this.optionKey == "mode") {
-				if (this.mode == "DM") {
-					ctx.fillRect(170, 120, 80, 40);
-				} else {
-					ctx.fillRect(250, 120, 80, 40);
-				}				
-			} else {
-				ctx.beginPath();
-				if (this.mode == "DM") {
-					ctx.rect(170, 120, 80, 40);
-				} else {
-					ctx.rect(250, 120, 80, 40);
-				}					
-				ctx.stroke();
-			}
-
-
-			if (this.optionKey == "play") {
-				ctx.fillRect(190, 160, 70, 40);
-			}
-			ctx.restore();
-
-			// Switching from DM to CTF
-			if (this.optionKey == "mode") {
-				if (Keys.left && this.mode != "DM") {
-					this.mode = "DM";
-					playSound(shoot_snd);
-				}
-				if (Keys.right && this.mode != "CTF") {
-					this.mode = "CTF";
-					playSound(shoot_snd);
-				}
-			}
-
-			// Switch from modes to play
-			if (Keys.down && this.optionKey != "play") {
-				this.optionKey = "play";
-				playSound(shoot_snd);
-			}
-			if (Keys.up && this.optionKey != "mode") {
-				this.optionKey = "mode";
-				playSound(shoot_snd);
-			}
-
-			
-			// Press enter to play
-			if (Keys.space && !this.holdSpace) {
-				if (this.optionKey == "play") {
-					this.toArenaScreen();
-				}
-			}
+			this.updateSelect();
 
 		// Control screen
 		} else if (this.gamestate == GAMESTATE.controls) {
-			ctx.drawImage(controlBack_img, 0, 0);
-			ctx.drawImage(arrow_img, 0, 78);
+			this.updateControl();
 
-			// Press button to go back to menu
-			if (Keys.space && !this.holdSpace) {
-				this.toMenuScreen();
-			}
+		// Deathmatch game
+		} else if (this.gamestate == GAMESTATE.dm) {
+			this.updateDM();
 
-
-		// Arena screen + gameover 
-		} else if (this.gamestate == GAMESTATE.arena || this.gamestate == GAMESTATE.gameover) {
-			ctx.drawImage(bg, 0, 0);
- 
-			snowArr.update();
-
-			tempArr.updateLayer(0);
-			tempArr.updateLayer(1);
-			tempArr.updateLayer(2);
-
-			for (var i = 0; i < playerArr.length; i++) {
-				playerArr[i].update();
-			}
-
-			wallArr.update();
-
-			tempArr.updateLayer(3);
-			tempArr.updateLayer(4);
-			tempArr.updateLayer(5);
-			
-			tempArr.renderHUD();
-
-			// Tick down and display the timer
-			this.displayTimer();
-
-			// Tick down and display the "Ready, fight!" message
-			this.displayFightMsg();
-
-
-			// Draw score for CTF
-			if (this.mode == "CTF") {
-				ctx.save();
-				ctx.font = "15px 'custom'";
-				ctx.fillText("P1: "+playerArr[0].score+"   P2: "+playerArr[1].score, 150, 20);
-				ctx.restore();
-			}
-
-			// Check if anybody has won yet - if yes, set to gameover
-			if (this.winner == 0) {
-				this.winner = this.checkWinner();
-				if (this.winner != 0) {
-					playSound(win_snd);
-					for (var i = 0; i < 200; i++) {
-						tempArr.add(new Confetti(180, 180, 5, 9));
-					}
-					this.gamestate = GAMESTATE.gameover;
-				}
-			}
-
-			// Display winner 
-			if (this.gamestate == GAMESTATE.gameover) {
-				ctx.drawImage(winBack_img, 140, 80);
-
-				ctx.save();
-				ctx.font = "15px 'custom'";
-				if (this.winner == "Stalemate") {
-					ctx.fillText("Stalemate!", 150, 110);
-				} else {
-					ctx.fillText("Player " + this.winner + " wins!", 150,110);
-				}
-				ctx.restore();
-
-				document.getElementById("backToMenuButton").style.visibility = "visible";
-
-				// Draw arrow on menu screen
-				ctx.drawImage(arrow_img, 0, 78);
-
-				// Press button to  go back to menu
-				if (Keys.space && !this.holdSpace) {
-					this.toMenuScreen();
-				}
-			}
+		// Capture the flag screen
+		} else if (this.gamestate == GAMESTATE.ctf) {
+			this.updateCTF();
 		}
 
 		// Remember if you held space or not
 		this.holdSpace = Keys.space;
 	}
+
 
 
 	// Load the levels and players and all objects into their arrays
@@ -340,7 +449,7 @@ class Game {
 		}
 	}
 
-	// Return the winner otherwise return 0
+	// Return the winner otherwise return -1
 	checkWinner() {
 		if (this.mode == "DM") {
 			var numAlive = playerArr.length
@@ -364,7 +473,7 @@ class Game {
 			} else if (numAlive == 0) {
 				return "Stalemate";
 			} else {
-				return 0;
+				return -1;
 			}
 		
 		} else {
@@ -374,7 +483,7 @@ class Game {
 					break;
 				}
 			}
-			return 0;
+			return -1;
 		}
 	}
 }

@@ -88,6 +88,49 @@ body {
 
 
 
+
+:root {
+	--canvasScaling: 3;
+}
+
+
+#winnerImg {
+	position: absolute;
+	width: calc(var(--canvasScaling) * 132px);
+	height: calc(var(--canvasScaling) * 55px);
+	z-index: 0;
+}
+
+#winnerText {
+	position: absolute;
+	top: 40px;
+	left: 35px;
+	z-index: 2;
+
+	font-family: "custom";
+	font-size: 55px;
+}
+
+#winnerBoard {
+	position: absolute;
+	left: 400px;
+	top: 230px;
+	width: 500px;
+
+	visibility: hidden;
+}
+
+#scoreCTF {
+	position: absolute;
+	left: 460px;
+	top: 20px;
+
+	font-size: 60px;
+	font-family: "custom";
+	visibility: hidden;
+}
+
+
 .ammoImg {
 	width: 100px;
 	height: 100px;
@@ -97,7 +140,6 @@ body {
 
 	font-size: 35px;
 	font-family: "custom";
-	border: 2px solid black;
 	visibility: hidden;
 }
 #ammo2 {
@@ -105,7 +147,6 @@ body {
 
 	font-size: 35px;
 	font-family: "custom";
-	border: 2px solid black;
 	visibility: hidden;
 }
 
@@ -116,7 +157,7 @@ body {
 
 .selectScreen {
 	font-family: "custom";
-	font-size: 35px;
+	font-size: 50px;
 	visibility: hidden;
 }
 
@@ -127,7 +168,7 @@ body {
 }
 #CTF {
 	position: absolute;
-	left: 730px;
+	left: 800px;
 	top: 400px;
 }
 #play {
