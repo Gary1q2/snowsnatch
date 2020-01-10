@@ -56,6 +56,8 @@ class Mine extends Gun {
 
 		this.shootTime = 20;
 		this.animDelayTime = 20;
+
+		document.getElementById("ammo"+this.player.playerID).style.visibility = "visible";
 	}
 	update() {
 		this.updateMovement();
@@ -96,6 +98,7 @@ class RocketLauncher extends Gun {
  
 		this.shootTime = 80;
 		this.ammo = 6;		
+		document.getElementById("ammo"+this.player.playerID).style.visibility = "visible";
 	}
 	update() {
 		this.updateMovement();
@@ -126,6 +129,7 @@ class Uzi extends Gun {
  
 		this.shootTime = 15;
 		this.ammo = 15;
+		document.getElementById("ammo"+this.player.playerID).style.visibility = "visible";
 	}
 	update() {
 		this.updateMovement();
@@ -140,7 +144,6 @@ class Uzi extends Gun {
 	// Shoot the gun (create bullet)
 	shoot() {
 		this.shooting = true;
-		console.log("smg ammo = " + this.ammo);
 		tempArr.add(new Pellet(this.x, this.y, this.player.playerID, this.player.angle, -1, -1, 2, 10));
 		
 		playSound(uziShoot_snd);
@@ -162,6 +165,8 @@ class Shotgun extends Gun {
 		this.gunID = 3;
 		this.shootTime = 60;
 		this.ammo = 10;
+
+		document.getElementById("ammo"+this.player.playerID).style.visibility = "visible";
 	}
 
 	update() {
@@ -213,6 +218,8 @@ class SnowGun extends Gun {
 		this.gunID = 1;
 		this.shootTime = 30;
 		this.shooting = false;
+
+		document.getElementById("ammo"+this.player.playerID).style.visibility = "hidden";
 	}
 
 	update() {
@@ -246,6 +253,8 @@ class LaserGun extends Gun {
 		this.chargeTimer = 0;
 
 		this.ammo = 10;
+
+		document.getElementById("ammo"+this.player.playerID).style.visibility = "visible";
 	}
 
 	update() {
@@ -741,6 +750,7 @@ class Snowball extends Bullet {
 			this.checkDead();
 		}
 		if (!this.dead) {
+			this.draw();
 			if (debug) {
 				this.drawCol();
 			}
@@ -771,8 +781,9 @@ class Snowball extends Bullet {
 			this.setAngle(DIR.right);
 			this.drawAnimated(this.frameSeq);
 		}
-
-		this.drawCol();
+		if (debug) {
+			this.drawCol();
+		}
 	}
 
 	updateMovement() {

@@ -655,7 +655,7 @@ class Player extends Entity {
 		this.playerID = playerID;
 
 
-		this.gun = new Uzi(this);
+		this.gun = new SnowGun(this);
 
 
 		this.dead = false;
@@ -689,6 +689,9 @@ class Player extends Entity {
 			this.shoot();
 			this.updateMovement();
 		}
+
+		this.updateAmmoHUD();
+
 		this.draw();
 		if (debug) {
 			this.drawCol();
@@ -707,6 +710,15 @@ class Player extends Entity {
 		}
 
 		this.canMoveTimer--;
+	}
+
+	updateAmmoHUD() {
+		if (!(this.gun instanceof SnowGun)) {
+			var ammoHUD = document.getElementById("ammo"+this.playerID);
+			ammoHUD.style.left = canvasScaling*this.x+35;
+			ammoHUD.style.top = canvasScaling*this.y-30;
+			ammoHUD.innerHTML = this.gun.ammo;
+		}
 	}
 
 	// Grab keypresses from global keys object
@@ -792,8 +804,7 @@ class Player extends Entity {
 
 		// Draw AMMO hud
 		if (!(this.gun instanceof SnowGun)) {
-			ctx.drawImage(ammo_img, this.x, this.y-10);
-			ctx.fillText(this.gun.ammo, this.x+12, this.y);
+			tempArr.pushHUD(ammo_img, this.x, this.y-10);
 		}
 	}
 
@@ -897,6 +908,8 @@ class ObjectArrayLayered {
 		this.array = [];
 		this.numLayer = layers;
 
+		this.hud = [];
+
 		for (var i = 0; i < this.numLayer; i++) {
 			this.array.push([]);
 		}
@@ -909,6 +922,24 @@ class ObjectArrayLayered {
 				this.array[layer][i].update();
 			}
 		}
+	}
+
+	// Render all the details for the HUD
+	renderHUD() {
+		for (var i = 0; i < this.hud.length; i++) {
+			var curr = this.hud[i];
+			ctx.drawImage(curr.img, curr.x, curr.y);
+		}
+		this.hud = [];
+	}
+
+	// Push images to be rendered as HUD
+	pushHUD(img, x, y) {
+		this.hud.push({
+			img: img,
+			x: x,
+			y: y
+		})
 	}
 
 	// Add entity to layer in array

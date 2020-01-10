@@ -14,14 +14,24 @@
 			<canvas id="canvas" width=400 height=200></canvas>
 			<div id="overlay">
 
+				<div id="ammo1"></div>
+				<div id="ammo2"></div>
+
 				<!--Menu screen-->
-				<img id="playButton" onclick="game.toArenaScreen()" src="img/playButton.png" alt="playButton">
-				<img id="controlButton" onclick="game.toControlScreen()" src="img/controlButton.png" alt="controlButton">
+				<img id="playButton" src="img/playButton.png" alt="playButton">
+				<img id="controlButton" src="img/controlButton.png" alt="controlButton">
+
+
+				<!--Selection screen-->
+				<div class="selectScreen" id="DM">Deathmatch</div>
+				<div class="selectScreen" id="CTF">Capture the flag</div>
+				<div class="selectScreen" id="play">Play</div>
 
 				<!--Control screen-->
-				<img id="backToMenuButton" onclick="game.toMenuScreen()" src="img/menuButton.png" alt="menuButton">
+				<img id="backToMenuButton" src="img/menuButton.png" alt="menuButton">
 			</div>
 		</div>
+
 
 	</body>
 	<script src="js/class.js"></script>
@@ -36,12 +46,19 @@
 <script>
 
 
+
 // Initialise canvas
 var canvas = document.getElementById('canvas');
 var ctx = canvas.getContext('2d');
 ctx.imageSmoothingEnabled = false;
 ctx.lineWidth = 1;
-ctx.font = '10px "8BITWONDER"';
+ctx.font = "10px 'custom'";
+
+// Scale canvas by 3 times
+var canvasScaling = 3;
+canvas.style.width = canvas.width * canvasScaling;
+canvas.style.height = canvas.height * canvasScaling;
+
 
 
 const DIR = {

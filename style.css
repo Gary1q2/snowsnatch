@@ -14,8 +14,6 @@
 #canvas {
 	position: static;
 	display: block;
-	width: 1200px;
-	height: 600px;
 
 	margin-left: auto;
 	margin-right: auto;
@@ -25,8 +23,8 @@
 }
 
 @font-face {
-	font-family: '8BITWONDER';
-	src: url('./8-BITWONDER.TTF');
+	font-family: 'custom';
+	src: url('./font/Pixellari.ttf');
 }
 
 #timer {
@@ -83,15 +81,57 @@
 	visibility: hidden;
 }
 
-#controlScreen {
-	width: 1200px;
-	height: 600px;
-	image-rendering: pixelated;
-
-	visibility: hidden;
-}
-
 body {
 	background-color: #0b1021;
 	image-rendering: pixelated;
+}
+
+
+
+.ammoImg {
+	width: 100px;
+	height: 100px;
+}
+#ammo1 {
+	position: absolute;
+
+	font-size: 35px;
+	font-family: "custom";
+	border: 2px solid black;
+	visibility: hidden;
+}
+#ammo2 {
+	position: absolute;
+
+	font-size: 35px;
+	font-family: "custom";
+	border: 2px solid black;
+	visibility: hidden;
+}
+
+
+
+
+
+
+.selectScreen {
+	font-family: "custom";
+	font-size: 35px;
+	visibility: hidden;
+}
+
+#DM {
+	position: absolute;
+	left: 500px;
+	top: 400px;
+}
+#CTF {
+	position: absolute;
+	left: 730px;
+	top: 400px;
+}
+#play {
+	position: absolute;
+	left: 640px;
+	top: 500px;
 }
