@@ -54,8 +54,7 @@ var winBack_img = new Image();
 winBack_img.src = "img/winBack.png";
 
 
-var arrow_img = new Image();
-arrow_img.src = "img/arrow.png";
+
 
 
 var confettiBlue_img = new Image();
@@ -108,6 +107,17 @@ var goButton_img = new Image();
 goButton_img.src = "img/goButton.png";
 var goButtonFlash_img = new Image();
 goButtonFlash_img.src = "img/goButtonFlash.png";
+
+
+var arrow_img = new Image();
+arrow_img.src = "img/arrow.png";
+var arrowFlash_img = new Image();
+arrowFlash_img.src = "img/arrowFlash.png";
+var arrowFlip_img = new Image();
+arrowFlip_img.src = "img/arrowFlip.png";
+var arrowFlipFlash_img = new Image();
+arrowFlipFlash_img.src = "img/arrowFlipFlash.png";
+
 
 
 // Sounds

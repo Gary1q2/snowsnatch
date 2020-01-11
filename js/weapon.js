@@ -113,7 +113,6 @@ class RocketLauncher extends Gun {
 	shoot() {
 		this.shooting = true;
 		this.ammo--;
-		console.log("rocket ammo = " + this.ammo);
 		tempArr.add(new Missile(this.x, this.y, this.player.playerID, this.player.angle));
 
 		// Prepare for new animation
@@ -199,7 +198,6 @@ class Shotgun extends Gun {
 	// Shoot the gun (create bullet + recoil)
 	shoot() {
 		this.shooting = true;
-		console.log("shotty ammo = " + this.ammo);
 		for (var i = 0; i < 6; i++) {
 			tempArr.add(new Pellet(this.x, this.y, this.player.playerID, this.player.angle, 6+Math.floor(Math.random()*10), 17, 5, 40));
 		}
@@ -273,12 +271,7 @@ class LaserGun extends Gun {
 			this.chargeTimer--;
 			if (this.chargeTimer == 0) {
 				this.shooting = true;
-
 				this.ammo--;
-				console.log("ammo = " + this.ammo);
-
-				console.log("SHOT LASERRR");
-				console.log("player angle = " + this.player.angle);
 				if (this.player.angle == DIR.left) {
 					for (var i = this.x-this.player.width/2; i > -20; i-=20) {
 						tempArr.add(new LaserBlast(i, this.y, this.player.playerID, this.player.angle));
@@ -391,8 +384,7 @@ class Explosion extends Bullet {
 		}
 
 		super(tempX, tempY, 60, 60, explosion_img, 4, 3, [0,1,2,3,4,5,6,7,8,9], 25, 25, owner, dir);
-		this.dmgTime = 1;     // awInitial time that can damage you
-		console.log("Created @ "+tempX+","+tempY);
+		this.dmgTime = 1;     // Initial time that can damage you
 
 		playSound(explosion_snd);
 	}
@@ -477,7 +469,6 @@ class MineBomb extends Bullet {
 	}
 	// Create explosion
 	explode() {
-		console.log("WIDTH = "+ this.width);
 		tempArr.add(new Explosion(this.x, this.y, this.owner, this.dir));
 		this.dead = true;
 	}
@@ -549,7 +540,6 @@ class Missile extends Bullet {
 	}
 	// Create explosion
 	explode() {
-		console.log("exploded at "+this.x+","+this.y);
 		tempArr.add(new Explosion(this.x, this.y, this.owner, this.dir));
 		this.dead = true;
 	}
@@ -725,7 +715,7 @@ class LaserBlast extends Bullet {
 		if (this.hurtTimer > 0) {
 			for (var i of playerArr) {
 				if (this.owner != i.playerID && this.collideWith(i) && !i.dead) {
-					console.log("REKTT player " + i.playerID + "died...");
+					console.log("REKTT player " + i.playerID + " died...");
 					i.die(this.dir);
 				}
 			}
@@ -821,7 +811,7 @@ class Snowball extends Bullet {
 	checkHit() {
 		for (var i of playerArr) {
 			if (this.owner != i.playerID && this.collideWith(i) && !i.dead) {
-				console.log("REKTT player " + i.playerID + "died...");
+				console.log("REKTT player " + i.playerID + " died...");
 				this.break();
 				i.die(this.dir);
 			}

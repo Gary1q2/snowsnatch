@@ -556,7 +556,7 @@ class Crate extends Entity {
 	     		while (true) {
 	     			var temp_y = Math.floor(Math.random()*numHeight);
 	     			var temp_x = Math.floor(Math.random()*numWidth);
-	     			if (game.level[temp_y][temp_x] != "W") {
+	     			if (levels[game.level][temp_y][temp_x] != "W") {
 	     				tempArr.add(new Crate(temp_x*gridLen, temp_y*gridLen));
 	     				break;
 	     			}
@@ -863,11 +863,9 @@ class Player extends Entity {
 		this.dead = true;
 		this.dying = true;
 		this.animDelayTime = 4;
-
-		// Respawn only if CTF
-		if (game.mode == "CTF") {
-			this.respawnTimer = this.respawnTime;
-		}
+		
+		this.respawnTimer = this.respawnTime;
+		
 
 		this.setAngle(DIR.right);
 		// Set direction for player to die

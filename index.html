@@ -4,10 +4,7 @@
 		<link href="style.css" rel="stylesheet">
 	</head>
 
-	<body>
-		
-		<div id="timer">30</div>
-		
+	<body>	
 		<div id="canvas-wrap">
 
 			<!--Game canvas-->
@@ -25,16 +22,19 @@
 
 
 				<!--Menu screen-->
-				<img id="playButton" onmouseover="changeImage(this, playButtonFlash_img)" onmouseout="changeImage(this, playButton_img)" onclick="game.toSelectionScreen()" src="img/playButton.png" alt="playButton">
-				<img id="controlButton" onmouseover="changeImage(this, controlButtonFlash_img)" onmouseout="changeImage(this, controlButton_img)" onclick="game.toControlScreen()" src="img/controlButton.png" alt="controlButton">
+				<img class="menuScreen" id="playButton" onmouseover="changeImage(this, playButtonFlash_img)" onmouseout="changeImage(this, playButton_img)" onclick="game.toSelectionScreen()" src="img/playButton.png" alt="playButton">
+				<img class="menuScreen" id="controlButton" onmouseover="changeImage(this, controlButtonFlash_img)" onmouseout="changeImage(this, controlButton_img)" onclick="game.toControlScreen()" src="img/controlButton.png" alt="controlButton">
 
 
 				<!--Selection screen-->
-				<img id="goButton" onmouseover="changeImage(this, goButtonFlash_img)" onmouseout="changeImage(this, goButton_img)" onclick="game.toCTFScreen()" src="img/goButton.png" alt="goButton">
+				<img id="goButton" class="selectScreen" onmouseover="changeImage(this, goButtonFlash_img)" onmouseout="changeImage(this, goButton_img)" onclick="game.toCTFScreen()" src="img/goButton.png" alt="goButton">
+				<img id="levelLeft" class="selectScreen" onmouseover="changeImage(this, arrowFlipFlash_img)" onmouseout="changeImage(this, arrowFlip_img)" onclick="prevLevel()" src="img/arrowFlip.png" alt="levelLeft">
+				<img id="levelRight" class="selectScreen" onmouseover="changeImage(this, arrowFlash_img)" onmouseout="changeImage(this, arrow_img)" onclick="nextLevel()" src="img/arrow.png" alt="levelLeft">
+				<div id="levelName" class="selectScreen">Level name</div>
 
 
 				<!--Control screen-->
-				<img id="backToMenuButton" onmouseover="changeImage(this, menuButtonFlash_img)" onmouseout="changeImage(this, menuButton_img)" onclick="game.toMenuScreen()" src="img/menuButton.png" alt="menuButton">
+				<img class="selectScreen" id="backToMenuButton" onmouseover="changeImage(this, menuButtonFlash_img)" onmouseout="changeImage(this, menuButton_img)" onclick="game.toMenuScreen()" src="img/menuButton.png" alt="menuButton">
 			</div>
 		</div>
 

@@ -3,19 +3,8 @@ class Game {
 	constructor() {
 		this.gamestate = GAMESTATE.menu;
 
-
-		// Countdown timer
-		this.timer = 30;
-		this.tickTimer = 0;
-
 		// Display ready, fight! images
 		this.fightMsgTimer = 0;
-
-
-		// Variables for selecting buttons on menu
-		this.optionKey = "play";
-		this.holdSpace = Keys.space;   // Store if last step was pressed or not
-
 
 		// Select and map
 		this.level = 0;
@@ -26,13 +15,18 @@ class Game {
 
 	// Head to selection screen
 	toSelectionScreen() {
-		document.getElementById("playButton").style.visibility = "hidden";
-		document.getElementById("controlButton").style.visibility = "hidden";
+		var temp = document.getElementsByClassName("menuScreen");
+		for (var i = 0; i < temp.length; i++) {
+			temp[i].style.visibility = "hidden";
+		}
 
-		document.getElementById("backToMenuButton").style.visibility = "visible";
-		document.getElementById("goButton").style.visibility = "visible";
+		var temp = document.getElementsByClassName("selectScreen");
+		for (var i = 0; i < temp.length; i++) {
+			temp[i].style.visibility = "visible";
+		}
 
-		this.optionKey = "mode";
+		// Set level name div to get the level name
+		document.getElementById("levelName").innerHTML = levelNames[this.level];
 
 		this.gamestate = GAMESTATE.selection;
 		playSound(snowbreak_snd);
@@ -40,10 +34,13 @@ class Game {
 
 	// Head to control screen
 	toControlScreen() {
-		document.getElementById("playButton").style.visibility = "hidden";
-		document.getElementById("controlButton").style.visibility = "hidden";	
+		var temp = document.getElementsByClassName("menuScreen");
+		for (var i = 0; i < temp.length; i++) {
+			temp[i].style.visibility = "hidden";
+		}
 
 		document.getElementById("backToMenuButton").style.visibility = "visible";
+
 		this.gamestate = GAMESTATE.controls;	
 
 		playSound(snowbreak_snd);
@@ -51,16 +48,12 @@ class Game {
 
 	// Head to CTF screen
 	toCTFScreen() {
-		document.getElementById("goButton").style.visibility = "hidden";
-		document.getElementById("backToMenuButton").style.visibility = "hidden";
-
 		var temp = document.getElementsByClassName("selectScreen");
 		for (var i = 0; i < temp.length; i++) {
 			temp[i].style.visibility = "hidden";
 		}
 
 		document.getElementById("ammo1").style.visibility = "visible";
-		document.getElementById("timer").style.visibility = "visible";
 
 		// Reset these variables
 		playerArr = [];               // Array of players
@@ -89,16 +82,22 @@ class Game {
 
 	// Head to menu screen
 	toMenuScreen() {
-		document.getElementById("playButton").style.visibility = "visible";
-		document.getElementById("controlButton").style.visibility = "visible";
+		var temp = document.getElementsByClassName("menuScreen");
+		for (var i = 0; i < temp.length; i++) {
+			temp[i].style.visibility = "visible";
+		}
+
+		var temp = document.getElementsByClassName("selectScreen");
+		for (var i = 0; i < temp.length; i++) {
+			temp[i].style.visibility = "hidden";
+		}
+
 
 		document.getElementById("ammo1").style.visibility = "hidden";
 		document.getElementById("ammo2").style.visibility = "hidden";
 		document.getElementById("backToMenuButton").style.visibility = "hidden";
-		document.getElementById("timer").style.visibility = "hidden";
 		document.getElementById("scoreCTF").style.visibility = "hidden";
 		document.getElementById("winnerBoard").style.visibility = "hidden";
-		document.getElementById("goButton").style.visibility = "hidden";
 
 		this.gamestate = GAMESTATE.menu;
 
@@ -112,7 +111,7 @@ class Game {
 
 	// Update the selection screen loop
 	updateSelect() {
-		ctx.drawImage(selectionScreen_img, 0, 0);		
+		ctx.drawImage(selectionScreen_img, 0, 0);	
 	}
 
 	// Update the control screen loop
@@ -141,9 +140,6 @@ class Game {
 		tempArr.updateLayer(5);
 		
 		tempArr.renderHUD();
-
-		// Tick down and display the timer
-		this.displayTimer();
 
 		// Tick down and display the "Ready, fight!" message
 		this.displayFightMsg();
@@ -200,9 +196,6 @@ class Game {
 		} else if (this.gamestate == GAMESTATE.ctf) {
 			this.updateCTF();
 		}
-
-		// Remember if you held space or not
-		this.holdSpace = Keys.space;
 	}
 
 
@@ -210,7 +203,7 @@ class Game {
 	// Load the levels and players and all objects into their arrays
 	generateLevel() {
 		var level = levels[this.level];
-		
+
 		// Create players first to have reference
 		for (var i = 0; i < numHeight; i++) {
 			for (var j = 0; j < numWidth; j++) {
@@ -258,17 +251,6 @@ class Game {
 		}
 	}
 
-	// Display timer
-	displayTimer() {
-		this.tickTimer++;
-		if (this.tickTimer == 60) {
-			this.tickTimer = 0;
-			if (this.timer > 0) {
-				this.timer--;
-			}
-			document.getElementById('timer').innerHTML = this.timer;
-		}
-	}
 
 	// Return the winner otherwise return -1
 	checkWinner() {

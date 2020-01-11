@@ -1,6 +1,9 @@
 var levels = [];
+var levelNames = [];
 
-
+levelNames.push("Snow Fields");
+levelNames.push("Mazey Arena");
+levelNames.push("Slopey Range");
 /* Legend
 	W = Wall
 	C = Crate

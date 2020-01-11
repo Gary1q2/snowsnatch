@@ -1,3 +1,23 @@
+// Preview next level
+function nextLevel() {
+	if (game.level < levels.length-1) {
+		game.level++;
+		document.getElementById("levelName").innerHTML = levelNames[game.level];
+		playSound(snowbreak_snd);
+	}
+	console.log(game.level);
+}
+
+// Preview previous level
+function prevLevel() {
+	if (game.level > 0) {
+		game.level--;
+		document.getElementById("levelName").innerHTML = levelNames[game.level];
+		playSound(snowbreak_snd);
+	}
+	console.log(game.level);
+}
+
 function changeImage(curr, img) {
 	curr.src = img.src;
 }
