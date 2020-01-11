@@ -17,9 +17,8 @@ class Game {
 		this.holdSpace = Keys.space;   // Store if last step was pressed or not
 
 
-		// Select gamemode and map
-		this.level;
-		this.mode = "DM";
+		// Select and map
+		this.level = 0;
 		this.winner = -1;
 
 		this.gameover = false;
@@ -50,8 +49,8 @@ class Game {
 		playSound(snowbreak_snd);
 	}
 
-	// Setup the arena screen
-	setupArena() {
+	// Head to CTF screen
+	toCTFScreen() {
 		document.getElementById("goButton").style.visibility = "hidden";
 		document.getElementById("backToMenuButton").style.visibility = "hidden";
 
@@ -81,18 +80,7 @@ class Game {
 		playSound(snowbreak_snd);
 
 		playSound(arenaBGM_snd);
-	}	
 
-	// Head to DM selectScreen
-	toDMScreen() {
-		this.setupArena();
-		this.gamestate = GAMESTATE.dm;
-	}
-
-	// Head to CTF screen
-	toCTFScreen() {
-		this.mode = "CTF";
-		this.setupArena();
 
 		document.getElementById("scoreCTF").style.visibility = "visible";
 
@@ -173,24 +161,6 @@ class Game {
 		}
 	}
 
-	// Update the deathmatch game loop
-	updateDM() {
-		this.updateArena();
-
-		// Display gameover screen
-		if (this.gameover) {
-			var winnerBoard = document.getElementById("winnerBoard");
-			winnerBoard.style.visibility = "visible";
-
-			if (this.winner == "Stalemate") {
-				winnerBoard.childNodes[3].innerHTML = "Stalemate!";
-			} else {
-				winnerBoard.childNodes[3].innerHTML = "Player " + this.winner + " wins!";
-			}			
-			
-			document.getElementById("backToMenuButton").style.visibility = "visible";
-		}
-	}
 
 	// Update the capture the flag game loop
 	updateCTF() {
@@ -226,10 +196,6 @@ class Game {
 		} else if (this.gamestate == GAMESTATE.controls) {
 			this.updateControl();
 
-		// Deathmatch game
-		} else if (this.gamestate == GAMESTATE.dm) {
-			this.updateDM();
-
 		// Capture the flag screen
 		} else if (this.gamestate == GAMESTATE.ctf) {
 			this.updateCTF();
@@ -243,18 +209,14 @@ class Game {
 
 	// Load the levels and players and all objects into their arrays
 	generateLevel() {
-		if (this.mode == "DM") {
-			this.level = levels[0];
-		} else {
-			this.level = levels[1];
-		}
-
+		var level = levels[this.level];
+		
 		// Create players first to have reference
 		for (var i = 0; i < numHeight; i++) {
 			for (var j = 0; j < numWidth; j++) {
-				if (this.level[i][j] == 1) {
+				if (level[i][j] == 1) {
 					playerArr.push(new Player(j*gridLen, i*gridLen, 1, DIR.right));
-				} else if (this.level[i][j] == 2) {
+				} else if (level[i][j] == 2) {
 					playerArr.push(new Player(j*gridLen, i*gridLen, 2, DIR.left));
 				}
 			}
@@ -263,17 +225,17 @@ class Game {
 		// Create objects from level array
 		for (var i = 0; i < numHeight; i++) {
 			for (var j = 0; j < numWidth; j++) {
-				if (this.level[i][j] == "W") {
+				if (level[i][j] == "W") {
 					wallArr.add(new Wall(j*gridLen, i*gridLen));
-				} else if (this.level[i][j] == "C") {
+				} else if (level[i][j] == "C") {
 					tempArr.add(new Crate(j*gridLen, i*gridLen));
-				} else if (this.level[i][j] == "F") {
+				} else if (level[i][j] == "F") {
 					tempArr.add(new Flag(j*gridLen, i*gridLen, getPlayer(1)));
-				} else if (this.level[i][j] == "G") {
+				} else if (level[i][j] == "G") {
 					tempArr.add(new Goal(j*gridLen, i*gridLen, getPlayer(1)));
-				} else if (this.level[i][j] == "R") {
+				} else if (level[i][j] == "R") {
 					tempArr.add(new Flag(j*gridLen, i*gridLen, getPlayer(2)));
-				} else if (this.level[i][j] == "T") {
+				} else if (level[i][j] == "T") {
 					tempArr.add(new Goal(j*gridLen, i*gridLen, getPlayer(2)));
 				} else {
 					snowArr.add(new Snow(j*gridLen, i*gridLen));
@@ -310,39 +272,12 @@ class Game {
 
 	// Return the winner otherwise return -1
 	checkWinner() {
-		if (this.mode == "DM") {
-			var numAlive = playerArr.length
-			var playerAlive;
-
-			// Count how many players alive
-			var numAlive = 0;
-			for (var i = 0; i < playerArr.length; i++) {
-				if (!playerArr[i].dead) {
-					numAlive++;
-				}
+		for (var i = 0; i < playerArr.length; i++) {
+			if (playerArr[i].score >= 3) {
+				return playerArr[i].playerID;
+				break;
 			}
-
-			// Get the last person standing
-			if (numAlive == 1) {
-				for (var i = 0; i < playerArr.length; i++) {
-					if (!playerArr[i].dead) {
-						return playerArr[i].playerID;
-					}
-				}
-			} else if (numAlive == 0) {
-				return "Stalemate";
-			} else {
-				return -1;
-			}
-		
-		} else {
-			for (var i = 0; i < playerArr.length; i++) {
-				if (playerArr[i].score >= 3) {
-					return playerArr[i].playerID;
-					break;
-				}
-			}
-			return -1;
 		}
+		return -1;
 	}
 }

@@ -668,6 +668,7 @@ class Player extends Entity {
 
 		this.gun = new SnowGun(this);
 
+		this.angle = startFace;
 
 		this.dead = false;
 		this.dying = false;
