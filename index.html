@@ -25,14 +25,13 @@
 
 
 				<!--Menu screen-->
-				<img id="playButton" src="img/playButton.png" alt="playButton">
-				<img id="controlButton" src="img/controlButton.png" alt="controlButton">
+				<img id="playButton" onmouseover="changeImage(this, playButtonFlash_img)" onmouseout="changeImage(this, playButton_img)" onclick="game.toSelectionScreen()" src="img/playButton.png" alt="playButton">
+				<img id="controlButton" onmouseover="changeImage(this, controlButtonFlash_img)" onmouseout="changeImage(this, controlButton_img)" onclick="game.toControlScreen()" src="img/controlButton.png" alt="controlButton">
 
 
 				<!--Selection screen-->
-				<div class="selectScreen" id="DM">Deathmatch</div>
-				<div class="selectScreen" id="CTF">Capture the flag</div>
-				<div class="selectScreen" id="play">Play</div>
+				<img id="goButton" onmouseover="changeImage(this, goButtonFlash_img)" onmouseout="changeImage(this, goButton_img)" onclick="game.toCTFScreen()" src="img/goButton.png" alt="goButton">
+
 
 				<!--Control screen-->
 				<img id="backToMenuButton" onmouseover="changeImage(this, menuButtonFlash_img)" onmouseout="changeImage(this, menuButton_img)" onclick="game.toMenuScreen()" src="img/menuButton.png" alt="menuButton">

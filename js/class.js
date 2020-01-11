@@ -495,12 +495,14 @@ class Snow extends Entity {
 
 class Crate extends Entity {
 	constructor(x, y) {
-		super(x, y, 20, 20, crate_img, 1, 2, [0], 0, 0);
+		super(x, y, 20, 20, crate_img, 1, 3, [0, 1], 0, 0);
 		this.dead = false;
 
 		this.broken = false;
 		this.waitTimer = 0;
 		this.waitTime = 60;
+
+		this.animDelayTime = 40;
 	}
 	update() {
 		this.checkGot();
@@ -520,7 +522,7 @@ class Crate extends Entity {
 	draw() {
 		if (!this.dead) {
 			if (this.broken) {
-				this.drawAnimated([1]);
+				this.drawAnimated([2]);
 			} else {
 				this.drawAnimated(this.frameSeq);
 			}
@@ -626,7 +628,7 @@ class Wall extends Entity {
 	draw() {
 		if (this.hp > 0) {		
 			var temp = this.maxHp-this.hp;
-			this.drawAnimated([Math.ceil(temp)]);
+			this.drawAnimated([Math.floor(temp)]);
 		} else {
 			this.drawAnimated([10,11,12,13]);
 			if (this.finishAnim) {

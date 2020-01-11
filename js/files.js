@@ -96,6 +96,19 @@ menuButton_img.src = "img/menuButton.png";
 var menuButtonFlash_img = new Image();
 menuButtonFlash_img.src = "img/menuButtonFlash.png";
 
+var playButton_img = new Image();
+playButton_img.src = "img/playButton.png";
+var playButtonFlash_img = new Image();
+playButtonFlash_img.src = "img/playButtonFlash.png";
+var controlButton_img = new Image();
+controlButton_img.src = "img/controlButton.png";
+var controlButtonFlash_img = new Image();
+controlButtonFlash_img.src = "img/controlButtonFlash.png";
+var goButton_img = new Image();
+goButton_img.src = "img/goButton.png";
+var goButtonFlash_img = new Image();
+goButtonFlash_img.src = "img/goButtonFlash.png";
+
 
 // Sounds
 var shoot_snd = document.createElement("audio");

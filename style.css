@@ -48,15 +48,11 @@
 	visibility: hidden;
 }
 
-#titlescreen {
-	width: 1200px;
-	height: 600px;
-}
 
 #playButton {
 	position: absolute;
-	top: 200px;
-	left: 50%;
+	top: 250px;
+	left: 40%;
 
 	height: 80px;
 	width: auto;
@@ -64,8 +60,8 @@
 
 #controlButton {
 	position: absolute;
-	top: 350px;
-	left: 50%;
+	top: 400px;
+	left: 40%;
 
 	height: 80px;
 	width: auto;
@@ -156,24 +152,13 @@ body {
 
 
 
-.selectScreen {
+#goButton {
+	position: absolute;
+	left: 600px;
+	top: 475px;
+	height: 80px;
+
 	font-family: "custom";
 	font-size: 50px;
 	visibility: hidden;
-}
-
-#DM {
-	position: absolute;
-	left: 500px;
-	top: 400px;
-}
-#CTF {
-	position: absolute;
-	left: 800px;
-	top: 400px;
-}
-#play {
-	position: absolute;
-	left: 640px;
-	top: 500px;
 }
