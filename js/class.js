@@ -703,7 +703,6 @@ class Player extends Entity {
 		}
 
 		this.updateAmmoHUD();
-
 		this.draw();
 		if (debug) {
 			this.drawCol();
@@ -765,7 +764,7 @@ class Player extends Entity {
 		}
 
 		if (this.moving) {
-
+			
 			// Start strafing
 			if (this.firstKeyPress == DIR.none) {
 				if (this.leftKey) { this.firstKeyPress = DIR.left; }
@@ -862,23 +861,13 @@ class Player extends Entity {
 	die(bulletDir) {
 		this.dead = true;
 		this.dying = true;
+
 		this.animDelayTime = 4;
-		
+
 		this.respawnTimer = this.respawnTime;
 		
-
+		// Die with the right direction animation
 		this.setAngle(DIR.right);
-		// Set direction for player to die
-		/*if (bulletDir == DIR.left) {
-			this.setAngle(DIR.right);
-		} else if (bulletDir == DIR.right) {
-			this.setAngle(DIR.left);
-		} else if (bulletDir == DIR.up) {
-			this.setAngle(DIR.down);
-		} else if (bulletDir == DIR.down) {
-			this.setAngle(DIR.up);
-		}*/
-		
 
 		// Prepare for new animation
 		this.animIndex = 0;
@@ -912,6 +901,10 @@ class Player extends Entity {
 		this.gun = new SnowGun(this);
 		this.dead = false;
 		this.dying = false;
+
+		// Reset these so player faces correct direction once they respawn if they hold the keys
+		this.moving = false;
+		this.firstKeyPress = DIR.none;
 
 		// Back to original spot
 		this.x = this.initX;
