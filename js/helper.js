@@ -87,3 +87,14 @@ function getPlayer(playerID) {
 	}
 	return false;
 }
+
+// Return the goal assocaited with player
+// Otherwise return FALSE
+function getGoal(playerID) {
+	for (var i of tempArr.array[tempArr.determineLayer(Goal)]) {
+		if (i instanceof Goal && playerID != i.owner.playerID) {
+			return i;
+		}
+	}
+	return false;
+}

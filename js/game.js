@@ -11,6 +11,8 @@ class Game {
 		this.winner = -1;
 
 		this.gameover = false;
+
+		this.justOffedControls = false;
 	}
 
 	// Head to selection screen
@@ -196,9 +198,28 @@ class Game {
 		} else if (this.gamestate == GAMESTATE.ctf) {
 			this.updateCTF();
 		}
+
+
+		// Set all controls OFF if the screen isn't focused
+		this.offScreenControl();
 	}
 
 
+	// Set all controls OFF if the screen isn't focused
+	offScreenControl() {
+		if (!document.hasFocus()) {
+			if (!this.justOffedControls) {
+				for (var i in Keys) {
+					Keys[i] = false;
+				}
+			}
+			this.justOffedControls = true;
+		} else {
+			if (this.justOffedControls) {
+				this.justOffedControls = false;
+			}
+		}
+	}
 
 	// Load the levels and players and all objects into their arrays
 	generateLevel() {
@@ -222,14 +243,12 @@ class Game {
 					wallArr.add(new Wall(j*gridLen, i*gridLen));
 				} else if (level[i][j] == "C") {
 					tempArr.add(new Crate(j*gridLen, i*gridLen));
-				} else if (level[i][j] == "F") {
-					tempArr.add(new Flag(j*gridLen, i*gridLen, getPlayer(1)));
 				} else if (level[i][j] == "G") {
-					tempArr.add(new Goal(j*gridLen, i*gridLen, getPlayer(1)));
-				} else if (level[i][j] == "R") {
 					tempArr.add(new Flag(j*gridLen, i*gridLen, getPlayer(2)));
+					tempArr.add(new Goal(j*gridLen, i*gridLen, getPlayer(1)));
 				} else if (level[i][j] == "T") {
 					tempArr.add(new Goal(j*gridLen, i*gridLen, getPlayer(2)));
+					tempArr.add(new Flag(j*gridLen, i*gridLen, getPlayer(1)));
 				} else {
 					snowArr.add(new Snow(j*gridLen, i*gridLen));
 				}

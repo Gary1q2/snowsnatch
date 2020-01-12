@@ -20,6 +20,9 @@ class Entity {
 		this.animDelay = 0;
 		this.animDelayTime = 4;
 		this.finishAnim = false;
+
+		this.colShiftX = 0;
+		this.colShiftY = 0;
 	}
 	update() {
 		this.drawAnimated(this.frameSeq); 
@@ -65,8 +68,8 @@ class Entity {
 
 	// Draw collision box for sprite
 	drawCol() {
-		var x_anchor = this.x-this.centerX;
-		var y_anchor = this.y-this.centerY;
+		var x_anchor = this.x-this.centerX+this.colShiftX;
+		var y_anchor = this.y-this.centerY+this.colShiftY;
 
 		ctx.beginPath();
 
@@ -96,15 +99,15 @@ class Entity {
 	// Check collision with another object
 	collideWith(other) {
 		var rect1 = {
-			x: this.x-this.centerX+this.img.width/this.nCol/2-this.width/2,
-			y: this.y-this.centerY+this.img.height/this.nRow/2-this.height/2,
+			x: this.x-this.centerX+this.colShiftX+this.img.width/this.nCol/2-this.width/2,
+			y: this.y-this.centerY+this.colShiftY+this.img.height/this.nRow/2-this.height/2,
 			width: this.width,
 			height: this.height
 		};
 
 		var rect2 = {
-			x: other.x-other.centerX+other.img.width/other.nCol/2-other.width/2,
-			y: other.y-other.centerY+other.img.height/other.nRow/2-other.height/2,
+			x: other.x-other.centerX+other.colShiftX+other.img.width/other.nCol/2-other.width/2,
+			y: other.y-other.centerY+other.colShiftY+other.img.height/other.nRow/2-other.height/2,
 			width: other.width,
 			height: other.height
 		};
@@ -115,14 +118,14 @@ class Entity {
 	// Check collision with another object @ certain offset
 	collideWithAt(other, xOff, yOff) {
 		var rect1 = {
-			x: this.x-this.centerX+this.img.width/this.nCol/2-this.width/2 + xOff,
-			y: this.y-this.centerY+this.img.height/this.nRow/2-this.height/2 + yOff,
+			x: this.x-this.centerX+this.colShiftX+this.img.width/this.nCol/2-this.width/2 + xOff,
+			y: this.y-this.centerY+this.colShiftY+this.img.height/this.nRow/2-this.height/2 + yOff,
 			width: this.width,
 			height: this.height
 		};
 		var rect2 = {
-			x: other.x-other.centerX+other.img.width/other.nCol/2-other.width/2,
-			y: other.y-other.centerY+other.img.height/other.nRow/2-other.height/2,
+			x: other.x-other.centerX+other.colShiftX+other.img.width/other.nCol/2-other.width/2,
+			y: other.y-other.centerY+other.colShiftY+other.img.height/other.nRow/2-other.height/2,
 			width: other.width,
 			height: other.height
 		};
@@ -156,8 +159,8 @@ class Entity {
 
 	// Check collision with the edge
 	checkEdgeCol() {
-		var leftX = this.x-this.centerX+this.img.width/this.nCol/2-this.width/2;
-		var topY = this.y-this.centerY+this.img.height/this.nRow/2-this.height/2;
+		var leftX = this.x-this.centerX+this.colShiftX+this.img.width/this.nCol/2-this.width/2;
+		var topY = this.y-this.centerY+this.colShiftY+this.img.height/this.nRow/2-this.height/2;
 		var rightX = leftX + this.width;
 		var bottomY = topY + this.height;
 
@@ -171,8 +174,8 @@ class Entity {
 
 	// Check collision with edge at offset
 	checkEdgeColAt(xOff, yOff) {
-		var leftX = this.x-this.centerX+this.img.width/this.nCol/2-this.width/2 + xOff;
-		var topY = this.y-this.centerY+this.img.height/this.nRow/2-this.height/2 + yOff;
+		var leftX = this.x-this.centerX+this.colShiftX+this.img.width/this.nCol/2-this.width/2 + xOff;
+		var topY = this.y-this.centerY+this.colShiftY+this.img.height/this.nRow/2-this.height/2 + yOff;
 		var rightX = leftX + this.width;
 		var bottomY = topY + this.height;
 
@@ -391,6 +394,23 @@ class Confetti extends Entity {
 	}
 }
 
+class Timer extends Entity {
+	constructor(x, y, time) {
+		super(x, y, 10, 10, timer_img, 4, 4, [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15], 0,0);
+		this.dead = false;
+
+		// 16 is 1 frame more, but lets player see the full red circle
+		this.animDelayTime = time/16;
+	}
+	update() {
+		this.draw();
+	}
+
+	draw() {
+		this.drawAnimated(this.frameSeq);
+	}
+}
+
 class Flag extends Entity {
 	constructor(x, y, owner) {
 
@@ -401,46 +421,77 @@ class Flag extends Entity {
 		} else {
 			flagColor = flagBlue_img
 		}
-		super(x, y, 20, 30, flagColor, 1, 2, [0,1], 0,0);
+		super(x, y, 20, 20, flagColor, 1, 2, [0,1], 0, 20);
 		this.dead = false;
 		this.owner = owner;
 		this.acquired = false;
+		this.atGoal = true;
 
 		this.initX = x;
 		this.initY = y;
 
 		this.animDelayTime = 10;
+
+		// Shift flag collision down 15 pixels
+		this.colShiftY = 15;
+
+		this.respawnTimer = 0;
+		this.respawnTime = 20*60;
+
+		this.timer;
 	}
 	update() {
+		// Check if player got it
 		if (!this.acquired) {
 			this.checkGet();
+
+		// Check if player drops it 
 		} else {
 			this.checkDead();
 			this.updateMovement();
 		}
 		
 		this.draw()
-		if (debug) {
+
+		// Draw collision to show players how to get it
+		if (!this.atGoal && !this.acquired) {
+			this.timer.update();
+			this.tickRespawn();
 			this.drawCol();
+		}
+	}
+
+	// Tick down the respawn timer
+	tickRespawn() {
+		if (this.respawnTimer > 0) {
+			this.respawnTimer--;
+			if (this.respawnTimer == 0) {
+				this.respawn();
+			}
 		}
 	}
 
 	updateMovement() {
 		this.x = this.owner.x;
-		this.y = this.owner.y-10;
+		this.y = this.owner.y+5;
 	}
-	// Check if player is dead or not
+
+	// If player dead, drop flag and start timer
 	checkDead() {
 		if (this.owner.dead) {
 			this.acquired = false;
+			this.respawnTimer = this.respawnTime;
+			this.timer = new Timer(this.x+5, this.y+5, this.respawnTime);
 		}
 	}
+
 	// Check if player got it
 	checkGet() {
 		for (var i of playerArr) {
 			if (this.owner == i && this.collideWith(i) && !i.dead) {
 				console.log("Player " + i.playerID + " acquired flag... player" +this.owner.playerID + "'s flag gg");
 				this.acquired = true;
+				this.atGoal = false;
 				playSound(flagGot_snd);
 				break;
 			}
@@ -449,13 +500,13 @@ class Flag extends Entity {
 
 	draw() {
 		this.drawAnimated(this.frameSeq);
-		//this.drawCol();
 	}
 
 	respawn() {
 		this.x = this.initX;
 		this.y = this.initY;
 		this.acquired = false;
+		this.atGoal = true;
 	}
 }
 
@@ -764,7 +815,7 @@ class Player extends Entity {
 		}
 
 		if (this.moving) {
-			
+
 			// Start strafing
 			if (this.firstKeyPress == DIR.none) {
 				if (this.leftKey) { this.firstKeyPress = DIR.left; }

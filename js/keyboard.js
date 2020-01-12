@@ -19,7 +19,7 @@ var KeyCode = {
 	right: 39,
 	up: 38,
 	down: 40,
-	space: 32,
+	space: 76,
 
 	a: 65,
 	s: 83,

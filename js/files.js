@@ -118,6 +118,9 @@ arrowFlip_img.src = "img/arrowFlip.png";
 var arrowFlipFlash_img = new Image();
 arrowFlipFlash_img.src = "img/arrowFlipFlash.png";
 
+var timer_img = new Image();
+timer_img.src = "img/timer.png";
+
 
 
 // Sounds
