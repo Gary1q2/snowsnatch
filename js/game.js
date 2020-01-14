@@ -34,6 +34,23 @@ class Game {
 		playSound(snowbreak_snd);
 	}
 
+	// Head to unlock screen
+	toUnlockScreen() {
+		var temp = document.getElementsByClassName("menuScreen");
+		for (var i = 0; i < temp.length; i++) {
+			temp[i].style.visibility = "hidden";
+		}
+
+		var temp = document.getElementsByClassName("unlockScreen");
+		for (var i = 0; i < temp.length; i++) {
+			temp[i].style.visibility = "visible";
+		}
+		document.getElementById("backToMenuButton").style.visibility = "visible";
+
+		this.gamestate = GAMESTATE.unlock;
+		playSound(snowbreak_snd);
+	}
+
 	// Head to control screen
 	toControlScreen() {
 		var temp = document.getElementsByClassName("menuScreen");
@@ -121,6 +138,11 @@ class Game {
 		ctx.drawImage(controlBack_img, 0, 0);
 	}
 
+	// Update the unlock screen loop
+	updateUnlock() {
+		ctx.drawImage(unlockScreen_img, 0, 0);
+	}
+
 	// Main arena update
 	updateArena() {
 		// Update and draw EVERYTHING
@@ -193,6 +215,11 @@ class Game {
 		// Control screen
 		} else if (this.gamestate == GAMESTATE.controls) {
 			this.updateControl();
+
+		// Unlock screen
+		} else if (this.gamestate == GAMESTATE.unlock) {
+			this.updateUnlock();
+
 
 		// Capture the flag screen
 		} else if (this.gamestate == GAMESTATE.ctf) {

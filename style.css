@@ -7,6 +7,12 @@
 	src: url('./font/Pixellari.ttf');
 }
 
+body {
+	background-color: #0b1021;
+	image-rendering: pixelated;
+}
+
+
 #canvas-wrap {
 	position: relative;
 }
@@ -44,11 +50,6 @@
 
 
 
-
-body {
-	background-color: #0b1021;
-	image-rendering: pixelated;
-}
 
 
 
@@ -151,19 +152,42 @@ body {
 /* Menu screen buttons*/
 .menuScreen {
 	position: absolute;
+	left: 30%;
 
 	height: 80px;
 	width: auto;
 }
 #playButton {
 	top: 250px;
-	left: 40%;
 }
 #controlButton {
-	top: 400px;
-	left: 40%;
+	top: 350px;
+}
+#unlockButton {
+	top: 450px;
 }
 
+
+/*Unlock screen buttons*/
+.unlockScreen {
+	display: inline;
+}
+#weaponry {
+	position: absolute;
+	left: 460px;
+	top: 250px;
+
+	width: 600px;
+	height: 150px;
+	border: 5px black solid;
+	visibility: hidden;
+}
+.weaponBox {
+	position: static;
+	width: 150px;
+	height: 150px;
+	border: 2px black solid;
+}
 
 
 /* Loner menu button */

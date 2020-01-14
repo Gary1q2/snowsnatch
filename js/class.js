@@ -1114,3 +1114,20 @@ class ObjectArray {
 		return this.array.length;
 	}
 }
+
+
+// Array containing the unlocked items
+class UnlockArray {
+	constructor() {
+		this.array = [];
+	}
+
+	// Add item to the array
+	add(name, desc, cost) {
+		this.array.push({
+			name: name,
+			desc: desc,
+			cost: cost
+		});
+	}
+}

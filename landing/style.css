@@ -1,0 +1,58 @@
+body {
+	font-family: custom;
+
+	background-image: url("img/titlescreen.png");
+	background-size: cover;
+	image-rendering: pixelated;
+}
+
+@font-face {
+	font-family: 'custom';
+	src: url('./font/Pixellari.ttf');
+}
+
+
+#box {
+	margin-top: 25%;
+	margin-left: auto;
+	margin-right: auto;
+	padding: 20px;
+	left: 40%;
+	width: 700px;
+	height: 150px;
+
+	background-color: #96d0e3;
+	font-size: 30px;
+	border: 8px solid black;
+}
+#form {
+	text-align: center;
+	padding: 10px;
+
+	font-family: custom;
+	/*border: 3px solid yellow;*/
+}
+
+#email {
+	display: inline-block;
+	height: 40px;
+
+
+	font-family: custom;
+	font-size: 30px;
+	/*border: 3px solid red;*/
+}
+#button {
+	width: 80px;
+	height: 40px;
+
+	font-family: custom;
+	font-size: 30px;
+}
+
+#tip {
+	text-align: right;
+
+	font-size: 20px;
+	/*border: 3px solid green;*/
+}

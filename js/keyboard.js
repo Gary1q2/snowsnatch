@@ -15,11 +15,11 @@ var Keys = {
 
 // Which keys bind to which
 var KeyCode = {
-	left: 37,
-	right: 39,
-	up: 38,
-	down: 40,
-	space: 76,
+	left: 74,
+	right: 76,
+	up: 73,
+	down: 75,
+	space: 72,
 
 	a: 65,
 	s: 83,

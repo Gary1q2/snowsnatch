@@ -107,7 +107,13 @@ var goButton_img = new Image();
 goButton_img.src = "img/goButton.png";
 var goButtonFlash_img = new Image();
 goButtonFlash_img.src = "img/goButtonFlash.png";
+var unlockButton_img = new Image();
+unlockButton_img.src = "img/unlockButton.png";
+var unlockButtonFlash_img = new Image();
+unlockButtonFlash_img.src = "img/unlockButtonFlash.png";
 
+var unlockScreen_img = new Image();
+unlockScreen_img.src = "img/unlockScreen.png";
 
 var arrow_img = new Image();
 arrow_img.src = "img/arrow.png";
@@ -120,6 +126,8 @@ arrowFlipFlash_img.src = "img/arrowFlipFlash.png";
 
 var timer_img = new Image();
 timer_img.src = "img/timer.png";
+
+
 
 
 
