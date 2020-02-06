@@ -91,7 +91,7 @@ class Game {
 		playSound(readFight_snd);
 		playSound(snowbreak_snd);
 
-		playSound(arenaBGM_snd);
+		//playSound(arenaBGM_snd);
 
 
 		document.getElementById("scoreCTF").style.visibility = "visible";
