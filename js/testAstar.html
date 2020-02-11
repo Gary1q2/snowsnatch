@@ -9,17 +9,22 @@
 </html>
 
 <script>
-var test = new astar();
+var test = new astar(3, 3);
 
 var start = {
-	x:0,
-	y:0,
-	f:0
-};
-var goal = {
-	x:3,
-	y:3
+	x: 0,
+	y: 0
 };
 
-test.search(start, goal);
+var goal = {
+	x: 2,
+	y: 2
+};
+
+var path = test.search(start, goal);
+
+console.log("\npath:");
+for (var i = 0; i < path.length; i++) {
+	console.log("["+path[i].x+","+path[i].y+"]");
+}
 </script>

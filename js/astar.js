@@ -1,10 +1,10 @@
 class astar {
 
 	// Create 4x4 array grid
-	constructor() {
+	constructor(height, width) {
 
-		this.height = 4;
-		this.width = 4;
+		this.height = height;
+		this.width = width;
 
 		// Create 2D array
 		this.array = new Array(this.height);
@@ -19,7 +19,6 @@ class astar {
 					f: -1,
 					g: -1,
 					h: -1,
-					debug: "",
 					parent: null
 				}
 			}
@@ -29,84 +28,102 @@ class astar {
 
 
 	search(start, goal) {
+
+		if (JSON.stringify(start) === JSON.stringify(goal)) {
+			console.log("Already at the goal");
+			return;
+		}
+
+		// Initialise starting node in array
+		this.array[start.y][start.x].f = 0;
+		this.array[start.y][start.x].g = 0;
+		this.array[start.y][start.x].h = 0;
+		this.array[start.y][start.x].parent = null;
+
 		var openList = [];
 		var closedList = [];
+
 		openList.push(start);
+
 
 		while (openList.length != 0) {
 
-			// Find the node with the lowest f(x) in openlist
-			var lowestIndex = -1;
+			var lowIndex = 0;
 			for (var i = 0; i < openList.length; i++) {
-				if (lowestIndex == -1) {
-					lowestIndex = i;
-				} else {
-					if (openList[i].f < openList[lowestIndex].f) {
-						lowestIndex = i;
-					}
+				if (openList[i].f < openList[lowIndex].f) {
+					lowIndex = i;
 				}
 			}
-			var currentNode = openList[lowestIndex];		
+			var currentNode = openList[lowIndex];
+			console.log("Reached new node ["+currentNode.x+","+currentNode.y+"]");
 
-			// Goal has been found, SO RETURN THE PATH
-			if (currentNode.x == goal.x && currentNode.y == goal.y) {
-				var curr = currentNode;
-				var path = [];
-				while (curr.parent) {
-					ret.push(curr);
-					curr = curr.parent;
-				}
-				return path.reverse();
-			}
 
-			// No goal found, continue searching
-
-			// Pop node from openlist
-			openList.splice(lowestIndex, 1);
+			openList.splice(lowIndex, 1);
 			closedList.push(currentNode);
 
 			var neighbours = this.neighbours(currentNode);
 			for (var i = 0; i < neighbours.length; i++) {
 				var neighbour = neighbours[i];
-				if (closedList.includes(neighbour)) {
-					continue;
-				}
+				console.log("Neighbour found ["+neighbour.x+","+neighbour.y+"]");
 
-				var gScore = currentNode.g + 1;
-				var gScoreIsBest = false;
+				// Check if goal
+				if (JSON.stringify(neighbour) === JSON.stringify(goal)) {
+					this.array[neighbour.y][neighbour.x].parent = currentNode;
+					console.log("Found goal");
+					return this.getPath(neighbour);
 
+				} else {
+					var newG = this.array[currentNode.y][currentNode.x].g + 1;
 
+					// Node in openList
+					if (this.containsObject(neighbour, openList)) {
+						console.log("In openList");
 
-				// Neighbour not in openList
-				if (!openList.includes(neighbour)) {
+						// Skip if new G value is larger than existing one
+						if (this.array[neighbour.y][neighbour.x].g <= newG) {
+							continue;
+						}
 
-					gScoreIsBest = true;
-					var pos1 = {
-						x: neighbour.x,
-						y: neighbour.y
-					};
-					var pos2 = {
-						x: goal.x,
-						y: goal.y
-					};
-					neighbour.h = this.manhattan(pos1, pos2);
-					openList.push(neighbour);
+					// Node in closedList
+					} else if (this.containsObject(neighbour, closedList)) {
+						console.log("In closedList");
 
-				} else if (gScore < neighbour.g) {
-					gScoreIsBest = true;
-				}
+						// Skip if new G value is larger than existing one
+						if (this.array[neighbour.y][neighbour.x].g <= newG) {
+							continue;
+						}
+						//openList.push(neighbour);
+						//closedList.splice(closedList.indexOf(neighbour), 1);
 
-				if (gScoreIsBest) {
-					neighbour.parent = currentNode;
-					neighbour.g = gScore;
-					neighbour.f = neighbour.g + neighbour.h;
-					neighbour.debug = "F: " + neighbour.f + "\n" + neighbour.g + "\n" + neighbour.h;
+					} else {
+						console.log("Not in any list... added to openList");
+						openList.push(neighbour);
+						this.array[neighbour.y][neighbour.x].h = this.manhattan(neighbour, goal);
+					}
+
+					this.array[neighbour.y][neighbour.x].g = newG;
+					this.array[neighbour.y][neighbour.x].f = this.array[neighbour.y][neighbour.x].g + this.array[neighbour.y][neighbour.x].h;
+					this.array[neighbour.y][neighbour.x].parent = currentNode;
 				}
 			}
 		}
 
-		// No path found
-		return [];
+		console.log("No path available...");
+		return;
+	}
+
+	// Return the path from start to current node
+	getPath(currNode) {
+		var curr = currNode
+		var path = [];
+		console.log("loop time");
+		while (this.array[curr.y][curr.x].parent) {
+			console.log("["+curr.x+","+curr.y+"]");
+			path.push(curr);
+			curr = this.array[curr.y][curr.x].parent;
+		}
+		path.push(curr);
+		return path.reverse();
 	}
 
 	// Return manhattan distance of 2 grids
@@ -116,29 +133,50 @@ class astar {
 
 	// Return all neighbours of the current node (only up, down, left & right)
 	neighbours(pos) {
-		console.log(pos);
 		var list = [];
 
-		// Append left column
-		if (this.array[pos.y][pos.x-1]) {
-			list.push(this.array[pos.y][pos.x-1]);
+		// Bottom neighbour
+		if (pos.y > 0) {
+			list.push({
+				x: pos.x,
+				y: pos.y-1
+			})
 		}
 
-		// Append right column
-		if (this.array[pos.y][pos.x+1]) {
-			list.push(this.array[pos.y][pos.x+1]);
+		// Top neighbour
+		if (pos.y < this.height-1) {
+			list.push({
+				x: pos.x,
+				y: pos.y+1
+			})
 		}
 
-		// Append top row
-		if (this.array[pos.y-1][pos.x]) {
-			list.push(this.array[pos.y-1][pos.x]);
+		// Left neighbour
+		if (pos.x > 0) {
+			list.push({
+				x: pos.x-1,
+				y: pos.y
+			})
 		}
 
-		// Append bottom row
-		if (this.array[pos.y+1][pos.x]) {
-			list.push(this.array[pos.y+1][pos.x]);
+		// Right neighbour
+		if (pos.x < this.width-1) {
+			list.push({
+				x: pos.x+1,
+				y: pos.y
+			})
 		}
 
 		return list;
+	}
+
+	// Checks if given array contains given object
+	containsObject(obj, list) {
+		for (var i = 0; i < list.length; i++) {
+			if (JSON.stringify(obj) === JSON.stringify(list[i])) {
+				return true;
+			}
+		}
+		return false;
 	}
 }
