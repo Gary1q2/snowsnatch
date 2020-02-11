@@ -3,13 +3,38 @@
 		<title>Astar test</title>
 	</head>
 	<body>
+		<canvas id="canvas" width=400 height=200></canvas>
 
 	</body>
 	<script src="astar.js"></script>
+	<script src="graph.js"></script>
 </html>
+<style>
 
+#canvas {
+	border: solid 2px black;
+	width: 1200px;
+	height: 800px;
+
+	image-rendering: pixelated;
+}
+</style>
 <script>
-var test = new astar(3, 3);
+/*
+0 = blank
+1 = wall
+2 = player
+3 = goal
+*/
+
+var level = [[2,0,0,0,0],
+			 [1,0,1,0,0],
+			 [0,0,0,0,0],
+			 [1,1,0,1,0],
+			 [0,0,0,0,3]];
+
+
+var test = new Astar(level);
 
 var start = {
 	x: 0,
@@ -17,8 +42,8 @@ var start = {
 };
 
 var goal = {
-	x: 2,
-	y: 2
+	x: 4,
+	y: 4
 };
 
 var path = test.search(start, goal);
@@ -27,4 +52,14 @@ console.log("\npath:");
 for (var i = 0; i < path.length; i++) {
 	console.log("["+path[i].x+","+path[i].y+"]");
 }
+
+
+var ctx = document.getElementById("canvas").getContext("2d");
+
+
+var graph = new Graph(level);
+graph.drawMaze();
+//graph.drawPath(path);
+
+
 </script>

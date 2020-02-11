@@ -1,10 +1,10 @@
-class astar {
+class Astar {
+	constructor(level) {
 
-	// Create 4x4 array grid
-	constructor(height, width) {
-
-		this.height = height;
-		this.width = width;
+		this.height = level.length;
+		this.width = level[0].length;
+		this.level = level;
+		console.log("Loading in level, height="+this.height+", width="+this.width);
 
 		// Create 2D array
 		this.array = new Array(this.height);
@@ -26,6 +26,12 @@ class astar {
 		console.log(this.array);
 	}
 
+	isWall(pos) {
+		if (this.level[pos.y][[pos.x]] == 1) {
+			return true;
+		}
+		return false;
+	}
 
 	search(start, goal) {
 
@@ -64,12 +70,18 @@ class astar {
 			var neighbours = this.neighbours(currentNode);
 			for (var i = 0; i < neighbours.length; i++) {
 				var neighbour = neighbours[i];
-				console.log("Neighbour found ["+neighbour.x+","+neighbour.y+"]");
+				console.log("--->Neighbour found ["+neighbour.x+","+neighbour.y+"]");
+
+				// Don't process if a wall
+				if (this.isWall(neighbour)) {
+					continue;
+				}
+
 
 				// Check if goal
 				if (JSON.stringify(neighbour) === JSON.stringify(goal)) {
 					this.array[neighbour.y][neighbour.x].parent = currentNode;
-					console.log("Found goal");
+					console.log("       Found goal");
 					return this.getPath(neighbour);
 
 				} else {
@@ -77,7 +89,7 @@ class astar {
 
 					// Node in openList
 					if (this.containsObject(neighbour, openList)) {
-						console.log("In openList");
+						console.log("       In openList");
 
 						// Skip if new G value is larger than existing one
 						if (this.array[neighbour.y][neighbour.x].g <= newG) {
@@ -86,7 +98,7 @@ class astar {
 
 					// Node in closedList
 					} else if (this.containsObject(neighbour, closedList)) {
-						console.log("In closedList");
+						console.log("       In closedList");
 
 						// Skip if new G value is larger than existing one
 						if (this.array[neighbour.y][neighbour.x].g <= newG) {
@@ -96,7 +108,7 @@ class astar {
 						//closedList.splice(closedList.indexOf(neighbour), 1);
 
 					} else {
-						console.log("Not in any list... added to openList");
+						console.log("       Not in any list... added to openList");
 						openList.push(neighbour);
 						this.array[neighbour.y][neighbour.x].h = this.manhattan(neighbour, goal);
 					}
@@ -135,7 +147,7 @@ class astar {
 	neighbours(pos) {
 		var list = [];
 
-		// Bottom neighbour
+		// Top neighbour
 		if (pos.y > 0) {
 			list.push({
 				x: pos.x,
@@ -143,7 +155,7 @@ class astar {
 			})
 		}
 
-		// Top neighbour
+		// Bottom neighbour
 		if (pos.y < this.height-1) {
 			list.push({
 				x: pos.x,
