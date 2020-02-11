@@ -10,6 +10,7 @@ class Game {
 		this.level = 0;
 		this.winner = -1;
 
+		this.bot = true;
 		this.gameover = false;
 
 		this.justOffedControls = false;
@@ -256,9 +257,13 @@ class Game {
 		for (var i = 0; i < numHeight; i++) {
 			for (var j = 0; j < numWidth; j++) {
 				if (level[i][j] == 1) {
-					playerArr.push(new Player(j*gridLen, i*gridLen, 1, DIR.right));
+					playerArr.push(new Player(j*gridLen, i*gridLen, 1, DIR.right, false));
 				} else if (level[i][j] == 2) {
-					playerArr.push(new Player(j*gridLen, i*gridLen, 2, DIR.left));
+					if (this.bot) {
+						playerArr.push(new Bot(j*gridLen, i*gridLen, 2, DIR.left));
+					} else {
+						playerArr.push(new Player(j*gridLen, i*gridLen, 2, DIR.left));
+					}
 				}
 			}
 		}	

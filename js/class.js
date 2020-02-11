@@ -719,7 +719,8 @@ class Player extends Entity {
 
 		this.gun = new SnowGun(this);
 
-		this.angle = startFace;
+		this.startFace = startFace
+		this.angle = this.startFace;
 
 		this.dead = false;
 		this.dying = false;
@@ -749,7 +750,9 @@ class Player extends Entity {
 	update() {
 		if (!this.dead && this.canMoveTimer <= 0) {
 			this.updateKeypress();
-			this.shoot();
+			if (this.shootKey) {
+				this.shoot();
+			}
 			this.updateMovement();
 		}
 
@@ -772,6 +775,9 @@ class Player extends Entity {
 		}
 
 		this.canMoveTimer--;
+		if (this.shootTimer > 0) {
+			this.shootTimer--;
+		}
 	}
 
 	updateAmmoHUD() {
@@ -898,13 +904,9 @@ class Player extends Entity {
 	}
 
 	shoot() {
-		if (this.shootKey && this.shootTimer == 0) {
+		if (this.shootTimer == 0) {
 			this.gun.shoot();
 			this.shootTimer = this.gun.shootTime;
-		}
-
-		if (this.shootTimer > 0) {
-			this.shootTimer--;
 		}
 	}
 
@@ -967,10 +969,26 @@ class Player extends Entity {
 		//} else {
 		//	temp = peng2;
 		//}
+
+		this.setAngle(this.startFace);
 		this.changeSprite(temp, 14, 14, 1, 3, [0, 1], 0,0);
 	}
 }
 
+class Bot extends Player {
+	constructor(x, y, playerID, startFace) {
+		super(x, y, playerID, startFace);
+		console.log("I am a bot... i will destroy you...");
+	}
+
+	update() {
+		super.update();
+		if (!this.dead && this.canMoveTimer <= 0 && this.shootTimer == 0) {
+			//this.shoot();
+		}
+	}
+
+}
 
 // Array containing all the temp objects in the game with layers
 class ObjectArrayLayered {
