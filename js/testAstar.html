@@ -13,53 +13,37 @@
 
 #canvas {
 	border: solid 2px black;
-	width: 1200px;
-	height: 800px;
+	width: 800px;
+	height: 400px;
 
 	image-rendering: pixelated;
 }
 </style>
 <script>
+
+
+var ctx = document.getElementById("canvas").getContext("2d");
+
 /*
 0 = blank
 1 = wall
 2 = player
 3 = goal
 */
-
-var level = [[2,0,0,0,0],
-			 [1,0,1,0,0],
-			 [0,0,0,0,0],
-			 [1,1,0,1,0],
-			 [0,0,0,0,3]];
-
-
-var test = new Astar(level);
-
-var start = {
-	x: 0,
-	y: 0
-};
-
-var goal = {
-	x: 4,
-	y: 4
-};
-
-var path = test.search(start, goal);
-
-console.log("\npath:");
-for (var i = 0; i < path.length; i++) {
-	console.log("["+path[i].x+","+path[i].y+"]");
-}
-
-
-var ctx = document.getElementById("canvas").getContext("2d");
-
-
+var level = [
+			[ 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ],
+			[ 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 1 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ],
+			[ 0 , 0 , 3 , 1 , 0 , 1 , 1 , 0 , 1 , 1 , 1 , 1 , 0 , 0 , 1 , 0 , 1 , 0 , 0 , 0 ],
+			[ 0 , 0 , 0 , 1 , 0 , 0 , 1 , 0 , 1 , 1 , 1 , 1 , 0 , 0 , 0 , 0 , 1 , 1 , 1 , 0 ],
+			[ 0 , 0 , 0 , 1 , 1 , 0 , 0 , 0 , 1 , 1 , 1 , 1 , 1 , 0 , 0 , 0 , 1 , 0 , 0 , 0 ],
+			[ 0 , 0 , 0 , 1 , 0 , 0 , 0 , 0 , 1 , 1 , 1 , 1 , 0 , 0 , 0 , 0 , 1 , 0 , 0 , 0 ],
+			[ 0 , 1 , 0 , 1 , 0 , 1 , 0 , 1 , 1 , 1 , 1 , 1 , 0 , 1 , 0 , 0 , 1 , 0 , 0 , 0 ],
+			[ 0 , 0 , 1 , 1 , 0 , 0 , 0 , 0 , 1 , 1 , 1 , 1 , 0 , 0 , 0 , 0 , 1 , 0 , 0 , 0 ],
+			[ 0 , 0 , 0 , 0 , 1 , 0 , 0 , 0 , 1 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 2 , 0 ],
+			[ 0 , 0 , 1 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ]
+			];		
 var graph = new Graph(level);
 graph.drawMaze();
-//graph.drawPath(path);
-
+//graph.drawPath();
 
 </script>
