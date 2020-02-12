@@ -53,7 +53,7 @@ class Astar {
 
 	// Checks if this position is a wall or not
 	isWall(pos) {
-		if (this.level[pos.y][[pos.x]] == 1) {
+		if (this.level[pos.y][[pos.x]] == "W") {
 			return true;
 		}
 		return false;
@@ -101,7 +101,7 @@ class Astar {
 			var neighbours = this.neighbours(currentNode);
 			for (var i = 0; i < neighbours.length; i++) {
 				var neighbour = neighbours[i];
-				console.log("--->Neighbour found ["+neighbour.x+","+neighbour.y+"]");
+				//console.log("--->Neighbour found ["+neighbour.x+","+neighbour.y+"]");
 
 				// Don't process if a wall
 				if (this.isWall(neighbour)) {
@@ -121,7 +121,7 @@ class Astar {
 
 					// Node in openList
 					if (this.containsObject(neighbour, openList)) {
-						console.log("       In openList");
+						//console.log("       In openList");
 
 						// Skip if new G value is larger than existing one
 						if (this.array[neighbour.y][neighbour.x].g <= newG) {
@@ -130,7 +130,7 @@ class Astar {
 
 					// Node in closedList
 					} else if (this.containsObject(neighbour, closedList)) {
-						console.log("       In closedList");
+						//console.log("       In closedList");
 
 						// Skip if new G value is larger than existing one
 						if (this.array[neighbour.y][neighbour.x].g <= newG) {
@@ -141,7 +141,7 @@ class Astar {
 
 					// Add node to openList
 					} else {
-						console.log("       Not in any list... added to openList");
+						//console.log("       Not in any list... added to openList");
 						openList.push(neighbour);
 						this.array[neighbour.y][neighbour.x].h = this.manhattan(neighbour, goal);
 					}

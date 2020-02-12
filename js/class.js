@@ -988,8 +988,14 @@ class Bot extends Player {
 		// Store the level layout
 		this.level = level;
 
-		//this.startPos = ?;
-		//this.goalPos = ?;
+
+		// This isn't updated... so won't update when walls are destroyed
+		this.astar = new Astar(level);
+
+		this.task = "getFlag";
+
+		this.path = [];
+		//this.fuck = true;
 	}
 
 	update() {
@@ -1002,30 +1008,79 @@ class Bot extends Player {
 			if (!this.dead && this.canMoveTimer <= 0) {
 
 
-				// Move to flag and going home
-				//if (!this.hasFlag)  {
-				//	this.x -= this.speed;
-				//} else {
-				//	this.x += this.speed;
-				//}
+
+				if (!this.hasFlag) {
+					this.task = "getFlag";
+				} else {
+					this.task = "goHome";
+				}
+
+				if (this.task == "getFlag" && this.path.length == 0) { // && this.fuck) {
+					this.path = this.astar.search({
+						x: 17,
+						y: 2
+					}, {
+						x: 2,
+						y: 2
+					});
+					//this.fuck = false;
+
+				} else if (this.task == "goHome" && this.path.length == 0) {
+					this.path = this.astar.search({
+						x: 2,
+						y: 2
+					}, {
+						x: 18,
+						y: 2
+					});
+				}
+
+				// There are paths to go to
+				if (this.path.length != 0) {
+
+					// Not yet reached the 1st designated grid
+					if (this.x != this.path[0].x*gridLen || this.y != this.path[0].y*gridLen) {
+						this.moveToPos(this.path[0]);
+
+					// Reached spot, pop off
+					} else {
+						console.log("Popped path ["+this.path[0].x+","+this.path[0].y+"]");
+						this.path.shift();
+
+					}
+				}
+
 
 				// Shooting automatically
-				if (this.shootTimer == 0) { 
-					this.shoot();
-					var omg = this.findGridLoc();
-					var string = "";
-					for (var i = 0; i < omg.length; i++) {
-						string += "["+omg[i].x+","+omg[i].y+"]";
-					}
-					console.log(string);
-				}
+				//if (this.shootTimer == 0) { 
+					//this.shoot();
+				//	var omg = this.findGridLoc();
+				//	var string = "";
+				//	for (var i = 0; i < omg.length; i++) {
+				//		string += "["+omg[i].x+","+omg[i].y+"]";
+				//	}
+					//console.log(string);
+				//}
 			}
 		}
 	}
 
-	// Move to the given position
+	// Move from current x,y position to given position
 	moveToPos(pos) {
 
+		// Moving left and right
+		if (this.x < pos.x*gridLen) {
+			this.x += this.speed;
+		} else if (this.x > pos.x*gridLen) {
+			this.x -= this.speed;
+		}
+
+		// Moving up and down
+		if (this.y < pos.y*gridLen) {
+			this.y += this.speed;
+		} else if (this.y > pos.y*gridLen) {
+			this.y -= this.speed;
+		}
 	}
 
 
