@@ -942,6 +942,15 @@ class Player extends Entity {
 
 		playSound(die_snd);
 		playSound(die2_snd);
+
+
+
+		// Reset the pathing array if bot dies + reset its current position
+		if (this instanceof(Bot)) {
+			this.path = [];
+			this.currPos = this.startPos;
+			console.log("i died and im a bot -> my path array reset");
+		}
 	}
 
 	// Return the current keys pressed
@@ -992,10 +1001,31 @@ class Bot extends Player {
 		// This isn't updated... so won't update when walls are destroyed
 		this.astar = new Astar(level);
 
-		this.task = "getFlag";
+		this.task = TASK.getFlag;
 
 		this.path = [];
-		//this.fuck = true;
+
+		// Current position of bot
+		this.currPos = {
+			x: x/gridLen,
+			y: y/gridLen
+		};
+
+		// Remember the starting coordinates
+		this.startPos = this.currPos;
+
+		// Find the coordinates for the bot's goal
+		this.goal;
+		for (var i = 0; i < level.length; i++) {
+			for (var j = 0; j < level[i].length; j++) {
+				if (level[i][j] == "T") {
+					this.goal = {
+						x: j,
+						y: i
+					};
+				}
+			}
+		}
 	}
 
 	update() {
@@ -1008,34 +1038,28 @@ class Bot extends Player {
 			if (!this.dead && this.canMoveTimer <= 0) {
 
 
-
+				// Decide what task the bot needs to do
 				if (!this.hasFlag) {
-					this.task = "getFlag";
+					this.task = TASK.getFlag;
 				} else {
-					this.task = "goHome";
+					this.task = TASK.goHome;
 				}
 
-				if (this.task == "getFlag" && this.path.length == 0) { // && this.fuck) {
-					this.path = this.astar.search({
-						x: 17,
-						y: 2
-					}, {
+
+				// Generate path to get the flag
+				if (this.task == TASK.getFlag && this.path.length == 0) {
+					this.path = this.astar.search(this.currPos, {
 						x: 2,
 						y: 2
 					});
-					//this.fuck = false;
 
-				} else if (this.task == "goHome" && this.path.length == 0) {
-					this.path = this.astar.search({
-						x: 2,
-						y: 2
-					}, {
-						x: 18,
-						y: 2
-					});
+
+				// Generate path to go home
+				} else if (this.task == TASK.goHome && this.path.length == 0) {
+					this.path = this.astar.search(this.currPos, this.goal);
 				}
 
-				// There are paths to go to
+				// Move the bot because it has somewhere to go
 				if (this.path.length != 0) {
 
 					// Not yet reached the 1st designated grid
@@ -1044,9 +1068,9 @@ class Bot extends Player {
 
 					// Reached spot, pop off
 					} else {
-						console.log("Popped path ["+this.path[0].x+","+this.path[0].y+"]");
+						//console.log("Popped path ["+this.path[0].x+","+this.path[0].y+"]");
+						this.currPos = this.path[0];
 						this.path.shift();
-
 					}
 				}
 
@@ -1054,7 +1078,7 @@ class Bot extends Player {
 				// Shooting automatically
 				//if (this.shootTimer == 0) { 
 					//this.shoot();
-				//	var omg = this.findGridLoc();
+				//	var omg = this.findBotLoc();
 				//	var string = "";
 				//	for (var i = 0; i < omg.length; i++) {
 				//		string += "["+omg[i].x+","+omg[i].y+"]";
@@ -1063,6 +1087,52 @@ class Bot extends Player {
 				//}
 			}
 		}
+	}
+
+	// Find the grids that the flag is currently in
+	findFlagLoc() {
+
+		// Find the flag object
+		var flag;
+		for (var i of tempArr.array) {
+			for (var j of i) {
+				if (j instanceof Flag) {
+					if (j.owner.playerID == this.playerID) {
+						flag = j;
+					}
+				}
+			}
+		}
+
+
+		var list = [];
+		for (var i = 0; i < this.level.length; i++) {
+			for (var j = 0; j < this.level[i].length; j++) {
+
+				// Check which grid the flag is in
+				var rect1 = {
+					x: flag.x-flag.centerX+flag.colShiftX+flag.img.width/flag.nCol/2-flag.width/2,
+					y: flag.y-flag.centerY+flag.colShiftY+flag.img.height/flag.nRow/2-flag.height/2,
+					width: flag.width,
+					height: flag.height
+				};
+				var rect2 = {
+					x: j*gridLen,
+					y: i*gridLen,
+					width: gridLen,
+					height: gridLen
+				};
+
+				// Push the coordinates of the grid
+				if (testCollisionRectRect(rect1, rect2)) {
+					list.push({
+						x: j,
+						y: i
+					});
+				}
+			}
+		}
+		return list;	
 	}
 
 	// Move from current x,y position to given position
@@ -1084,9 +1154,9 @@ class Bot extends Player {
 	}
 
 
-	// Find the grid that bot is currently in
+	// Find the grids that the bot is currently in
 	// Can return multiple grids if standing on multiple
-	findGridLoc() {
+	findBotLoc() {
 		var list = [];
 		for (var i = 0; i < this.level.length; i++) {
 			for (var j = 0; j < this.level[i].length; j++) {

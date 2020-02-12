@@ -91,7 +91,7 @@ class Astar {
 				}
 			}
 			var currentNode = openList[lowIndex];
-			console.log("Reached new node ["+currentNode.x+","+currentNode.y+"]");
+			//console.log("Reached new node ["+currentNode.x+","+currentNode.y+"]");
 
 			// Move current node to closedList
 			openList.splice(lowIndex, 1);
