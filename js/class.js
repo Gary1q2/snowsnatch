@@ -945,9 +945,10 @@ class Player extends Entity {
 
 
 
-		// Reset the pathing array if bot dies + reset its current position
+		// Reset the pathing array, current position && flag array if bot dies
 		if (this instanceof(Bot)) {
 			this.path = [];
+			this.flag = [];
 			this.currPos = this.startPos;
 			console.log("i died and im a bot -> my path array reset");
 		}
@@ -1003,7 +1004,13 @@ class Bot extends Player {
 
 		this.task = TASK.getFlag;
 
+		// Array containing grids which bot needs to go to
 		this.path = [];
+
+		// Array containing possible grid location of the flag
+		this.flag = [];
+
+
 
 		// Current position of bot
 		this.currPos = {
@@ -1043,21 +1050,34 @@ class Bot extends Player {
 					this.task = TASK.getFlag;
 				} else {
 					this.task = TASK.goHome;
+					this.flag = [];  // Reset the flag array to empty
 				}
 
 
 				// Generate path to get the flag
 				if (this.task == TASK.getFlag && this.path.length == 0) {
-					this.path = this.astar.search(this.currPos, {
-						x: 2,
-						y: 2
-					});
+
+					// Generate possible locations of the flag
+					if (this.flag.length == 0) {
+						this.flag = this.findFlagLoc();		
+
+					// No flag found at previous location, pop off		
+					} else {
+						this.flag.shift();
+					}
+
+					console.log("Flag located at ["+this.flag[0].x+","+this.flag[0].y+"]");
+					this.path = this.astar.search(this.currPos, this.flag[0]);
+
 
 
 				// Generate path to go home
 				} else if (this.task == TASK.goHome && this.path.length == 0) {
 					this.path = this.astar.search(this.currPos, this.goal);
 				}
+
+
+
 
 				// Move the bot because it has somewhere to go
 				if (this.path.length != 0) {
