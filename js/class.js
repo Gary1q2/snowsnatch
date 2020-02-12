@@ -988,18 +988,20 @@ class Bot extends Player {
 
 	update() {
 		super.update();
-		if (!this.dead && this.canMoveTimer <= 0) {
+		if (!game.gameover) {
+			if (!this.dead && this.canMoveTimer <= 0) {
 
-			// Move to flag and going home
-			if (!this.hasFlag)  {
-				this.x -= this.speed;
-			} else {
-				this.x += this.speed;
-			}
+				// Move to flag and going home
+				if (!this.hasFlag)  {
+					this.x -= this.speed;
+				} else {
+					this.x += this.speed;
+				}
 
-			// Shooting automatically
-			if (this.shootTimer == 0) { 
-				this.shoot();
+				// Shooting automatically
+				if (this.shootTimer == 0) { 
+					this.shoot();
+				}
 			}
 		}
 	}
