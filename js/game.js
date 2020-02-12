@@ -260,7 +260,7 @@ class Game {
 					playerArr.push(new Player(j*gridLen, i*gridLen, 1, DIR.right, false));
 				} else if (level[i][j] == 2) {
 					if (this.bot) {
-						playerArr.push(new Bot(j*gridLen, i*gridLen, 2, DIR.left));
+						playerArr.push(new Bot(j*gridLen, i*gridLen, 2, DIR.left, level));
 					} else {
 						playerArr.push(new Player(j*gridLen, i*gridLen, 2, DIR.left));
 					}

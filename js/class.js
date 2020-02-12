@@ -981,30 +981,87 @@ class Player extends Entity {
 }
 
 class Bot extends Player {
-	constructor(x, y, playerID, startFace) {
+	constructor(x, y, playerID, startFace, level) {
 		super(x, y, playerID, startFace);
 		console.log("I am a bot... i will destroy you...");
+
+		// Store the level layout
+		this.level = level;
+
+		//this.startPos = ?;
+		//this.goalPos = ?;
 	}
 
 	update() {
 		super.update();
+
+		// Stop moving when gameover
 		if (!game.gameover) {
+
+			// Only move if allowed
 			if (!this.dead && this.canMoveTimer <= 0) {
 
+
 				// Move to flag and going home
-				if (!this.hasFlag)  {
-					this.x -= this.speed;
-				} else {
-					this.x += this.speed;
-				}
+				//if (!this.hasFlag)  {
+				//	this.x -= this.speed;
+				//} else {
+				//	this.x += this.speed;
+				//}
 
 				// Shooting automatically
 				if (this.shootTimer == 0) { 
 					this.shoot();
+					var omg = this.findGridLoc();
+					var string = "";
+					for (var i = 0; i < omg.length; i++) {
+						string += "["+omg[i].x+","+omg[i].y+"]";
+					}
+					console.log(string);
 				}
 			}
 		}
 	}
+
+	// Move to the given position
+	moveToPos(pos) {
+
+	}
+
+
+	// Find the grid that bot is currently in
+	// Can return multiple grids if standing on multiple
+	findGridLoc() {
+		var list = [];
+		for (var i = 0; i < this.level.length; i++) {
+			for (var j = 0; j < this.level[i].length; j++) {
+
+				// Check which grid the bot is in
+				var rect1 = {
+					x: this.x-this.centerX+this.colShiftX+this.img.width/this.nCol/2-this.width/2,
+					y: this.y-this.centerY+this.colShiftY+this.img.height/this.nRow/2-this.height/2,
+					width: this.width,
+					height: this.height
+				};
+				var rect2 = {
+					x: j*gridLen,
+					y: i*gridLen,
+					width: gridLen,
+					height: gridLen
+				};
+
+				// Push the coordinates of the grid
+				if (testCollisionRectRect(rect1, rect2)) {
+					list.push({
+						x: j,
+						y: i
+					});
+				}
+			}
+		}
+		return list;
+	}
+
 
 }
 

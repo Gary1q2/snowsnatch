@@ -5,6 +5,7 @@ class Astar {
 		this.width = level[0].length;
 		this.level = level;
 
+/*
 		this.start; 
 		this.goal;
 
@@ -24,7 +25,7 @@ class Astar {
 				}
 			}
 		}
-
+*/
 		console.log("Loading in level, height="+this.height+", width="+this.width);
 
 		// Create 2D array
@@ -33,7 +34,11 @@ class Astar {
 			this.array[i] = new Array(this.width);
 		}
 
-		// Fill array with variables
+		console.log(this.array);
+	}
+
+	// Initialise array values to default
+	initArray() {
 		for (var i = 0; i < this.array.length; i++) {
 			for (var j = 0; j < this.array[i].length; j++) {
 				this.array[i][j] = {
@@ -44,7 +49,6 @@ class Astar {
 				}
 			}
 		}
-		console.log(this.array);
 	}
 
 	// Checks if this position is a wall or not
@@ -56,23 +60,25 @@ class Astar {
 	}
 
 	// Start A* search
-	search() {
+	search(start, goal) {
+		this.initArray();
 
-		// Disable goal to be same as start
-		if (JSON.stringify(this.start) === JSON.stringify(this.goal)) {
+
+		// Disallow goal to be same as start
+		if (JSON.stringify(start) === JSON.stringify(goal)) {
 			console.log("Already at the goal");
 			return;
 		}
 
 		// Initialise starting node in array
-		this.array[this.start.y][this.start.x].f = 0;
-		this.array[this.start.y][this.start.x].g = 0;
-		this.array[this.start.y][this.start.x].h = 0;
-		this.array[this.start.y][this.start.x].parent = null;
+		this.array[start.y][start.x].f = 0;
+		this.array[start.y][start.x].g = 0;
+		this.array[start.y][start.x].h = 0;
+		this.array[start.y][start.x].parent = null;
 
 		var openList = [];
 		var closedList = [];
-		openList.push(this.start);
+		openList.push(start);
 
 
 		while (openList.length != 0) {
@@ -104,7 +110,7 @@ class Astar {
 
 
 				// Check if goal
-				if (JSON.stringify(neighbour) === JSON.stringify(this.goal)) {
+				if (JSON.stringify(neighbour) === JSON.stringify(goal)) {
 					this.array[neighbour.y][neighbour.x].parent = currentNode;
 					console.log("       Found goal");
 					return this.getPath(neighbour);
@@ -137,7 +143,7 @@ class Astar {
 					} else {
 						console.log("       Not in any list... added to openList");
 						openList.push(neighbour);
-						this.array[neighbour.y][neighbour.x].h = this.manhattan(neighbour, this.goal);
+						this.array[neighbour.y][neighbour.x].h = this.manhattan(neighbour, goal);
 					}
 
 					this.array[neighbour.y][neighbour.x].g = newG;
