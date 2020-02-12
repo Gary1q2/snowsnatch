@@ -30,7 +30,8 @@ class Graph {
 	// Draw the path on top of the maze
 	drawPath() {
 		var path = this.astar.search();
-
+		if (!path) { return; }
+		
 		// Log the path
 		//console.log("\npath:");
 		for (var i = 0; i < path.length; i++) {

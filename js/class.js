@@ -480,6 +480,7 @@ class Flag extends Entity {
 	checkDead() {
 		if (this.owner.dead) {
 			this.acquired = false;
+			this.owner.hasFlag = false;
 			this.respawnTimer = this.respawnTime;
 			this.timer = new Timer(this.x+5, this.y+5, this.respawnTime);
 		}
@@ -492,6 +493,7 @@ class Flag extends Entity {
 				console.log("Player " + i.playerID + " acquired flag... player" +this.owner.playerID + "'s flag gg");
 				this.acquired = true;
 				this.atGoal = false;
+				this.owner.hasFlag = true;
 				playSound(flagGot_snd);
 				break;
 			}
@@ -650,6 +652,7 @@ class Goal extends Entity {
 		for (var j = 0; j < 100; j++) {
 			tempArr.add(new Confetti(180, 180, 5, 9));
 		}
+		this.owner.hasFlag = false;
 		this.owner.score++;
 		flag.respawn();
 		playSound(win_snd);
@@ -746,6 +749,8 @@ class Player extends Entity {
 		this.respawnTime = 100;
 
 		this.score = 0;
+
+		this.hasFlag = false;
 	}
 	update() {
 		if (!this.dead && this.canMoveTimer <= 0) {
@@ -983,8 +988,19 @@ class Bot extends Player {
 
 	update() {
 		super.update();
-		if (!this.dead && this.canMoveTimer <= 0 && this.shootTimer == 0) {
-			//this.shoot();
+		if (!this.dead && this.canMoveTimer <= 0) {
+
+			// Move to flag and going home
+			if (!this.hasFlag)  {
+				this.x -= this.speed;
+			} else {
+				this.x += this.speed;
+			}
+
+			// Shooting automatically
+			if (this.shootTimer == 0) { 
+				this.shoot();
+			}
 		}
 	}
 
