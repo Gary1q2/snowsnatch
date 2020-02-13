@@ -154,7 +154,7 @@ class Astar {
 		}
 
 		console.log("No path available...");
-		return;
+		return [];
 	}
 
 	// Return the path from start node to goal node

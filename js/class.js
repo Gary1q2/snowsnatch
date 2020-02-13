@@ -1106,6 +1106,7 @@ class Bot extends Player {
 					// Generate possible locations of the flag
 					if (this.flag.length == 0) {
 						this.flag = this.findFlagLoc();		
+						console.log("generated flag locations");
 
 					// No flag found at previous location, pop off		
 					} else {
@@ -1113,9 +1114,11 @@ class Bot extends Player {
 						this.flag.shift();
 					}
 
-					console.log("Flag located at ["+this.flag[0].x+","+this.flag[0].y+"]");
-					this.path = this.astar.search(this.currPos, this.flag[0]);
-
+					// Find path to the flag
+					if (this.flag.length != 0) {
+						console.log("Flag located at ["+this.flag[0].x+","+this.flag[0].y+"]");
+						this.path = this.astar.search(this.currPos, this.flag[0]);
+					}
 
 
 				// Generate path to go home
