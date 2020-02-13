@@ -1093,6 +1093,10 @@ class Bot extends Player {
 						this.currPos = this.path[0];
 						this.path.shift();
 					}
+
+					this.moving = true;
+				} else {
+					this.moving = false;
 				}
 
 
