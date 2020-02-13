@@ -1063,6 +1063,7 @@ class Bot extends Player {
 
 					// No flag found at previous location, pop off		
 					} else {
+						console.log("Not in previous flag position, POPPED OFF");
 						this.flag.shift();
 					}
 
@@ -1161,15 +1162,20 @@ class Bot extends Player {
 		// Moving left and right
 		if (this.x < pos.x*gridLen) {
 			this.x += this.speed;
+			this.setAngle(DIR.right);
+
 		} else if (this.x > pos.x*gridLen) {
 			this.x -= this.speed;
+			this.setAngle(DIR.left);
 		}
 
 		// Moving up and down
 		if (this.y < pos.y*gridLen) {
 			this.y += this.speed;
+			this.setAngle(DIR.down);
 		} else if (this.y > pos.y*gridLen) {
 			this.y -= this.speed;
+			this.setAngle(DIR.up);
 		}
 	}
 
