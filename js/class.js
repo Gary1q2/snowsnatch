@@ -1133,12 +1133,15 @@ class Bot extends Player {
 					if (this.x != this.path[0].x*gridLen || this.y != this.path[0].y*gridLen) {
 						this.moveToPos(this.path[0]);
 
-					// Reached spot, pop off
+					// Reached spot, pop off AND MOVE TO NEW SPOT
 					} else {
-						//console.log("Popped path ["+this.path[0].x+","+this.path[0].y+"]");
 						this.currPos = this.path[0];
 						this.path.shift();
+						if (this.path.length != 0) {
+							this.moveToPos(this.path[0]);
+						}
 					}
+
 					if (this.moving == false) {
 						this.moving = true;
 
@@ -1148,6 +1151,7 @@ class Bot extends Player {
 						this.animDelayTime = 6;
 					}
 				} else {
+
 					if (this.moving) {
 						this.moving = false;
 
