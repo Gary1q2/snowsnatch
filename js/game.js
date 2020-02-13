@@ -257,12 +257,12 @@ class Game {
 		for (var i = 0; i < numHeight; i++) {
 			for (var j = 0; j < numWidth; j++) {
 				if (level[i][j] == 1) {
-					playerArr.push(new Player(j*gridLen, i*gridLen, 1, DIR.right, false));
+					playerArr.push(new Human(j*gridLen, i*gridLen, 1, DIR.right, false));
 				} else if (level[i][j] == 2) {
 					if (this.bot) {
 						playerArr.push(new Bot(j*gridLen, i*gridLen, 2, DIR.left, level));
 					} else {
-						playerArr.push(new Player(j*gridLen, i*gridLen, 2, DIR.left));
+						playerArr.push(new Human(j*gridLen, i*gridLen, 2, DIR.left));
 					}
 				}
 			}

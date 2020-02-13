@@ -702,6 +702,8 @@ class Wall extends Entity {
 }
 
 
+
+// A playable character controlled by a human or bot
 class Player extends Entity {
 	constructor(x, y, playerID, startFace) {
 		var pengColor;
@@ -713,34 +715,25 @@ class Player extends Entity {
 
 		super(x, y, 14, 14, pengColor, 1, 3, [0,1], 0,0);
 
-		this.speed = 1;
+		this.speed = 1;            // Move speed
 
-		this.shootTimer = 0;
+		this.shootTimer = 0;       // Timer for shooting
 
 		this.playerID = playerID;
 
 
 		this.gun = new SnowGun(this);
 
-		this.startFace = startFace
-		this.angle = this.startFace;
+		this.startFace = startFace;    // Initial direction the player faces
+		this.angle = this.startFace;   // Current angle of object
 
-		this.dead = false;
-		this.dying = false;
+		this.dead = false;            
+		this.dying = false;           // In dying animation
 
-		this.leftKey;
-		this.rightKey;
-		this.upKey;
-		this.downKey;
-		this.shootKey;
 
 		this.moving = false; // If player is moving or not
 
-		this.strafeDir = DIR.none; // Direction keep facing when strafing
-		this.firstKeyPress = DIR.none;  // Key first pressed for strafing
-		
-
-		this.canMoveTimer = 100;
+		this.canMoveTimer = 100;   // Delay before game starts
 
 		this.initX = x;   // Remember initial spawn location
 		this.initY = y;
@@ -748,19 +741,16 @@ class Player extends Entity {
 		this.respawnTimer = 0;
 		this.respawnTime = 100;
 
-		this.score = 0;
+		this.score = 0;     // How many flags captured
 
 		this.hasFlag = false;
-	}
-	update() {
-		if (!this.dead && this.canMoveTimer <= 0) {
-			this.updateKeypress();
-			if (this.shootKey) {
-				this.shoot();
-			}
-			this.updateMovement();
-		}
 
+
+		this.animDelayTime = 20;   // Set animation speed for initial idling
+	}
+
+	// Update function that only updates the basics
+	update() {
 		this.updateAmmoHUD();
 		this.draw();
 		if (debug) {
@@ -794,57 +784,6 @@ class Player extends Entity {
 		}
 	}
 
-	// Grab keypresses from global keys object
-	updateKeypress() {
-		if (this.playerID == 1) {
-			this.leftKey = Keys.left;
-			this.rightKey = Keys.right;
-			this.upKey = Keys.up;
-			this.downKey = Keys.down;
-			this.shootKey = Keys.space;
-		} else if (this.playerID == 2) {
-			this.leftKey = Keys.a;
-			this.rightKey = Keys.d;
-			this.upKey = Keys.w;
-			this.downKey = Keys.s;
-			this.shootKey = Keys.f;			
-		}
-
-		// Check if player is moving or not
-		if (this.leftKey || this.rightKey || this.upKey || this.downKey) {
-			if (!this.moving) {
-				this.moving = true;
-
-				// Prepare for new animation
-				this.animIndex = 0;
-				this.animDelay = 0;
-				this.animDelayTime = 6;
-			}
-		} else {
-			this.moving = false;
-			this.firstKeyPress = DIR.none;
-		}
-
-		if (this.moving) {
-
-			// Start strafing
-			if (this.firstKeyPress == DIR.none) {
-				if (this.leftKey) { this.firstKeyPress = DIR.left; }
-				if (this.rightKey) { this.firstKeyPress = DIR.right; }
-				if (this.upKey) { this.firstKeyPress = DIR.up; }
-				if (this.downKey) { this.firstKeyPress = DIR.down; }
-				this.setAngle(this.firstKeyPress);
-
-			// Change strafe direction mid-strafe
-			} else {
-				var keyArr = this.currKeysPressed();
-				if (keyArr.length == 1 && this.firstKeyPress != keyArr[0]) {
-					this.firstKeyPress = keyArr[0];
-					this.setAngle(this.firstKeyPress);
-				}
-			}
-		}
-	}
 
 	draw() {
 		// Alive sprite
@@ -856,7 +795,6 @@ class Player extends Entity {
 
 			// Idle animation
 			} else {
-				this.animDelayTime = 20;
 				this.drawAnimated(this.frameSeq);
 			}
 
@@ -882,31 +820,6 @@ class Player extends Entity {
 		}
 	}
 
-	// Update movement based on key presses
-	updateMovement() {
-		if (this.leftKey) {
-			if (!this.checkEdgeColAt(-this.speed, 0) && !this.checkWallColAt(-this.speed, 0)) {
-				this.x -= this.speed;
-			}
-		}
-		if (this.rightKey) {
-			if (!this.checkEdgeColAt(this.speed, 0) && !this.checkWallColAt(this.speed, 0)) {
-				this.x += this.speed;
-			}
-		}
-		if (this.upKey) {
-			if (!this.checkEdgeColAt(0, -this.speed) && !this.checkWallColAt(0, -this.speed)) {
-				this.y -= this.speed;
-			}	
-		}
-			
-		if (this.downKey) {
-			if (!this.checkEdgeColAt(0, this.speed) && !this.checkWallColAt(0, this.speed)) {
-				this.y += this.speed;
-			}	
-		}
-			
-	}
 
 	shoot() {
 		if (this.shootTimer == 0) {
@@ -954,15 +867,6 @@ class Player extends Entity {
 		}
 	}
 
-	// Return the current keys pressed
-	currKeysPressed() {
-		var keys = [];
-		if (this.rightKey) { keys.push(DIR.right); }
-		if (this.leftKey) { keys.push(DIR.left);}
-		if (this.upKey) { keys.push(DIR.up); }
-		if (this.downKey) { keys.push(DIR.down); }
-		return keys;
-	}
 
 	// Respawn the player
 	respawn() {
@@ -972,6 +876,8 @@ class Player extends Entity {
 
 		// Reset these so player faces correct direction once they respawn if they hold the keys
 		this.moving = false;
+
+
 		this.firstKeyPress = DIR.none;
 
 		// Back to original spot
@@ -985,11 +891,151 @@ class Player extends Entity {
 		//	temp = peng2;
 		//}
 
+		// Prepare for new animation
+		this.animIndex = 0;
+		this.animDelay = 0;
+		this.animDelayTime = 20;
+
+
 		this.setAngle(this.startFace);
 		this.changeSprite(temp, 14, 14, 1, 3, [0, 1], 0,0);
 	}
 }
 
+
+// Human controlled player
+class Human extends Player {
+	constructor(x, y, playerID, startFace) {
+		super(x, y, playerID, startFace);
+
+		// Stores if the keys are pressed or not
+		this.leftKey;   
+		this.rightKey;
+		this.upKey;
+		this.downKey;
+		this.shootKey;
+
+		this.strafeDir = DIR.none; // Direction keep facing when strafing
+		this.firstKeyPress = DIR.none;  // Key first pressed for strafing
+		
+	}
+
+	update() {
+
+		// Register keypresses for moving & shooting
+		if (!this.dead && this.canMoveTimer <= 0) {
+			this.updateKeypress();
+			if (this.shootKey) {
+				this.shoot();
+			}
+			this.updateMovement();
+		}
+
+		// Update the basic functions
+		super.update();
+	}
+
+	// Grab keypresses from global keys object
+	updateKeypress() {
+		if (this.playerID == 1) {
+			this.leftKey = Keys.left;
+			this.rightKey = Keys.right;
+			this.upKey = Keys.up;
+			this.downKey = Keys.down;
+			this.shootKey = Keys.space;
+		} else if (this.playerID == 2) {
+			this.leftKey = Keys.a;
+			this.rightKey = Keys.d;
+			this.upKey = Keys.w;
+			this.downKey = Keys.s;
+			this.shootKey = Keys.f;			
+		}
+
+		// Check if player is moving or not
+		if (this.leftKey || this.rightKey || this.upKey || this.downKey) {
+			if (!this.moving) {
+				this.moving = true;
+
+				// Prepare for new animation - idle to walking
+				this.animIndex = 0;
+				this.animDelay = 0;
+				this.animDelayTime = 6;
+			}
+		} else {
+			if (this.moving) {
+				this.moving = false;
+
+				// Prepare for new animation - walking to idle
+				this.animIndex = 0;
+				this.animDelay = 0;
+				this.animDelayTime = 20;
+			}
+
+			this.firstKeyPress = DIR.none;
+		}
+
+		if (this.moving) {
+
+			// Start strafing
+			if (this.firstKeyPress == DIR.none) {
+				if (this.leftKey) { this.firstKeyPress = DIR.left; }
+				if (this.rightKey) { this.firstKeyPress = DIR.right; }
+				if (this.upKey) { this.firstKeyPress = DIR.up; }
+				if (this.downKey) { this.firstKeyPress = DIR.down; }
+				this.setAngle(this.firstKeyPress);
+
+			// Change strafe direction mid-strafe
+			} else {
+				var keyArr = this.currKeysPressed();
+				if (keyArr.length == 1 && this.firstKeyPress != keyArr[0]) {
+					this.firstKeyPress = keyArr[0];
+					this.setAngle(this.firstKeyPress);
+				}
+			}
+		}
+	}
+
+
+
+	// Update movement based on key presses
+	updateMovement() {
+		if (this.leftKey) {
+			if (!this.checkEdgeColAt(-this.speed, 0) && !this.checkWallColAt(-this.speed, 0)) {
+				this.x -= this.speed;
+			}
+		}
+		if (this.rightKey) {
+			if (!this.checkEdgeColAt(this.speed, 0) && !this.checkWallColAt(this.speed, 0)) {
+				this.x += this.speed;
+			}
+		}
+		if (this.upKey) {
+			if (!this.checkEdgeColAt(0, -this.speed) && !this.checkWallColAt(0, -this.speed)) {
+				this.y -= this.speed;
+			}	
+		}
+			
+		if (this.downKey) {
+			if (!this.checkEdgeColAt(0, this.speed) && !this.checkWallColAt(0, this.speed)) {
+				this.y += this.speed;
+			}	
+		}
+			
+	}
+
+	// Return the current keys pressed
+	currKeysPressed() {
+		var keys = [];
+		if (this.rightKey) { keys.push(DIR.right); }
+		if (this.leftKey) { keys.push(DIR.left);}
+		if (this.upKey) { keys.push(DIR.up); }
+		if (this.downKey) { keys.push(DIR.down); }
+		return keys;
+	}
+}
+
+
+// Computer controlled player
 class Bot extends Player {
 	constructor(x, y, playerID, startFace, level) {
 		super(x, y, playerID, startFace);
@@ -1002,7 +1048,8 @@ class Bot extends Player {
 		// This isn't updated... so won't update when walls are destroyed
 		this.astar = new Astar(level);
 
-		this.task = TASK.getFlag;
+		// Curent task of the bot
+		this.task = TASK.getFlag; 
 
 		// Array containing grids which bot needs to go to
 		this.path = [];
@@ -1036,7 +1083,6 @@ class Bot extends Player {
 	}
 
 	update() {
-		super.update();
 
 		// Stop moving when gameover
 		if (!game.gameover) {
@@ -1093,10 +1139,23 @@ class Bot extends Player {
 						this.currPos = this.path[0];
 						this.path.shift();
 					}
+					if (this.moving == false) {
+						this.moving = true;
 
-					this.moving = true;
+						// Preparing change in animation - from idle to walking
+						this.animIndex = 0;
+						this.animDelay = 0;
+						this.animDelayTime = 6;
+					}
 				} else {
-					this.moving = false;
+					if (this.moving) {
+						this.moving = false;
+
+						// Prepare for new animation - walking to idle
+						this.animIndex = 0;
+						this.animDelay = 0;
+						this.animDelayTime = 20;
+					}
 				}
 
 
@@ -1112,6 +1171,10 @@ class Bot extends Player {
 				//}
 			}
 		}
+
+
+		// Common functions dealing with updates to player
+		super.update();
 	}
 
 	// Find the grids that the flag is currently in
@@ -1219,6 +1282,9 @@ class Bot extends Player {
 
 
 }
+
+
+
 
 // Array containing all the temp objects in the game with layers
 class ObjectArrayLayered {
