@@ -1099,6 +1099,10 @@ class Bot extends Player {
 					this.flag = [];  // Reset the flag array to empty
 				}
 
+				if (this.checkDodge()) {
+					this.task = TASK.dodge;
+				}
+
 
 				// Generate path to get the flag
 				if (this.task == TASK.getFlag && this.path.length == 0) {
@@ -1124,6 +1128,13 @@ class Bot extends Player {
 				// Generate path to go home
 				} else if (this.task == TASK.goHome && this.path.length == 0) {
 					this.path = this.astar.search(this.currPos, this.goal);
+
+
+
+				// Dodging a bullet
+				} else if (this.task == TASK.dodge) {
+					console.log("I NEED TO DODGE FUCK");
+					this.path = this.dodgeRandom();
 				}
 
 
@@ -1176,6 +1187,54 @@ class Bot extends Player {
 
 		// Common functions dealing with updates to player
 		super.update();
+	}
+
+	// Return a path thats a random square away
+	dodgeRandom() {
+		var dodgePos = this.currPos;
+		if (Math.random() < 0.5) {
+			if (dodgePos.x > 0) {
+				dodgePos.x -= 1;
+			}
+		} else {
+			if (dodgePos.x < this.level[0].length-1) {
+				dodgePos.x += 1;
+			}
+		}
+
+		if (Math.random() < 0.5) {
+			if (dodgePos.y > 0) {
+				dodgePos.y -= 1;
+			}
+		} else {
+			if (dodgePos.x < this.level.length-1) {
+				dodgePos.x += 1;
+			}
+		}
+
+		var list = [];
+		list.push(dodgePos);
+		return list;
+	}
+
+	// Check for any snowballs that might be coming
+	checkDodge() {
+
+		// ONLY SNOWBALLS AT THE MOMENT
+		for (var i = 0; i < tempArr.array[3].length; i++) {
+			var snowball = tempArr.array[3][i];
+			if (snowball instanceof Snowball) {
+				if (snowball.x < this.x && snowball.dir == DIR.right) {
+					return true;
+				} else if (snowball.x > this.x && snowball.dir == DIR.left) {
+					return true;
+				} else if (snowball.y < this.y && snowball.dir == DIR.down) {
+					return true;
+				} else if (snowball.y > this.y && snowball.dir == DIR.up) {
+					return true;
+				}
+			}
+		}
 	}
 
 	// Find the grids that the flag is currently in
