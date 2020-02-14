@@ -152,13 +152,14 @@ class Game {
 
 		tempArr.updateLayer(0);
 		tempArr.updateLayer(1);
+
+		wallArr.update();
+
 		tempArr.updateLayer(2);
 
 		for (var i = 0; i < playerArr.length; i++) {
 			playerArr[i].update();
-		}
-
-		wallArr.update();
+		}		
 
 		tempArr.updateLayer(3);
 		tempArr.updateLayer(4);
