@@ -1207,8 +1207,8 @@ class Bot extends Player {
 				dodgePos.y -= 1;
 			}
 		} else {
-			if (dodgePos.x < this.level.length-1) {
-				dodgePos.x += 1;
+			if (dodgePos.y < this.level.length-1) {
+				dodgePos.y += 1;
 			}
 		}
 
