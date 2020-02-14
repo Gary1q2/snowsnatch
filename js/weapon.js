@@ -214,7 +214,7 @@ class SnowGun extends Gun {
 	constructor(player) {
 		super(0, 100, 8, 8, gunImg, 2, 2, [0], 0,0, player);
 		this.gunID = 1;
-		this.shootTime = 30;
+		this.shootTime = 60;
 		this.shooting = false;
 
 		document.getElementById("ammo"+this.player.playerID).style.visibility = "hidden";

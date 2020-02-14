@@ -1167,15 +1167,9 @@ class Bot extends Player {
 
 
 				// Shooting automatically
-				//if (this.shootTimer == 0) { 
-					//this.shoot();
-				//	var omg = this.findBotLoc();
-				//	var string = "";
-				//	for (var i = 0; i < omg.length; i++) {
-				//		string += "["+omg[i].x+","+omg[i].y+"]";
-				//	}
-					//console.log(string);
-				//}
+				if (this.shootTimer == 0) { 
+					this.shoot();
+				}
 			}
 		}
 
@@ -1351,8 +1345,8 @@ class ObjectArrayLayered {
 	// Determines what layer this entity belongs in
 	determineLayer(entity) {
 		switch(entity.constructor.name) {
+
 			//case "Snow":
-			//	return 0;
 
 			case "Goal":
 				return 0;
@@ -1361,24 +1355,19 @@ class ObjectArrayLayered {
 				return 1;
 
 			//case "Wall":
-			//	return 3;
-
-			//	return 4;
 
 			case "Shell":
-			case "Flag":
 			case "MineBomb":
 				return 2;
 
 			//case "Player":
-			//	return 6;
-
 
 			case "Bullet":
 			case "Missile":
 			case "Pellet":
 			case "LaserBlast":
 			case "Snowball":
+			case "Flag":
 				return 3;
 
 			case "Gun":
