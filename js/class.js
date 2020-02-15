@@ -115,6 +115,7 @@ class Entity {
 		return testCollisionRectRect(rect1, rect2);
 	}
 
+
 	// Check collision with another object @ certain offset
 	collideWithAt(other, xOff, yOff) {
 		var rect1 = {
@@ -130,6 +131,17 @@ class Entity {
 			height: other.height
 		};
 		return testCollisionRectRect(rect1, rect2);
+	}
+
+	// Get the object's rectangle at a certain (x,y)
+	getRectAt(xNew, yNew) {
+		var rect = {
+			x: xNew-this.centerX+this.colShiftX+this.img.width/this.nCol/2-this.width/2,
+			y: yNew-this.centerY+this.colShiftY+this.img.height/this.nRow/2-this.height/2,
+			width: this.width,
+			height: this.height
+		};
+		return rect;
 	}
 
 	// Check collision with wall objects
@@ -1049,7 +1061,7 @@ class Bot extends Player {
 		this.astar = new Astar(level);
 
 		// Curent task of the bot
-		this.task = TASK.getFlag; 
+		this.task = TASK.getFlag;
 
 		// Array containing grids which bot needs to go to
 		this.path = [];
@@ -1058,6 +1070,10 @@ class Bot extends Player {
 		this.flag = [];
 
 
+		this.dodgeTime = 60; // Cooldown before dodging again
+		this.dodgeTimer = 0;
+
+		this.waitTimer = 0;  // How long to wait before doing stuff again
 
 		// Current position of bot
 		this.currPos = {
@@ -1092,16 +1108,22 @@ class Bot extends Player {
 
 
 				// Decide what task the bot needs to do
-				if (!this.hasFlag) {
-					this.task = TASK.getFlag;
+				if (this.task == TASK.dodge || this.checkDodge()) {
+					this.task = TASK.dodge;
+
+				} else if (this.task == TASK.wait) {
+
+
+
 				} else {
-					this.task = TASK.goHome;
-					this.flag = [];  // Reset the flag array to empty
+					if (!this.hasFlag) {
+						this.task = TASK.getFlag;
+					} else {
+						this.task = TASK.goHome;
+						this.flag = [];  // Reset the flag array to empty
+					}
 				}
 
-				if (this.checkDodge()) {
-					this.task = TASK.dodge;
-				}
 
 
 				// Generate path to get the flag
@@ -1132,9 +1154,14 @@ class Bot extends Player {
 
 
 				// Dodging a bullet
-				} else if (this.task == TASK.dodge) {
-					console.log("I NEED TO DODGE FUCK");
+				} else if (this.task == TASK.dodge && this.dodgeTimer == 0) {
+					console.log("i dodged!!!!!!!!!!!!");
 					this.path = this.dodgeRandom();
+					this.flag = [];
+
+				// Don't do anything
+				} else if (this.task == TASK.idle) {
+
 				}
 
 
@@ -1154,6 +1181,13 @@ class Bot extends Player {
 						if (this.path.length != 0) {
 							this.moveToPos(this.path[0]);
 						}
+
+						if (this.task == TASK.dodge) {
+							this.task = TASK.wait;
+							this.waitTimer = 60;
+							console.log("finished dodging.... wait a second");
+						}
+
 					}
 
 					if (this.moving == false) {
@@ -1182,6 +1216,16 @@ class Bot extends Player {
 					this.shoot();
 				}
 			}
+
+			if (this.dodgeTimer > 0) {
+				this.dodgeTimer--;
+			}
+			if (this.waitTimer > 0) {
+				this.waitTimer--;
+				if (this.waitTimer == 0) {
+					this.task = TASK.idle;
+				}
+			}
 		}
 
 
@@ -1191,8 +1235,10 @@ class Bot extends Player {
 
 	// Return a path thats a random square away
 	dodgeRandom() {
+		this.dodgeTimer = this.dodgeTime;
+
 		var dodgePos = this.currPos;
-		if (Math.random() < 0.5) {
+		/*if (Math.random() < 0.5) {
 			if (dodgePos.x > 0) {
 				dodgePos.x -= 1;
 			}
@@ -1200,7 +1246,7 @@ class Bot extends Player {
 			if (dodgePos.x < this.level[0].length-1) {
 				dodgePos.x += 1;
 			}
-		}
+		}*/
 
 		if (Math.random() < 0.5) {
 			if (dodgePos.y > 0) {
@@ -1223,18 +1269,43 @@ class Bot extends Player {
 		// ONLY SNOWBALLS AT THE MOMENT
 		for (var i = 0; i < tempArr.array[3].length; i++) {
 			var snowball = tempArr.array[3][i];
-			if (snowball instanceof Snowball) {
-				if (snowball.x < this.x && snowball.dir == DIR.right) {
-					return true;
-				} else if (snowball.x > this.x && snowball.dir == DIR.left) {
+
+			// Detecting enemy snowballs
+			if (snowball instanceof Snowball && !snowball.dead && snowball.owner.playerID != this.playerID) {
+
+				// Snowballs that are moving RIGHT towards the bot  - only 80 pixels within
+				if (snowball.x < this.x && snowball.dir == DIR.right && this.x - snowball.x <= 80) {
+					var snowballPos = {
+						x: snowball.x,
+						y: snowball.y
+					};
+					var playerPos = {
+						x: this.x,
+						y: this.y
+					};
+
+					// Check if snowball crosses over the player
+					var multiple = 10;
+					while (snowballPos.x < playerPos.x) {
+						snowballPos.x += snowball.speed * multiple;
+						var rect1 = snowball.getRectAt(snowballPos.x, snowballPos.y);
+						var rect2 = this.getRectAt(this.x, this.y);
+						ctx.fillRect(rect1.x, rect1.y, snowball.width, snowball.height);
+						if (testCollisionRectRect(rect1, rect2)) {
+							console.log("IT PASSES THROUGH FUCKK  current task =" + this.task);
+							return true;
+						}
+					}
+				}/* else if (snowball.x > this.x && snowball.dir == DIR.left) {
 					return true;
 				} else if (snowball.y < this.y && snowball.dir == DIR.down) {
 					return true;
 				} else if (snowball.y > this.y && snowball.dir == DIR.up) {
 					return true;
-				}
+				}*/
 			}
 		}
+		return false;
 	}
 
 	// Find the grids that the flag is currently in
@@ -1283,27 +1354,34 @@ class Bot extends Player {
 		return list;	
 	}
 
-	// Move from current x,y position to given position
+	// Move from current x,y position to given position  - only if there is no wall
 	moveToPos(pos) {
 
 		// Moving left and right
 		if (this.x < pos.x*gridLen) {
-			this.x += this.speed;
-			this.setAngle(DIR.right);
-
+			if (!this.checkEdgeColAt(this.speed, 0) && !this.checkWallColAt(this.speed, 0)) {
+				this.x += this.speed;
+				this.setAngle(DIR.right);
+			}
 		} else if (this.x > pos.x*gridLen) {
-			this.x -= this.speed;
-			this.setAngle(DIR.left);
+			if (!this.checkEdgeColAt(-this.speed, 0) && !this.checkWallColAt(-this.speed, 0)) {
+				this.x -= this.speed;
+				this.setAngle(DIR.left);
+			}
 		}
 
 		// Moving up and down
 		if (this.y < pos.y*gridLen) {
-			this.y += this.speed;
-			this.setAngle(DIR.down);
+			if (!this.checkEdgeColAt(0, this.speed) && !this.checkWallColAt(0, this.speed)) {
+				this.y += this.speed;
+				this.setAngle(DIR.down);
+			}
 		} else if (this.y > pos.y*gridLen) {
-			this.y -= this.speed;
-			this.setAngle(DIR.up);
-		}
+			if (!this.checkEdgeColAt(0, -this.speed) && !this.checkWallColAt(0, -this.speed)) {
+				this.y -= this.speed;
+				this.setAngle(DIR.up);
+			}
+		}			
 	}
 
 
