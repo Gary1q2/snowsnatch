@@ -1251,11 +1251,14 @@ class Bot extends Player {
 
 		var dodgePos = this.currPos;
 
-		// Dodge in a random direction UNLESS at the edge of level then dodge inwards
+		// Dodge in a random direction UNLESS at the edge of level or wall, then dodges away
 		if (this.dodgeWay == DIR.up || this.dodgeWay == DIR.down) {
-			if (dodgePos.x == 0) {
+			if ((dodgePos.x == 0 || this.level[dodgePos.y][dodgePos.x-1] == "W") &&
+				(dodgePos.x == this.level[0].length-1 || this.level[dodgePos.y][dodgePos.x+1] == "W")) {
+				console.log("FUck im Dead IM TRAPPED LOOOOOL");
+			} else if (dodgePos.x == 0 || this.level[dodgePos.y][dodgePos.x-1] == "W") {
 				dodgePos.x += 1;
-			} else if (dodgePos.x == this.level[0].length-1) {
+			} else if (dodgePos.x == this.level[0].length-1 || this.level[dodgePos.y][dodgePos.x+1] == "W") {
 				dodgePos.x -= 1;
 			} else {
 				if (Math.random() < 0.5) {
@@ -1270,11 +1273,14 @@ class Bot extends Player {
 			}
 		}
 
-		// Dodge in a random direction UNLESS at the edge of level then dodge inwards
+		// Dodge in a random direction UNLESS at the edge of level or wall, then dodges away
 		if (this.dodgeWay == DIR.left || this.dodgeWay == DIR.right) {
-			if (dodgePos.y == 0) {
+			if ((dodgePos.y == 0 || this.level[dodgePos.y-1][dodgePos.x] == "W") &&
+				(dodgePos.y == this.level.length-1 || this.level[dodgePos.y+1][dodgePos.x] == "W")) {
+				console.log("FUck im Dead IM TRAPPED LOOOOOL");
+			} else if (dodgePos.y == 0 || this.level[dodgePos.y-1][dodgePos.x] == "W") {
 				dodgePos.y += 1;
-			} else if (dodgePos.y == this.level.length-1) {
+			} else if (dodgePos.y == this.level.length-1 || this.level[dodgePos.y+1][dodgePos.x] == "W") {
 				dodgePos.y -= 1;
 			} else {
 				if (Math.random() < 0.5) {
