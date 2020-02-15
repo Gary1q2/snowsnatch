@@ -1213,7 +1213,13 @@ class Bot extends Player {
 
 				// Shooting automatically
 				if (this.shootTimer == 0) { 
-					this.shoot();
+					var enemy = playerArr[0];
+					if ((this.angle == DIR.left && enemy.x < this.x) ||
+					    (this.angle == DIR.right && enemy.x > this.x) ||
+					    (this.angle == DIR.up && enemy.y < this.y)    ||
+					    (this.angle == DIR.down && enemy.y > this.y)) {
+					   	this.shoot();
+					}
 				}
 			}
 
