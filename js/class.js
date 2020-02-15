@@ -1085,6 +1085,11 @@ class Bot extends Player {
 			y: y/gridLen
 		};
 
+		this.prevPos = this.currPos; // Previous position before currPos
+
+		this.alleySave = this.prevPos;   // Stores the last path BEFORE an alley way turn to run from alley attacks lol...
+
+
 		// Remember the starting coordinates
 		this.startPos = this.currPos;
 
@@ -1182,12 +1187,25 @@ class Bot extends Player {
 
 					// Reached spot, pop off AND MOVE TO NEW SPOT
 					} else {
+
+						// Store the alleySave position in case in a corridor and need to run back
+						if (this.prevPos.y == this.currPos.y && this.currPos.y != this.path[0].y) {
+							this.alleySave = this.prevPos;
+						}
+
+
+						this.prevPos = this.currPos;
 						this.currPos = this.path[0];
+
+
+						//this.alleySave
+
 						this.path.shift();
 						if (this.path.length != 0) {
 							this.moveToPos(this.path[0]);
 						}
 
+						// Finished dodging to the designated spot
 						if (this.task == TASK.dodge) {
 							this.task = TASK.wait;
 							this.waitTimer = 40;
@@ -1255,7 +1273,8 @@ class Bot extends Player {
 		if (this.dodgeWay == DIR.up || this.dodgeWay == DIR.down) {
 			if ((dodgePos.x == 0 || this.level[dodgePos.y][dodgePos.x-1] == "W") &&
 				(dodgePos.x == this.level[0].length-1 || this.level[dodgePos.y][dodgePos.x+1] == "W")) {
-				console.log("FUck im Dead IM TRAPPED LOOOOOL");
+				dodgePos = this.alleySave;
+				console.log("RUNNNNING TO ALLEYSAVE WOOOHOO");
 			} else if (dodgePos.x == 0 || this.level[dodgePos.y][dodgePos.x-1] == "W") {
 				dodgePos.x += 1;
 			} else if (dodgePos.x == this.level[0].length-1 || this.level[dodgePos.y][dodgePos.x+1] == "W") {
@@ -1277,7 +1296,8 @@ class Bot extends Player {
 		if (this.dodgeWay == DIR.left || this.dodgeWay == DIR.right) {
 			if ((dodgePos.y == 0 || this.level[dodgePos.y-1][dodgePos.x] == "W") &&
 				(dodgePos.y == this.level.length-1 || this.level[dodgePos.y+1][dodgePos.x] == "W")) {
-				console.log("FUck im Dead IM TRAPPED LOOOOOL");
+				dodgePos = this.alleySave;
+				console.log("RUNNNNING TO ALLEYSAVE WOOOHOO");
 			} else if (dodgePos.y == 0 || this.level[dodgePos.y-1][dodgePos.x] == "W") {
 				dodgePos.y += 1;
 			} else if (dodgePos.y == this.level.length-1 || this.level[dodgePos.y+1][dodgePos.x] == "W") {
