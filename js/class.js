@@ -1162,7 +1162,7 @@ class Bot extends Player {
 				// Dodging a bullet
 				} else if (this.task == TASK.dodge && this.dodgeTimer == 0) {
 					console.log("i dodged!!!!!!!!!!!!");
-					this.path = this.dodgeRandom();
+					this.path = this.dodgeAway();
 					this.flag = [];
 
 				// Don't do anything
@@ -1245,32 +1245,46 @@ class Bot extends Player {
 		super.update();
 	}
 
-	// Return a path thats a random square away
-	dodgeRandom() {
+	// Return a path thats a square away - dodges appropriately
+	dodgeAway() {
 		this.dodgeTimer = this.dodgeTime;
 
 		var dodgePos = this.currPos;
 
+		// Dodge in a random direction UNLESS at the edge of level then dodge inwards
 		if (this.dodgeWay == DIR.up || this.dodgeWay == DIR.down) {
-			if (Math.random() < 0.5) {
-				if (dodgePos.x > 0) {
-					dodgePos.x -= 1;
-				}
+			if (dodgePos.x == 0) {
+				dodgePos.x += 1;
+			} else if (dodgePos.x == this.level[0].length-1) {
+				dodgePos.x -= 1;
 			} else {
-				if (dodgePos.x < this.level[0].length-1) {
-					dodgePos.x += 1;
-				}
-			}		
+				if (Math.random() < 0.5) {
+					if (dodgePos.x > 0) {
+						dodgePos.x -= 1;
+					}
+				} else {
+					if (dodgePos.x < this.level[0].length-1) {
+						dodgePos.x += 1;
+					}
+				}		
+			}
 		}
 
+		// Dodge in a random direction UNLESS at the edge of level then dodge inwards
 		if (this.dodgeWay == DIR.left || this.dodgeWay == DIR.right) {
-			if (Math.random() < 0.5) {
-				if (dodgePos.y > 0) {
-					dodgePos.y -= 1;
-				}
+			if (dodgePos.y == 0) {
+				dodgePos.y += 1;
+			} else if (dodgePos.y == this.level.length-1) {
+				dodgePos.y -= 1;
 			} else {
-				if (dodgePos.y < this.level.length-1) {
-					dodgePos.y += 1;
+				if (Math.random() < 0.5) {
+					if (dodgePos.y > 0) {
+						dodgePos.y -= 1;
+					}
+				} else {
+					if (dodgePos.y < this.level.length-1) {
+						dodgePos.y += 1;
+					}
 				}
 			}
 		}
