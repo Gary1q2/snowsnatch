@@ -67,7 +67,7 @@ class Astar {
 		// Disallow goal to be same as start
 		if (JSON.stringify(start) === JSON.stringify(goal)) {
 			console.log("Already at the goal");
-			return;
+			return [];
 		}
 
 		// Initialise starting node in array

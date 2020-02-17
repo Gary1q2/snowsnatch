@@ -1090,6 +1090,8 @@ class Bot extends Player {
 		this.alleySave = this.prevPos;   // Stores the last path BEFORE an alley way turn to run from alley attacks lol...
 
 
+		this.shootDir;  // Direction to shoot after moving to shooting position
+
 		// Remember the starting coordinates
 		this.startPos = this.currPos;
 
@@ -1123,18 +1125,38 @@ class Bot extends Player {
 						console.log("task before set = " + this.task + "     <--- set task to dodge");
 						this.task = TASK.dodge;
 					}
-				} else if (this.task == TASK.wait) {
-
-
 
 				} else {
-					if (!this.hasFlag) {
-						this.task = TASK.getFlag;
+
+					// Shoot enemy if in range to move to  - only attack 30% of the time
+					var test = this.findEnemyLoc();
+					var enemyLoc = test[0];
+					if (this.task != TASK.attack && Math.random() <= 0.01 &&(Math.abs(enemyLoc.x - this.currPos.x) <= 3 || Math.abs(enemyLoc.y - this.currPos.y)) <= 3) {
+						console.log("task = " + this.task);
+						console.log("ATTACKING TIMEEE  enemyLoc=["+enemyLoc.x+","+enemyLoc.y+"]    currPos=["+this.currPos.x+","+this.currPos.y+"]");
+						this.task = TASK.attack;
+						this.path = [];
+
+					// Get flag or go home
+					} else if (this.task == TASK.idle) {
+						if (!this.hasFlag) {
+							this.task = TASK.getFlag;
+						} else {
+							this.task = TASK.goHome; 
+						}
+						this.flag = []; // Reset the flag array to empty
+
+					// Do nothing
+					} else if (this.task == TASK.wait) {
+					
+
+
+					// Do nothing
 					} else {
-						this.task = TASK.goHome;
-						this.flag = [];  // Reset the flag array to empty
+
 					}
 				}
+
 
 				// Generate path to get the flag
 				if (this.task == TASK.getFlag && this.path.length == 0) {
@@ -1170,6 +1192,63 @@ class Bot extends Player {
 					this.path = this.dodgeAway();
 					this.flag = [];
 
+
+				// Attacking the enemy
+				} else if (this.task == TASK.attack && this.path.length == 0) {
+					console.log("finding path TO ATTACK");
+					var temp = this.findEnemyLoc();
+					var enemyLoc = temp[0];
+					var dest;
+
+					// Only find path to attack if not already at the position
+					if (enemyLoc.x != this.currPos.x && enemyLoc.y != this.currPos.y) {
+						console.log("lets do it");
+
+						// X axis is shorter than y axis
+						if (Math.abs(enemyLoc.x-this.currPos.x) < Math.abs(enemyLoc.y-this.currPos.y)) {
+							dest = {
+								x: enemyLoc.x,
+								y: this.currPos.y
+							};
+
+							if (enemyLoc.y < this.currPos.y) {
+								this.shootDir = DIR.up;
+							} else {
+								this.shootDir = DIR.down;
+							}
+
+						// Y axis is shorter than x axis
+						} else {//if (Math.abs(enemyLoc.x-this.currPos.x) > Math.abs(enemyLoc.y-this.currPos.y)) {
+							dest = {
+								x: this.currPos.x,
+								y: enemyLoc.y
+							}
+
+							if (enemyLoc.x < this.currPos.x) {
+								this.shootDir = DIR.left;
+							} else {
+								this.shootDir = DIR.right;
+							}
+							// Both axis are same... so choose random. But currently go Y only
+							/*} else {
+								dest = {
+									x: this.currPos.x,
+									y: enemyLoc.y
+								}					
+							}*/
+							// Need to check if dest is a wall or not....
+							//WAAAA	
+						}
+						console.log("FInding path to DEST["+dest.x+","+dest.y+"]");
+						this.path = this.astar.search(this.currPos, dest);
+					} else {
+						console.log("I'm already there... so just shoot");
+						this.angle = this.shootDir;
+						this.shoot();
+						this.task = TASK.idle;
+						console.log("i JUST SHOT AND back to idlee");
+					}
+				
 				// Don't do anything
 				} else if (this.task == TASK.idle) {
 					console.log("in idle");
@@ -1203,6 +1282,17 @@ class Bot extends Player {
 						this.path.shift();
 						if (this.path.length != 0) {
 							this.moveToPos(this.path[0]);
+
+						// Reeached end of the path...
+						} else {
+							console.log("im there now yay");
+							if (this.task == TASK.attack) {
+								this.angle = this.shootDir;
+								this.shoot();
+								this.task = TASK.idle;
+								console.log("i JUST SHOT AND back to idlee");
+							}
+							
 						}
 
 						// Finished dodging to the designated spot
@@ -1236,7 +1326,7 @@ class Bot extends Player {
 
 
 				// Shooting automatically
-				if (this.shootTimer == 0) { 
+				/*if (this.shootTimer == 0) { 
 					var enemy = playerArr[0];
 					if ((this.angle == DIR.left && enemy.x < this.x) ||
 					    (this.angle == DIR.right && enemy.x > this.x) ||
@@ -1244,7 +1334,7 @@ class Bot extends Player {
 					    (this.angle == DIR.down && enemy.y > this.y)) {
 					   	this.shoot();
 					}
-				}
+				}*/
 			}
 
 			if (this.dodgeTimer > 0) {
@@ -1425,6 +1515,39 @@ class Bot extends Player {
 			}
 		}
 		return false;
+	}
+
+	// Find the grids that the enemy is currently in
+	findEnemyLoc() {
+		var enemy = playerArr[0];
+		var rect1 = {
+			x: enemy.x-enemy.centerX+enemy.colShiftX+enemy.img.width/enemy.nCol/2-enemy.width/2,
+			y: enemy.y-enemy.centerY+enemy.colShiftY+enemy.img.height/enemy.nRow/2-enemy.height/2,
+			width: enemy.width,
+			height: enemy.height
+		};
+
+		// Check which grid enemy is in
+		var list = [];
+		for (var i = 0; i < this.level.length; i++) {
+			for (var j = 0; j < this.level[i].length; j++) {
+				var rect2 = {
+					x: j*gridLen,
+					y: i*gridLen,
+					width: gridLen,
+					height: gridLen
+				};
+
+				// Push the coordinates of the grid
+				if (testCollisionRectRect(rect1, rect2)) {
+					list.push({
+						x: j,
+						y: i
+					});
+				}
+			}
+		}
+		return list;
 	}
 
 	// Find the grids that the flag is currently in
