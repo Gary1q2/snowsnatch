@@ -1090,7 +1090,9 @@ class Bot extends Player {
 		this.alleySave = this.prevPos;   // Stores the last path BEFORE an alley way turn to run from alley attacks lol...
 
 
-		this.shootDir;  // Direction to shoot after moving to shooting position
+		this.shootDir = DIR.left;  // Direction to shoot after moving to shooting position
+
+		this.dodgeMethod = DODGE.move;
 
 		// Remember the starting coordinates
 		this.startPos = this.currPos;
@@ -1129,7 +1131,7 @@ class Bot extends Player {
 				} else {
 
 					// Shoot enemy if in range to move to  - only attack 30% of the time
-					var test = this.findEnemyLoc();
+					/*var test = this.findEnemyLoc();
 					var enemyLoc = test[0];
 					if (this.task != TASK.attack && Math.random() <= 0.01 &&(Math.abs(enemyLoc.x - this.currPos.x) <= 3 || Math.abs(enemyLoc.y - this.currPos.y)) <= 3) {
 						console.log("task = " + this.task);
@@ -1138,7 +1140,7 @@ class Bot extends Player {
 						this.path = [];
 
 					// Get flag or go home
-					} else if (this.task == TASK.idle) {
+					} else */if (this.task == TASK.idle) {
 						if (!this.hasFlag) {
 							this.task = TASK.getFlag;
 						} else {
@@ -1189,9 +1191,15 @@ class Bot extends Player {
 				// Dodging a bullet
 				} else if (this.task == TASK.dodge && this.dodgeTimer == 0) {
 					console.log("i dodged!!!!!!!!!!!!");
-					this.path = this.dodgeAway();
-					this.flag = [];
 
+					if (this.dodgeMethod == DODGE.move) {
+						this.path = this.dodgeAway();
+					} else {
+						this.task = TASK.wait;
+						this.waitTimer = 40;
+						this.path = [];
+						console.log("DIDN't STEP INTO A SNOWBALL.... wait a second");
+					}
 
 				// Attacking the enemy
 				} else if (this.task == TASK.attack && this.path.length == 0) {
@@ -1241,6 +1249,11 @@ class Bot extends Player {
 						}
 						console.log("FInding path to DEST["+dest.x+","+dest.y+"]");
 						this.path = this.astar.search(this.currPos, dest);
+
+						// Couldn't find a path there so.... fk it back to idle
+						if (this.path.length == 0) {
+							this.task = TASK.idle;
+						}
 					} else {
 						console.log("I'm already there... so just shoot");
 						this.angle = this.shootDir;
@@ -1272,35 +1285,39 @@ class Bot extends Player {
 							this.alleySave = this.prevPos;
 						}
 
-
 						this.prevPos = this.currPos;
 						this.currPos = this.path[0];
-
-
-						//this.alleySave
-
 						this.path.shift();
+
+						// Still have somewhere to go.. so keep going
 						if (this.path.length != 0) {
 							this.moveToPos(this.path[0]);
 
-						// Reeached end of the path...
+						// Reached the intended destination
 						} else {
 							console.log("im there now yay");
+
+							// Arrived at shooting spot...so shoot
 							if (this.task == TASK.attack) {
 								this.angle = this.shootDir;
 								this.shoot();
 								this.task = TASK.idle;
 								console.log("i JUST SHOT AND back to idlee");
+
+							// Finished dodging to the designated spot
+							} else if (this.task == TASK.dodge) {
+								this.task = TASK.wait;
+								this.waitTimer = 40;
+								console.log("finished dodging.... wait a second");
+
+							} else {
+								this.task = TASK.idle;
 							}
 							
+
 						}
 
-						// Finished dodging to the designated spot
-						if (this.task == TASK.dodge) {
-							this.task = TASK.wait;
-							this.waitTimer = 40;
-							console.log("finished dodging.... wait a second");
-						}
+
 
 					}
 
@@ -1433,18 +1450,38 @@ class Bot extends Player {
 						y: this.y
 					};
 
-					// Check if snowball crosses over the player
 					var multiple = 10;
 					while (snowballPos.x < playerPos.x) {
 						snowballPos.x += snowball.speed * multiple;
+
+						if (this.moving) {
+							if (this.angle == DIR.left) {
+								playerPos.x -= this.speed * multiple;
+							} else if (this.angle == DIR.right) {
+								playerPos.x += this.speed * multiple;
+							} else if (this.angle == DIR.up) {
+								playerPos.y -= this.speed * multiple;
+							} else {
+								playerPos.y += this.speed * multiple;
+							}
+						}
+
 						var rect1 = snowball.getRectAt(snowballPos.x, snowballPos.y);
-						var rect2 = this.getRectAt(this.x, this.y);
-						//ctx.fillRect(rect1.x, rect1.y, snowball.width, snowball.height);
+						var rect2 = this.getRectAt(playerPos.x, playerPos.y);
+						ctx.fillRect(rect1.x, rect1.y, snowball.width, snowball.height);
+						ctx.fillRect(rect2.x, rect2.y, this.width, this.height);
+
 						if (testCollisionRectRect(rect1, rect2)) {
 							console.log("IT PASSES THROUGH FUCKK  RIGHTT current task =" + this.task);
+							if (this.angle == DIR.up || this.angle == DIR.down) {
+								this.dodgeMethod = DODGE.stop;
+							} else {
+								this.dodgeMethod = DODGE.move;
+							}
 							return DIR.right;
 						}
 					}
+					
 				} else if (snowball.x > this.x && snowball.dir == DIR.left && snowball.x - this.x <= 40) {
 					var snowballPos = {
 						x: snowball.x,
@@ -1459,11 +1496,31 @@ class Bot extends Player {
 					var multiple = 10;
 					while (snowballPos.x > playerPos.x) {
 						snowballPos.x -= snowball.speed * multiple;
+
+						if (this.moving) {
+							if (this.angle == DIR.left) {
+								playerPos.x -= this.speed * multiple;
+							} else if (this.angle == DIR.right) {
+								playerPos.x += this.speed * multiple;
+							} else if (this.angle == DIR.up) {
+								playerPos.y -= this.speed * multiple;
+							} else {
+								playerPos.y += this.speed * multiple;
+							}
+						}
+
 						var rect1 = snowball.getRectAt(snowballPos.x, snowballPos.y);
-						var rect2 = this.getRectAt(this.x, this.y);
+						var rect2 = this.getRectAt(playerPos.x, playerPos.y);
 						ctx.fillRect(rect1.x, rect1.y, snowball.width, snowball.height);
+						ctx.fillRect(rect2.x, rect2.y, this.width, this.height);
+
 						if (testCollisionRectRect(rect1, rect2)) {
-							console.log("IT PASSES THROUGH FUCKK - LEFTTTT current task =" + this.task);
+							console.log("IT PASSES THROUGH FUCKK  LEFTTT current task =" + this.task);
+							if (this.angle == DIR.up || this.angle == DIR.down) {
+								this.dodgeMethod = DODGE.stop;
+							} else {
+								this.dodgeMethod = DODGE.move;
+							}
 							return DIR.left;
 						}
 					}
@@ -1481,14 +1538,35 @@ class Bot extends Player {
 					var multiple = 10;
 					while (snowballPos.y < playerPos.y) {
 						snowballPos.y += snowball.speed * multiple;
+
+						if (this.moving) {
+							if (this.angle == DIR.left) {
+								playerPos.x -= this.speed * multiple;
+							} else if (this.angle == DIR.right) {
+								playerPos.x += this.speed * multiple;
+							} else if (this.angle == DIR.up) {
+								playerPos.y -= this.speed * multiple;
+							} else {
+								playerPos.y += this.speed * multiple;
+							}
+						}
+
 						var rect1 = snowball.getRectAt(snowballPos.x, snowballPos.y);
-						var rect2 = this.getRectAt(this.x, this.y);
+						var rect2 = this.getRectAt(playerPos.x, playerPos.y);
 						ctx.fillRect(rect1.x, rect1.y, snowball.width, snowball.height);
+						ctx.fillRect(rect2.x, rect2.y, this.width, this.height);
+
 						if (testCollisionRectRect(rect1, rect2)) {
-							console.log("IT PASSES THROUGH FUCKK DOWNNNN current task =" + this.task);
+							console.log("IT PASSES THROUGH FUCKK  DOWNNN current task =" + this.task);
+							if (this.angle == DIR.left || this.angle == DIR.right) {
+								this.dodgeMethod = DODGE.stop;
+							} else {
+								this.dodgeMethod = DODGE.move;
+							}
 							return DIR.down;
 						}
-					}
+					}		
+
 				} else if (snowball.y > this.y && snowball.dir == DIR.up && snowball.y - this.y <= 40) {
 					var snowballPos = {
 						x: snowball.x,
@@ -1502,12 +1580,32 @@ class Bot extends Player {
 					// Check if snowball crosses over the player
 					var multiple = 10;
 					while (snowballPos.y > playerPos.y) {
+
 						snowballPos.y -= snowball.speed * multiple;
+						if (this.moving) {
+							if (this.angle == DIR.left) {
+								playerPos.x -= this.speed * multiple;
+							} else if (this.angle == DIR.right) {
+								playerPos.x += this.speed * multiple;
+							} else if (this.angle == DIR.up) {
+								playerPos.y -= this.speed * multiple;
+							} else {
+								playerPos.y += this.speed * multiple;
+							}
+						}
+
 						var rect1 = snowball.getRectAt(snowballPos.x, snowballPos.y);
-						var rect2 = this.getRectAt(this.x, this.y);
+						var rect2 = this.getRectAt(playerPos.x, playerPos.y);
 						ctx.fillRect(rect1.x, rect1.y, snowball.width, snowball.height);
+						ctx.fillRect(rect2.x, rect2.y, this.width, this.height);
+
 						if (testCollisionRectRect(rect1, rect2)) {
-							console.log("IT PASSES THROUGH FUCKK  UPP current task =" + this.task);
+							console.log("IT PASSES THROUGH FUCKK  LEFTTT current task =" + this.task);
+							if (this.angle == DIR.left || this.angle == DIR.right) {
+								this.dodgeMethod = DODGE.stop;
+							} else {
+								this.dodgeMethod = DODGE.move;
+							}
 							return DIR.up;
 						}
 					}
