@@ -1136,7 +1136,7 @@ class Bot extends Player {
 
 					// Bot attacks more... IF enemy is near base trying to cap flag ORRR if enemy has
 					// flag he will try to attack all the time...
-					if ((this.enemyCloseToBase() && !playerArr[0].hasFlag) || playerArr[0].hasFlag) {
+					if (this.enemyCloseToBase() && !playerArr[0].hasFlag) {
 						attackChance = 0.1;
 						distFromEnemy = 10;
 					} else {
@@ -1219,64 +1219,31 @@ class Bot extends Player {
 				// Attacking the enemy
 				} else if (this.task == TASK.attack && this.path.length == 0) {
 					console.log("finding path TO ATTACK");
+
 					var temp = this.findEnemyLoc();
 					var enemyLoc = temp[0];
-					var dest;
 
 					// Only find path to attack if not already at the position
-					if (enemyLoc.x != this.currPos.x && enemyLoc.y != this.currPos.y) {
+					if (enemyLoc.x != this.currPos.x && enemyLoc.y != this.currPos.y) {	
 						console.log("lets do it");
-
-						// X axis is shorter than y axis
-						if (Math.abs(enemyLoc.x-this.currPos.x) < Math.abs(enemyLoc.y-this.currPos.y)) {
-							dest = {
-								x: enemyLoc.x,
-								y: this.currPos.y
-							};
-
-							if (enemyLoc.y < this.currPos.y) {
-								this.shootDir = DIR.up;
-							} else {
-								this.shootDir = DIR.down;
-							}
-
-						// Y axis is shorter than x axis
-						} else {//if (Math.abs(enemyLoc.x-this.currPos.x) > Math.abs(enemyLoc.y-this.currPos.y)) {
-							dest = {
-								x: this.currPos.x,
-								y: enemyLoc.y
-							}
-
-							if (enemyLoc.x < this.currPos.x) {
-								this.shootDir = DIR.left;
-							} else {
-								this.shootDir = DIR.right;
-							}
-							// Both axis are same... so choose random. But currently go Y only
-							/*} else {
-								dest = {
-									x: this.currPos.x,
-									y: enemyLoc.y
-								}					
-							}*/
-							// Need to check if dest is a wall or not....
-							//WAAAA	
-						}
-						console.log("FInding path to DEST["+dest.x+","+dest.y+"]");
-						this.path = this.astar.search(this.currPos, dest);
-
-						// Couldn't find a path there so.... fk it back to idle
-						if (this.path.length == 0) {
+						
+						var route = this.attack();
+						if (route.length != 0) {
+							this.path = route;
+						} else {
 							this.task = TASK.idle;
 						}
+
+
 					} else {
 						console.log("I'm already there... so just shoot");
 						this.angle = this.shootDir;
 						this.shoot();
 						this.task = TASK.idle;
-						console.log("i JUST SHOT AND back to idlee");
+						console.log("i JUST SHOT AND back to idlee");	
 					}
-				
+
+
 				// Don't do anything
 				} else if (this.task == TASK.idle) {
 					console.log("in idle");
@@ -1383,6 +1350,61 @@ class Bot extends Player {
 
 		// Common functions dealing with updates to player
 		super.update();
+	}
+
+
+	// Calculate path for player to move to and ATTACK
+	attack() {
+		var temp = this.findEnemyLoc();
+		var enemyLoc = temp[0];
+		var dest;
+
+		// X axis is shorter than y axis
+		if (Math.abs(enemyLoc.x-this.currPos.x) < Math.abs(enemyLoc.y-this.currPos.y)) {
+			dest = {
+				x: enemyLoc.x,
+				y: this.currPos.y
+			};
+
+			if (enemyLoc.y < this.currPos.y) {
+				this.shootDir = DIR.up;
+			} else {
+				this.shootDir = DIR.down;
+			}
+
+		// Y axis is shorter than x axis
+		} else {//if (Math.abs(enemyLoc.x-this.currPos.x) > Math.abs(enemyLoc.y-this.currPos.y)) {
+			dest = {
+				x: this.currPos.x,
+				y: enemyLoc.y
+			}
+
+			if (enemyLoc.x < this.currPos.x) {
+				this.shootDir = DIR.left;
+			} else {
+				this.shootDir = DIR.right;
+			}
+			// Both axis are same... so choose random. But currently go Y only
+			/*} else {
+				dest = {
+					x: this.currPos.x,
+					y: enemyLoc.y
+				}					
+			}*/
+			// Need to check if dest is a wall or not....
+			//WAAAA	
+		}
+		console.log("FInding path to DEST["+dest.x+","+dest.y+"]");
+		var path = this.astar.search(this.currPos, dest);
+
+		// Couldn't find a path there so.... fk it back to idle
+		if (path.length == 0) {
+			return [];
+		} else {
+			return path;
+		}
+		
+
 	}
 
 	// Checks if the enemy is a certain radius around the bot's goal
