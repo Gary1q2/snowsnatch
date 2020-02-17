@@ -1130,17 +1130,32 @@ class Bot extends Player {
 
 				} else {
 
+					// Bot attacks more if enemy is near base
+					var attackChance;   
+					var distFromEnemy = 3;     // Minimum distance away before bot starts attacking
+
+					// Bot attacks more... IF enemy is near base trying to cap flag ORRR if enemy has
+					// flag he will try to attack all the time...
+					if ((this.enemyCloseToBase() && !playerArr[0].hasFlag) || playerArr[0].hasFlag) {
+						attackChance = 0.1;
+						distFromEnemy = 10;
+					} else {
+						attackChance = 0.02;
+					}
+
+					 
+
 					// Shoot enemy if in range to move to  - only attack 30% of the time
-					/*var test = this.findEnemyLoc();
-					var enemyLoc = test[0];
-					if (this.task != TASK.attack && Math.random() <= 0.01 &&(Math.abs(enemyLoc.x - this.currPos.x) <= 3 || Math.abs(enemyLoc.y - this.currPos.y)) <= 3) {
+					var test = this.findEnemyLoc();
+					var enemyLoc = test[0];                       
+					if (this.task != TASK.attack && Math.random() <= attackChance && (Math.abs(enemyLoc.x - this.currPos.x) <= distFromEnemy || Math.abs(enemyLoc.y - this.currPos.y)) <= distFromEnemy) {
 						console.log("task = " + this.task);
 						console.log("ATTACKING TIMEEE  enemyLoc=["+enemyLoc.x+","+enemyLoc.y+"]    currPos=["+this.currPos.x+","+this.currPos.y+"]");
 						this.task = TASK.attack;
 						this.path = [];
-
+						
 					// Get flag or go home
-					} else */if (this.task == TASK.idle) {
+					} else if (this.task == TASK.idle) {
 						if (!this.hasFlag) {
 							this.task = TASK.getFlag;
 						} else {
@@ -1370,6 +1385,18 @@ class Bot extends Player {
 		super.update();
 	}
 
+	// Checks if the enemy is a certain radius around the bot's goal
+	enemyCloseToBase() {
+		var temp = this.findEnemyLoc();
+		var enemyLoc = temp[0];
+
+		var radius = 5;
+		if (Math.abs(enemyLoc.x-this.goal.x) <= radius && Math.abs(enemyLoc.y-this.goal.y) <= radius) {
+			return true;
+		}
+		return false;
+	}
+
 	// Return a path thats a square away - dodges appropriately
 	dodgeAway() {
 		this.dodgeTimer = this.dodgeTime;
@@ -1468,8 +1495,8 @@ class Bot extends Player {
 
 						var rect1 = snowball.getRectAt(snowballPos.x, snowballPos.y);
 						var rect2 = this.getRectAt(playerPos.x, playerPos.y);
-						ctx.fillRect(rect1.x, rect1.y, snowball.width, snowball.height);
-						ctx.fillRect(rect2.x, rect2.y, this.width, this.height);
+						//ctx.fillRect(rect1.x, rect1.y, snowball.width, snowball.height);
+						//ctx.fillRect(rect2.x, rect2.y, this.width, this.height);
 
 						if (testCollisionRectRect(rect1, rect2)) {
 							console.log("IT PASSES THROUGH FUCKK  RIGHTT current task =" + this.task);
@@ -1511,8 +1538,8 @@ class Bot extends Player {
 
 						var rect1 = snowball.getRectAt(snowballPos.x, snowballPos.y);
 						var rect2 = this.getRectAt(playerPos.x, playerPos.y);
-						ctx.fillRect(rect1.x, rect1.y, snowball.width, snowball.height);
-						ctx.fillRect(rect2.x, rect2.y, this.width, this.height);
+						//ctx.fillRect(rect1.x, rect1.y, snowball.width, snowball.height);
+						//ctx.fillRect(rect2.x, rect2.y, this.width, this.height);
 
 						if (testCollisionRectRect(rect1, rect2)) {
 							console.log("IT PASSES THROUGH FUCKK  LEFTTT current task =" + this.task);
@@ -1553,8 +1580,8 @@ class Bot extends Player {
 
 						var rect1 = snowball.getRectAt(snowballPos.x, snowballPos.y);
 						var rect2 = this.getRectAt(playerPos.x, playerPos.y);
-						ctx.fillRect(rect1.x, rect1.y, snowball.width, snowball.height);
-						ctx.fillRect(rect2.x, rect2.y, this.width, this.height);
+						//ctx.fillRect(rect1.x, rect1.y, snowball.width, snowball.height);
+						//ctx.fillRect(rect2.x, rect2.y, this.width, this.height);
 
 						if (testCollisionRectRect(rect1, rect2)) {
 							console.log("IT PASSES THROUGH FUCKK  DOWNNN current task =" + this.task);
@@ -1596,8 +1623,8 @@ class Bot extends Player {
 
 						var rect1 = snowball.getRectAt(snowballPos.x, snowballPos.y);
 						var rect2 = this.getRectAt(playerPos.x, playerPos.y);
-						ctx.fillRect(rect1.x, rect1.y, snowball.width, snowball.height);
-						ctx.fillRect(rect2.x, rect2.y, this.width, this.height);
+						//ctx.fillRect(rect1.x, rect1.y, snowball.width, snowball.height);
+						//ctx.fillRect(rect2.x, rect2.y, this.width, this.height);
 
 						if (testCollisionRectRect(rect1, rect2)) {
 							console.log("IT PASSES THROUGH FUCKK  LEFTTT current task =" + this.task);
