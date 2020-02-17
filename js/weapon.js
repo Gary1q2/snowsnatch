@@ -732,7 +732,7 @@ class LaserBlast extends Bullet {
 }
 class Snowball extends Bullet {
 	constructor(x, y, owner, dir) {
-		super(x, y, 6, 6, snowball, 3, 2, [0], 0,0, owner, dir);
+		super(x, y, 7, 7, snowball, 3, 2, [0], 0,0, owner, dir);
 		this.speed = 2;
 		this.breaking = false;   // Showing breaking animation
 	}

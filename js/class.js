@@ -1146,8 +1146,7 @@ class Bot extends Player {
 					 
 
 					// Shoot enemy if in range to move to  - only attack 30% of the time
-					var test = this.findEnemyLoc();
-					var enemyLoc = test[0];                       
+					var enemyLoc = this.findEnemyLoc();                      
 					if (this.task != TASK.attack && Math.random() <= attackChance && (Math.abs(enemyLoc.x - this.currPos.x) <= distFromEnemy || Math.abs(enemyLoc.y - this.currPos.y)) <= distFromEnemy) {
 						console.log("task = " + this.task);
 						console.log("ATTACKING TIMEEE  enemyLoc=["+enemyLoc.x+","+enemyLoc.y+"]    currPos=["+this.currPos.x+","+this.currPos.y+"]");
@@ -1220,13 +1219,12 @@ class Bot extends Player {
 				} else if (this.task == TASK.attack && this.path.length == 0) {
 					console.log("finding path TO ATTACK");
 
-					var temp = this.findEnemyLoc();
-					var enemyLoc = temp[0];
+					var enemyLoc = this.findEnemyLoc();
 
 					// Only find path to attack if not already at the position
 					if (enemyLoc.x != this.currPos.x && enemyLoc.y != this.currPos.y) {	
 						console.log("lets do it");
-						
+
 						var route = this.attack();
 						if (route.length != 0) {
 							this.path = route;
@@ -1355,8 +1353,7 @@ class Bot extends Player {
 
 	// Calculate path for player to move to and ATTACK
 	attack() {
-		var temp = this.findEnemyLoc();
-		var enemyLoc = temp[0];
+		var enemyLoc = this.findEnemyLoc();
 		var dest;
 
 		// X axis is shorter than y axis
@@ -1409,8 +1406,7 @@ class Bot extends Player {
 
 	// Checks if the enemy is a certain radius around the bot's goal
 	enemyCloseToBase() {
-		var temp = this.findEnemyLoc();
-		var enemyLoc = temp[0];
+		var enemyLoc = this.findEnemyLoc();
 
 		var radius = 5;
 		if (Math.abs(enemyLoc.x-this.goal.x) <= radius && Math.abs(enemyLoc.y-this.goal.y) <= radius) {
@@ -1694,7 +1690,82 @@ class Bot extends Player {
 				}
 			}
 		}
-		return list;
+
+		// Get enemy's anchor position
+		var enemy = {
+			x: enemy.x-enemy.centerX+enemy.colShiftX+enemy.img.width/enemy.nCol/2-enemy.width/2,
+			y: enemy.y-enemy.centerY+enemy.colShiftY+enemy.img.height/enemy.nRow/2-enemy.height/2,
+			width: enemy.width,
+			height: enemy.height
+		};	
+
+		var grid;
+		if (list.length == 1) {
+			grid = list[0];
+
+		} else if (list.length == 2) {
+			// Overlapping horizontal tiles
+			if (list[0].y == list[1].y) {
+				var box1Hor = (list[0].x+1)*gridLen-enemy.x;
+				var box2Hor = enemy.width - box1Hor;
+
+				if (box1Hor >= box2Hor) {
+					grid = list[0];
+				} else {
+					grid = list[1];
+				}
+
+			// Overlapping vertical tiles
+			} else {
+				var box1Ver = (list[0].y+1)*gridLen-enemy.y;
+				var box2Ver = enemy.height - box1Ver;
+
+				if (box1Ver >= box2Ver) {
+					grid = list[0];
+				} else {
+					grid = list[1];
+				}
+			}	
+			
+		} else {
+			var box1Hor = (list[0].x+1)*gridLen-enemy.x;
+			var box1Ver = (list[0].y+1)*gridLen-enemy.y;
+			var box2Hor = enemy.width - box1Hor;
+			var box2Ver = box1Ver;
+			var box3Hor = box1Hor;
+			var box3Ver = enemy.height - box1Ver;
+			var box4Hor = box2Hor;
+			var box4Ver = box3Ver;
+
+			var b1 = box1Hor + box1Ver;
+			var b2 = box2Hor + box2Ver;
+			var b3 = box3Hor + box3Ver;
+			var b4 = box4Hor + box4Ver; 
+
+			if (b1 >= b2 && b1 >= b3 && b1 >= b4) {
+				grid = list[0];
+				console.log("b1");
+			} else if (b2 > b1 && b2 > b3 && b2 > b4) {
+				grid = list[1];
+				console.log("b2");
+			} else if (b3 > b1 && b3 > b2 && b3 > b4) {
+				grid = list[2];
+				console.log("b2");
+			} else {
+				grid = list[3];
+				console.log("b2");
+			}
+			console.log(box1Hor);
+			console.log(box1Ver);
+			console.log(box2Hor);
+			console.log(box2Ver);
+			console.log(box3Hor);
+			console.log(box3Ver);
+			console.log(box4Hor);
+			console.log(box4Ver);
+		}
+
+		return grid;
 	}
 
 	// Find the grids that the flag is currently in
