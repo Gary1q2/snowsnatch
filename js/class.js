@@ -1137,10 +1137,10 @@ class Bot extends Player {
 					// Bot attacks more... IF enemy is near base trying to cap flag ORRR if enemy has
 					// flag he will try to attack all the time...
 					if (this.enemyCloseToBase() && !playerArr[0].hasFlag) {
-						attackChance = -1;//0.1;
+						attackChance = 1;//-1;//0.1;
 						distFromEnemy = 10;
 					} else {
-						attackChance = -1;//0.02;
+						attackChance = 1;//-1;//0.02;
 					}
 
 					 
@@ -1222,26 +1222,26 @@ class Bot extends Player {
 					var enemyLoc = this.findEnemyLoc();
 
 					// Only find path to attack if not already at the position
-					if (enemyLoc.x != this.currPos.x && enemyLoc.y != this.currPos.y) {	
+					//if (enemyLoc.x != this.currPos.x && enemyLoc.y != this.currPos.y) {	
 						//console.log("lets do it");
 
-						var route = this.attack();
-						if (route.length != 0) {
-							this.path = route;
+					var route = this.attack();
+					if (route != []) {
+						this.path = route;
 
-						// No path was found at that distance... just cancel shooting;
-						} else {
-							this.task = TASK.idle;
-						}
-
-
+					// No path was found at that distance... just cancel shooting;
 					} else {
+						this.task = TASK.idle;
+					}
+
+
+					/*} else {
 						//console.log("I'm already there... so just shoot");
 						this.angle = this.shootDir;
 						this.shoot();
 						this.task = TASK.idle;
 						//console.log("i JUST SHOT AND back to idlee");	
-					}
+					}*/
 
 
 				// Don't do anything
@@ -1358,6 +1358,12 @@ class Bot extends Player {
 		var enemyLoc = this.findEnemyLoc();
 		var dest;
 
+		// 50% chance that bot will close in on gap
+		var moveIn = 0;
+		if (Math.random() < 0.5) {
+			moveIn = 1;
+		};
+
 		// X axis is shorter than y axis
 		if (Math.abs(enemyLoc.x-this.currPos.x) < Math.abs(enemyLoc.y-this.currPos.y)) {
 			dest = {
@@ -1367,8 +1373,10 @@ class Bot extends Player {
 
 			if (enemyLoc.y < this.currPos.y) {
 				this.shootDir = DIR.up;
+				dest.y -= moveIn;
 			} else {
 				this.shootDir = DIR.down;
+				dest.y += moveIn;
 			}
 
 		// Y axis is shorter than x axis
@@ -1380,8 +1388,10 @@ class Bot extends Player {
 
 			if (enemyLoc.x < this.currPos.x) {
 				this.shootDir = DIR.left;
+				dest.x -= moveIn;
 			} else {
 				this.shootDir = DIR.right;
+				dest.x += moveIn;
 			}
 			// Both axis are same... so choose random. But currently go Y only
 			/*} else {
@@ -1396,7 +1406,7 @@ class Bot extends Player {
 		var path = this.astar.search(this.currPos, dest);
 
 		// Couldn't find a path there so.... fk it back to idle
-		if (path.length == 0) {
+		if (path == []) {
 			console.log("FAILED no path to DEST["+dest.x+","+dest.y+"]");
 			return [];
 		} else {

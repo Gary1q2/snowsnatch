@@ -60,13 +60,24 @@ class Astar {
 	}
 
 	// Start A* search
+	/* Return:
+	   array          - path successful
+	   empty array    - no valid path
+	*/
 	search(start, goal) {
 		this.initArray();
 
-
-		// Disallow goal to be same as start
+		// If the start is the goal... just return the path to itself
 		if (JSON.stringify(start) === JSON.stringify(goal)) {
-			//console.log("Already at the goal");
+			console.log("Goal is the start... astar done");
+			var arr = [];
+			arr.push(goal);
+			return arr;
+		}
+
+		// Goal cannot be a wall... so fail
+		if (this.isWall(goal)) {
+			console.log("Goal is a wall... astar failed");
 			return [];
 		}
 
