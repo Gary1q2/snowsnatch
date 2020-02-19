@@ -66,7 +66,7 @@ class Astar {
 
 		// Disallow goal to be same as start
 		if (JSON.stringify(start) === JSON.stringify(goal)) {
-			console.log("Already at the goal");
+			//console.log("Already at the goal");
 			return [];
 		}
 
@@ -112,7 +112,7 @@ class Astar {
 				// Check if goal
 				if (JSON.stringify(neighbour) === JSON.stringify(goal)) {
 					this.array[neighbour.y][neighbour.x].parent = currentNode;
-					console.log("       Found goal");
+					//console.log("       Found goal");
 					return this.getPath(neighbour);
 
 				} else {

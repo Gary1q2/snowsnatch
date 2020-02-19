@@ -1124,7 +1124,7 @@ class Bot extends Player {
 				if (this.task != TASK.dodge) {this.dodgeWay = this.checkDodge();}
 				if (this.task == TASK.dodge || this.dodgeWay) {
 					if (this.task != TASK.dodge) {
-						console.log("task before set = " + this.task + "     <--- set task to dodge");
+						//console.log("task before set = " + this.task + "     <--- set task to dodge");
 						this.task = TASK.dodge;
 					}
 
@@ -1137,10 +1137,10 @@ class Bot extends Player {
 					// Bot attacks more... IF enemy is near base trying to cap flag ORRR if enemy has
 					// flag he will try to attack all the time...
 					if (this.enemyCloseToBase() && !playerArr[0].hasFlag) {
-						attackChance = 0.1;
+						attackChance = -1;//0.1;
 						distFromEnemy = 10;
 					} else {
-						attackChance = 0.02;
+						attackChance = -1;//0.02;
 					}
 
 					 
@@ -1148,8 +1148,8 @@ class Bot extends Player {
 					// Shoot enemy if in range to move to  - only attack 30% of the time
 					var enemyLoc = this.findEnemyLoc();                      
 					if (this.task != TASK.attack && Math.random() <= attackChance && (Math.abs(enemyLoc.x - this.currPos.x) <= distFromEnemy || Math.abs(enemyLoc.y - this.currPos.y)) <= distFromEnemy) {
-						console.log("task = " + this.task);
-						console.log("ATTACKING TIMEEE  enemyLoc=["+enemyLoc.x+","+enemyLoc.y+"]    currPos=["+this.currPos.x+","+this.currPos.y+"]");
+						//console.log("task = " + this.task);
+						//console.log("ATTACKING TIMEEE  enemyLoc=["+enemyLoc.x+","+enemyLoc.y+"]    currPos=["+this.currPos.x+","+this.currPos.y+"]");
 						this.task = TASK.attack;
 						this.path = [];
 						
@@ -1176,11 +1176,11 @@ class Bot extends Player {
 
 				// Generate path to get the flag
 				if (this.task == TASK.getFlag && this.path.length == 0) {
-					console.log("get flag");
+					//console.log("get flag");
 					// Generate possible locations of the flag
 					if (this.flag.length == 0) {
 						this.flag = this.findFlagLoc();		
-						console.log("generated flag locations");
+						//console.log("generated flag locations");
 
 					// No flag found at previous location, pop off		
 					} else {
@@ -1190,21 +1190,21 @@ class Bot extends Player {
 
 					// Find path to the flag
 					if (this.flag.length != 0) {
-						console.log("Flag located at ["+this.flag[0].x+","+this.flag[0].y+"]");
+						//console.log("Flag located at ["+this.flag[0].x+","+this.flag[0].y+"]");
 						this.path = this.astar.search(this.currPos, this.flag[0]);
 					}
 
 
 				// Generate path to go home
 				} else if (this.task == TASK.goHome && this.path.length == 0) {
-					console.log("gohome");
+					//console.log("gohome");
 					this.path = this.astar.search(this.currPos, this.goal);
 
 
 
 				// Dodging a bullet
 				} else if (this.task == TASK.dodge && this.dodgeTimer == 0) {
-					console.log("i dodged!!!!!!!!!!!!");
+					//console.log("i dodged!!!!!!!!!!!!");
 
 					if (this.dodgeMethod == DODGE.move) {
 						this.path = this.dodgeAway();
@@ -1217,28 +1217,30 @@ class Bot extends Player {
 
 				// Attacking the enemy
 				} else if (this.task == TASK.attack && this.path.length == 0) {
-					console.log("finding path TO ATTACK");
+					//console.log("finding path TO ATTACK");
 
 					var enemyLoc = this.findEnemyLoc();
 
 					// Only find path to attack if not already at the position
 					if (enemyLoc.x != this.currPos.x && enemyLoc.y != this.currPos.y) {	
-						console.log("lets do it");
+						//console.log("lets do it");
 
 						var route = this.attack();
 						if (route.length != 0) {
 							this.path = route;
+
+						// No path was found at that distance... just cancel shooting;
 						} else {
 							this.task = TASK.idle;
 						}
 
 
 					} else {
-						console.log("I'm already there... so just shoot");
+						//console.log("I'm already there... so just shoot");
 						this.angle = this.shootDir;
 						this.shoot();
 						this.task = TASK.idle;
-						console.log("i JUST SHOT AND back to idlee");	
+						//console.log("i JUST SHOT AND back to idlee");	
 					}
 
 
@@ -1275,7 +1277,6 @@ class Bot extends Player {
 
 						// Reached the intended destination
 						} else {
-							console.log("im there now yay");
 
 							// Arrived at shooting spot...so shoot
 							if (this.task == TASK.attack) {
@@ -1292,6 +1293,7 @@ class Bot extends Player {
 
 							} else {
 								this.task = TASK.idle;
+								console.log("im there now... idle");
 							}
 							
 
@@ -1391,13 +1393,14 @@ class Bot extends Player {
 			// Need to check if dest is a wall or not....
 			//WAAAA	
 		}
-		console.log("FInding path to DEST["+dest.x+","+dest.y+"]");
 		var path = this.astar.search(this.currPos, dest);
 
 		// Couldn't find a path there so.... fk it back to idle
 		if (path.length == 0) {
+			console.log("FAILED no path to DEST["+dest.x+","+dest.y+"]");
 			return [];
 		} else {
+			console.log("Found path to DEST["+dest.x+","+dest.y+"]");
 			return path;
 		}
 		
@@ -1518,6 +1521,17 @@ class Bot extends Player {
 
 						if (testCollisionRectRect(rect1, rect2)) {
 							console.log("IT PASSES THROUGH FUCKK  RIGHTT current task =" + this.task);
+
+							// Special case where bot is inline with enemy shooting
+							var rect1 = snowball.getRectAt(this.x, snowball.y);
+							var rect2 = this.getRectAt(this.x, this.y);
+							if (testCollisionRectRect(rect1, rect2)) {
+								console.log("Directly INLINEEEEEE");
+								this.dodgeMethod = DODGE.move;
+								return DIR.right;
+							}
+
+
 							if (this.angle == DIR.up || this.angle == DIR.down) {
 								this.dodgeMethod = DODGE.stop;
 							} else {
@@ -1561,6 +1575,16 @@ class Bot extends Player {
 
 						if (testCollisionRectRect(rect1, rect2)) {
 							console.log("IT PASSES THROUGH FUCKK  LEFTTT current task =" + this.task);
+
+							// Special case where bot is inline with enemy shooting
+							var rect1 = snowball.getRectAt(this.x, snowball.y);
+							var rect2 = this.getRectAt(this.x, this.y);
+							if (testCollisionRectRect(rect1, rect2)) {
+								console.log("Directly INLINEEEEEE");
+								this.dodgeMethod = DODGE.move;
+								return DIR.left;
+							}
+
 							if (this.angle == DIR.up || this.angle == DIR.down) {
 								this.dodgeMethod = DODGE.stop;
 							} else {
@@ -1603,6 +1627,16 @@ class Bot extends Player {
 
 						if (testCollisionRectRect(rect1, rect2)) {
 							console.log("IT PASSES THROUGH FUCKK  DOWNNN current task =" + this.task);
+
+							// Special case where bot is inline with enemy shooting
+							var rect1 = snowball.getRectAt(snowball.x, this.y);
+							var rect2 = this.getRectAt(this.x, this.y);
+							if (testCollisionRectRect(rect1, rect2)) {
+								console.log("Directly INLINEEEEEE");
+								this.dodgeMethod = DODGE.move;
+								return DIR.down;
+							}
+
 							if (this.angle == DIR.left || this.angle == DIR.right) {
 								this.dodgeMethod = DODGE.stop;
 							} else {
@@ -1621,6 +1655,7 @@ class Bot extends Player {
 						x: this.x,
 						y: this.y
 					};
+
 
 					// Check if snowball crosses over the player
 					var multiple = 10;
@@ -1645,7 +1680,17 @@ class Bot extends Player {
 						//ctx.fillRect(rect2.x, rect2.y, this.width, this.height);
 
 						if (testCollisionRectRect(rect1, rect2)) {
-							console.log("IT PASSES THROUGH FUCKK  LEFTTT current task =" + this.task);
+							console.log("IT PASSES THROUGH FUCKK   UPPP current task =" + this.task);
+
+							// Special case where bot is inline with enemy shooting
+							var rect1 = snowball.getRectAt(snowball.x, this.y);
+							var rect2 = this.getRectAt(this.x, this.y);
+							if (testCollisionRectRect(rect1, rect2)) {
+								console.log("Directly INLINEEEEEE");
+								this.dodgeMethod = DODGE.move;
+								return DIR.up;
+							}
+
 							if (this.angle == DIR.left || this.angle == DIR.right) {
 								this.dodgeMethod = DODGE.stop;
 							} else {
@@ -1744,17 +1789,17 @@ class Bot extends Player {
 
 			if (b1 >= b2 && b1 >= b3 && b1 >= b4) {
 				grid = list[0];
-				console.log("b1");
+				//console.log("b1");
 			} else if (b2 > b1 && b2 > b3 && b2 > b4) {
 				grid = list[1];
-				console.log("b2");
+				//console.log("b2");
 			} else if (b3 > b1 && b3 > b2 && b3 > b4) {
 				grid = list[2];
-				console.log("b2");
+				//console.log("b2");
 			} else {
 				grid = list[3];
-				console.log("b2");
-			}
+				//console.log("b2");
+			}/*
 			console.log(box1Hor);
 			console.log(box1Ver);
 			console.log(box2Hor);
@@ -1762,7 +1807,7 @@ class Bot extends Player {
 			console.log(box3Hor);
 			console.log(box3Ver);
 			console.log(box4Hor);
-			console.log(box4Ver);
+			console.log(box4Ver);*/
 		}
 
 		return grid;
