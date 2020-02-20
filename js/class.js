@@ -1106,6 +1106,12 @@ class Bot extends Player {
 				}
 			}
 		}
+
+
+
+		this.attackFail = 0;      // If bot fails to find a shoot spot 4 times, banned from attacking for a little while
+		this.attackBanTime = 60;
+		this.attackBanTimer = 0;
 	}
 
 	update() {
@@ -1124,18 +1130,22 @@ class Bot extends Player {
 				if (this.task == TASK.dodge || this.dodgeWay) {
 					if (this.task != TASK.dodge) {
 						this.task = TASK.dodge;
+						this.attackBanTimer = 0;  // Once attacked, u can ATTACK
 					}
 
 
 				// Decide whether to attack or not 
-				} else if (this.task != TASK.attack && this.shouldBotAttack()) {
-					console.log("task = " + this.task);
+				} else if (this.task != TASK.attack && this.shouldBotAttack() && this.attackBanTimer == 0) {
 
 					this.task = TASK.attack;
 					this.path = [];
-					
+			
 
-				// Get flag or go home
+				// Wait for a bit
+				} else if (this.task == TASK.wait) {
+
+
+				// Get flag or go home   (has to be idle... otherwise all cases would just get to this)
 				} else if (this.task == TASK.idle) {
 					if (!this.hasFlag) {
 						this.task = TASK.getFlag;
@@ -1143,14 +1153,8 @@ class Bot extends Player {
 						this.task = TASK.goHome; 
 					}
 					this.flag = []; // Reset the flag array to empty
+				}
 
-
-				// Wait for a bit
-				} else if (this.task == TASK.wait) {
-
-
-				} 
-				
 
 
 				// Generate path to get the flag
@@ -1194,9 +1198,9 @@ class Bot extends Player {
 				// Attacking the enemy
 				} else if (this.task == TASK.attack && this.path.length == 0) {
 					var route = this.attack();
-					if (route != []) {
+					if (route.length != 0) {
 						this.path = route;
-						
+
 					// No path was found at that distance... just cancel shooting;
 					} else {
 						this.task = TASK.idle;
@@ -1208,7 +1212,7 @@ class Bot extends Player {
 					console.log("in idle");
 				}
 
-
+				console.log("task = " + this.task);
 
 
 				// Move the bot because it has somewhere to go
@@ -1251,6 +1255,7 @@ class Bot extends Player {
 								console.log("finished dodging.... wait a second");
 
 							} else {
+								console.log("before idle..? = " + this.task);
 								this.task = TASK.idle;
 								console.log("im there now... idle");
 							}
@@ -1298,6 +1303,9 @@ class Bot extends Player {
 			if (this.dodgeTimer > 0) {
 				this.dodgeTimer--;
 			}
+			if (this.attackBanTimer > 0) {
+				this.attackBanTimer--;
+			}
 			if (this.waitTimer > 0) {
 				this.waitTimer--;
 				if (this.waitTimer == 0) {
@@ -1323,8 +1331,12 @@ class Bot extends Player {
 			moveIn = 1;
 		};
 
+
+
+
+
 		// X axis is shorter than y axis
-		if (Math.abs(enemyLoc.x-this.currPos.x) < Math.abs(enemyLoc.y-this.currPos.y)) {
+		if (Math.abs(enemyLoc.x-this.currPos.x) < Math.abs(enemyLoc.y-this.currPos.y) && this.checkShootSpotX(enemyLoc, moveIn)) {
 			dest = {
 				x: enemyLoc.x,
 				y: this.currPos.y
@@ -1339,7 +1351,7 @@ class Bot extends Player {
 			}
 
 		// Y axis is shorter than x axis
-		} else {//if (Math.abs(enemyLoc.x-this.currPos.x) > Math.abs(enemyLoc.y-this.currPos.y)) {
+		} else if (Math.abs(enemyLoc.x-this.currPos.x) > Math.abs(enemyLoc.y-this.currPos.y) && this.checkShootSpotY(enemyLoc, moveIn)) {
 			dest = {
 				x: this.currPos.x,
 				y: enemyLoc.y
@@ -1352,29 +1364,56 @@ class Bot extends Player {
 				this.shootDir = DIR.right;
 				dest.x += moveIn;
 			}
-			// Both axis are same... so choose random. But currently go Y only
-			/*} else {
-				dest = {
-					x: this.currPos.x,
-					y: enemyLoc.y
-				}					
-			}*/
-			// Need to check if dest is a wall or not....
-			//WAAAA	
+
+		// Not possible to do anything... just return
+		} else {
+			console.log("cant do shit... returning out hehe");
+			this.attackFail++;
+			if (this.attackFail >= 4) {
+				this.attackBanTimer = this.attackBanTime;
+				this.attackFail = 0;
+				console.log("BANNED FROM ATTACKING for 1 SECOND!!!!");
+			}
+			return [];
 		}
+
 		var path = this.astar.search(this.currPos, dest);
 
 		// Couldn't find a path there so.... fk it back to idle
-		if (path == []) {
+		if (path.length == 0) {
 			console.log("FAILED no path to DEST["+dest.x+","+dest.y+"]");
 			return [];
 		} else {
-			console.log("Found path to DEST["+dest.x+","+dest.y+"]");
+			console.log("Found path to DEST["+dest.x+","+dest.y+"]     curr dest["+this.currPos.x+","+this.currPos.y+"]");
+			this.attackFail = 0;
 			return path;
 		}
 		
 
 	}
+
+
+	// Check if shooting spot is free when moving on X axis
+	checkShootSpotX(enemyLoc, moveIn) {
+		if (enemyLoc.y < this.currPos.y && currLevel[this.currPos.y-moveIn][enemyLoc.x] != "W") {
+			return true;
+		} else if (enemyLoc.y >= this.currPos.y && currLevel[this.currPos.y+moveIn][enemyLoc.x] != "W") {
+			return true;
+		}
+		return false;
+	}
+
+
+	// Check if shooting spot is free when moving on Y axis
+	checkShootSpotY(enemyLoc, moveIn) {
+		if (enemyLoc.x < this.currPos.x && currLevel[enemyLoc.y][this.currPos.x-moveIn] != "W") {
+			return true;
+		} else if (enemyLoc.x >= this.currPos.x && currLevel[enemyLoc.y][this.currPos.x+moveIn] != "W") {
+			return true;
+		}
+		return false;
+	}
+
 
 	shouldBotAttack() {
 
@@ -1384,6 +1423,8 @@ class Bot extends Player {
 		var fewAxesAwayChance = 0.02;
 		var numAxesAway = 3;
 
+		//var hasFlagChance
+
 		// Enemy trying to capture flag.... DEFEND if in range
 		if (this.enemyCloseToBase() && !playerArr[0].hasFlag && this.checkEnemyWithinRadius(defendRadius)) {
 			if (Math.random() <= defendBaseChance) {
@@ -1392,6 +1433,9 @@ class Bot extends Player {
 
 		// Enemy is a few axes away... SHOOT them
 		} else if (this.checkEnemyWithinAxes(numAxesAway)) {
+			//if (this.hasFlag && Math.random() <= 0.01) {
+			//	return true;
+			//} else
 			if (Math.random() <= fewAxesAwayChance) {
 				return true;
 			}
