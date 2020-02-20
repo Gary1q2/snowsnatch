@@ -699,6 +699,7 @@ class Wall extends Entity {
 			this.drawAnimated([10,11,12,13]);
 			if (this.finishAnim) {
 				this.dead = true;
+				currLevel[this.y/gridLen][this.x/gridLen] = 0;  // Set wall to broken in the global level array
 			}
 		}
 	}
@@ -1049,16 +1050,12 @@ class Human extends Player {
 
 // Computer controlled player
 class Bot extends Player {
-	constructor(x, y, playerID, startFace, level) {
+	constructor(x, y, playerID, startFace) {
 		super(x, y, playerID, startFace);
 		console.log("I am a bot... i will destroy you...");
 
-		// Store the level layout
-		this.level = level;
-
-
 		// This isn't updated... so won't update when walls are destroyed
-		this.astar = new Astar(level);
+		this.astar = new Astar();
 
 		// Curent task of the bot
 		this.task = TASK.getFlag;
@@ -1099,9 +1096,9 @@ class Bot extends Player {
 
 		// Find the coordinates for the bot's goal
 		this.goal;
-		for (var i = 0; i < level.length; i++) {
-			for (var j = 0; j < level[i].length; j++) {
-				if (level[i][j] == "T") {
+		for (var i = 0; i < currLevel.length; i++) {
+			for (var j = 0; j < currLevel[i].length; j++) {
+				if (currLevel[i][j] == "T") {
 					this.goal = {
 						x: j,
 						y: i
@@ -1120,67 +1117,49 @@ class Bot extends Player {
 			if (!this.dead && this.canMoveTimer <= 0) {
 
 
+
+
 				// Decide what task the bot needs to do
 				if (this.task != TASK.dodge) {this.dodgeWay = this.checkDodge();}
 				if (this.task == TASK.dodge || this.dodgeWay) {
 					if (this.task != TASK.dodge) {
-						//console.log("task before set = " + this.task + "     <--- set task to dodge");
 						this.task = TASK.dodge;
 					}
 
-				} else {
 
-					// Bot attacks more if enemy is near base
-					var attackChance;   
-					var distFromEnemy = 3;     // Minimum distance away before bot starts attacking
+				// Decide whether to attack or not 
+				} else if (this.task != TASK.attack && this.shouldBotAttack()) {
+					console.log("task = " + this.task);
 
-					// Bot attacks more... IF enemy is near base trying to cap flag ORRR if enemy has
-					// flag he will try to attack all the time...
-					if (this.enemyCloseToBase() && !playerArr[0].hasFlag) {
-						attackChance = 1;//-1;//0.1;
-						distFromEnemy = 10;
-					} else {
-						attackChance = 1;//-1;//0.02;
-					}
-
-					 
-
-					// Shoot enemy if in range to move to  - only attack 30% of the time
-					var enemyLoc = this.findEnemyLoc();                      
-					if (this.task != TASK.attack && Math.random() <= attackChance && (Math.abs(enemyLoc.x - this.currPos.x) <= distFromEnemy || Math.abs(enemyLoc.y - this.currPos.y)) <= distFromEnemy) {
-						//console.log("task = " + this.task);
-						//console.log("ATTACKING TIMEEE  enemyLoc=["+enemyLoc.x+","+enemyLoc.y+"]    currPos=["+this.currPos.x+","+this.currPos.y+"]");
-						this.task = TASK.attack;
-						this.path = [];
-						
-					// Get flag or go home
-					} else if (this.task == TASK.idle) {
-						if (!this.hasFlag) {
-							this.task = TASK.getFlag;
-						} else {
-							this.task = TASK.goHome; 
-						}
-						this.flag = []; // Reset the flag array to empty
-
-					// Do nothing
-					} else if (this.task == TASK.wait) {
+					this.task = TASK.attack;
+					this.path = [];
 					
 
-
-					// Do nothing
+				// Get flag or go home
+				} else if (this.task == TASK.idle) {
+					if (!this.hasFlag) {
+						this.task = TASK.getFlag;
 					} else {
-
+						this.task = TASK.goHome; 
 					}
-				}
+					this.flag = []; // Reset the flag array to empty
+
+
+				// Wait for a bit
+				} else if (this.task == TASK.wait) {
+
+
+				} 
+				
 
 
 				// Generate path to get the flag
 				if (this.task == TASK.getFlag && this.path.length == 0) {
-					//console.log("get flag");
+
 					// Generate possible locations of the flag
 					if (this.flag.length == 0) {
 						this.flag = this.findFlagLoc();		
-						//console.log("generated flag locations");
+
 
 					// No flag found at previous location, pop off		
 					} else {
@@ -1190,22 +1169,18 @@ class Bot extends Player {
 
 					// Find path to the flag
 					if (this.flag.length != 0) {
-						//console.log("Flag located at ["+this.flag[0].x+","+this.flag[0].y+"]");
 						this.path = this.astar.search(this.currPos, this.flag[0]);
 					}
 
 
 				// Generate path to go home
 				} else if (this.task == TASK.goHome && this.path.length == 0) {
-					//console.log("gohome");
 					this.path = this.astar.search(this.currPos, this.goal);
 
 
 
 				// Dodging a bullet
 				} else if (this.task == TASK.dodge && this.dodgeTimer == 0) {
-					//console.log("i dodged!!!!!!!!!!!!");
-
 					if (this.dodgeMethod == DODGE.move) {
 						this.path = this.dodgeAway();
 					} else {
@@ -1215,33 +1190,17 @@ class Bot extends Player {
 						console.log("DIDN't STEP INTO A SNOWBALL.... wait a second");
 					}
 
+
 				// Attacking the enemy
 				} else if (this.task == TASK.attack && this.path.length == 0) {
-					//console.log("finding path TO ATTACK");
-
-					var enemyLoc = this.findEnemyLoc();
-
-					// Only find path to attack if not already at the position
-					//if (enemyLoc.x != this.currPos.x && enemyLoc.y != this.currPos.y) {	
-						//console.log("lets do it");
-
 					var route = this.attack();
 					if (route != []) {
 						this.path = route;
-
+						
 					// No path was found at that distance... just cancel shooting;
 					} else {
 						this.task = TASK.idle;
 					}
-
-
-					/*} else {
-						//console.log("I'm already there... so just shoot");
-						this.angle = this.shootDir;
-						this.shoot();
-						this.task = TASK.idle;
-						//console.log("i JUST SHOT AND back to idlee");	
-					}*/
 
 
 				// Don't do anything
@@ -1417,6 +1376,51 @@ class Bot extends Player {
 
 	}
 
+	shouldBotAttack() {
+
+		var defendBaseChance = 0.1;
+		var defendRadius = 9;
+
+		var fewAxesAwayChance = 0.02;
+		var numAxesAway = 3;
+
+		// Enemy trying to capture flag.... DEFEND if in range
+		if (this.enemyCloseToBase() && !playerArr[0].hasFlag && this.checkEnemyWithinRadius(defendRadius)) {
+			if (Math.random() <= defendBaseChance) {
+				return true;
+			}
+
+		// Enemy is a few axes away... SHOOT them
+		} else if (this.checkEnemyWithinAxes(numAxesAway)) {
+			if (Math.random() <= fewAxesAwayChance) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+
+
+	// Check if enemy within certain radius of bot
+	checkEnemyWithinRadius(radius) {
+		var enemyLoc = this.findEnemyLoc();
+		if (Math.abs(enemyLoc.x-this.currPos.x) <= radius && Math.abs(enemyLoc.y-this.currPos.y) <= radius) {
+			return true;
+		}
+		return false;
+	}
+
+	// Check if enemy is within a certain axes away
+	checkEnemyWithinAxes(radius) {
+		var enemyLoc = this.findEnemyLoc();
+		if (Math.abs(enemyLoc.x-this.currPos.x) <= radius || Math.abs(enemyLoc.y-this.currPos.y) <= radius) {
+			return true;
+		}
+		return false;
+	}
+
+
 	// Checks if the enemy is a certain radius around the bot's goal
 	enemyCloseToBase() {
 		var enemyLoc = this.findEnemyLoc();
@@ -1436,13 +1440,13 @@ class Bot extends Player {
 
 		// Dodge in a random direction UNLESS at the edge of level or wall, then dodges away
 		if (this.dodgeWay == DIR.up || this.dodgeWay == DIR.down) {
-			if ((dodgePos.x == 0 || this.level[dodgePos.y][dodgePos.x-1] == "W") &&
-				(dodgePos.x == this.level[0].length-1 || this.level[dodgePos.y][dodgePos.x+1] == "W")) {
+			if ((dodgePos.x == 0 || currLevel[dodgePos.y][dodgePos.x-1] == "W") &&
+				(dodgePos.x == currLevel[0].length-1 || currLevel[dodgePos.y][dodgePos.x+1] == "W")) {
 				dodgePos = this.alleySave;
 				console.log("RUNNNNING TO ALLEYSAVE WOOOHOO");
-			} else if (dodgePos.x == 0 || this.level[dodgePos.y][dodgePos.x-1] == "W") {
+			} else if (dodgePos.x == 0 || currLevel[dodgePos.y][dodgePos.x-1] == "W") {
 				dodgePos.x += 1;
-			} else if (dodgePos.x == this.level[0].length-1 || this.level[dodgePos.y][dodgePos.x+1] == "W") {
+			} else if (dodgePos.x == currLevel[0].length-1 || currLevel[dodgePos.y][dodgePos.x+1] == "W") {
 				dodgePos.x -= 1;
 			} else {
 				if (Math.random() < 0.5) {
@@ -1450,7 +1454,7 @@ class Bot extends Player {
 						dodgePos.x -= 1;
 					}
 				} else {
-					if (dodgePos.x < this.level[0].length-1) {
+					if (dodgePos.x < currLevel[0].length-1) {
 						dodgePos.x += 1;
 					}
 				}		
@@ -1459,13 +1463,13 @@ class Bot extends Player {
 
 		// Dodge in a random direction UNLESS at the edge of level or wall, then dodges away
 		if (this.dodgeWay == DIR.left || this.dodgeWay == DIR.right) {
-			if ((dodgePos.y == 0 || this.level[dodgePos.y-1][dodgePos.x] == "W") &&
-				(dodgePos.y == this.level.length-1 || this.level[dodgePos.y+1][dodgePos.x] == "W")) {
+			if ((dodgePos.y == 0 || currLevel[dodgePos.y-1][dodgePos.x] == "W") &&
+				(dodgePos.y == currLevel.length-1 || currLevel[dodgePos.y+1][dodgePos.x] == "W")) {
 				dodgePos = this.alleySave;
 				console.log("RUNNNNING TO ALLEYSAVE WOOOHOO");
-			} else if (dodgePos.y == 0 || this.level[dodgePos.y-1][dodgePos.x] == "W") {
+			} else if (dodgePos.y == 0 || currLevel[dodgePos.y-1][dodgePos.x] == "W") {
 				dodgePos.y += 1;
-			} else if (dodgePos.y == this.level.length-1 || this.level[dodgePos.y+1][dodgePos.x] == "W") {
+			} else if (dodgePos.y == currLevel.length-1 || currLevel[dodgePos.y+1][dodgePos.x] == "W") {
 				dodgePos.y -= 1;
 			} else {
 				if (Math.random() < 0.5) {
@@ -1473,7 +1477,7 @@ class Bot extends Player {
 						dodgePos.y -= 1;
 					}
 				} else {
-					if (dodgePos.y < this.level.length-1) {
+					if (dodgePos.y < currLevel.length-1) {
 						dodgePos.y += 1;
 					}
 				}
@@ -1727,8 +1731,8 @@ class Bot extends Player {
 
 		// Check which grid enemy is in
 		var list = [];
-		for (var i = 0; i < this.level.length; i++) {
-			for (var j = 0; j < this.level[i].length; j++) {
+		for (var i = 0; i < currLevel.length; i++) {
+			for (var j = 0; j < currLevel[i].length; j++) {
 				var rect2 = {
 					x: j*gridLen,
 					y: i*gridLen,
@@ -1840,8 +1844,8 @@ class Bot extends Player {
 
 
 		var list = [];
-		for (var i = 0; i < this.level.length; i++) {
-			for (var j = 0; j < this.level[i].length; j++) {
+		for (var i = 0; i < currLevel.length; i++) {
+			for (var j = 0; j < currLevel[i].length; j++) {
 
 				// Check which grid the flag is in
 				var rect1 = {
@@ -1904,8 +1908,8 @@ class Bot extends Player {
 	// Can return multiple grids if standing on multiple
 	findBotLoc() {
 		var list = [];
-		for (var i = 0; i < this.level.length; i++) {
-			for (var j = 0; j < this.level[i].length; j++) {
+		for (var i = 0; i < currLevel.length; i++) {
+			for (var j = 0; j < currLevel[i].length; j++) {
 
 				// Check which grid the bot is in
 				var rect1 = {

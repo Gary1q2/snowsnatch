@@ -252,16 +252,16 @@ class Game {
 
 	// Load the levels and players and all objects into their arrays
 	generateLevel() {
-		var level = levels[this.level];
+		currLevel = levels[this.level];
 
 		// Create players first to have reference
 		for (var i = 0; i < numHeight; i++) {
 			for (var j = 0; j < numWidth; j++) {
-				if (level[i][j] == 1) {
+				if (currLevel[i][j] == 1) {
 					playerArr.push(new Human(j*gridLen, i*gridLen, 1, DIR.right, false));
-				} else if (level[i][j] == 2) {
+				} else if (currLevel[i][j] == 2) {
 					if (this.bot) {
-						playerArr.push(new Bot(j*gridLen, i*gridLen, 2, DIR.left, level));
+						playerArr.push(new Bot(j*gridLen, i*gridLen, 2, DIR.left));
 					} else {
 						playerArr.push(new Human(j*gridLen, i*gridLen, 2, DIR.left));
 					}
@@ -272,14 +272,14 @@ class Game {
 		// Create objects from level array
 		for (var i = 0; i < numHeight; i++) {
 			for (var j = 0; j < numWidth; j++) {
-				if (level[i][j] == "W") {
+				if (currLevel[i][j] == "W") {
 					wallArr.add(new Wall(j*gridLen, i*gridLen));
-				} else if (level[i][j] == "C") {
+				} else if (currLevel[i][j] == "C") {
 					tempArr.add(new Crate(j*gridLen, i*gridLen));
-				} else if (level[i][j] == "G") {
+				} else if (currLevel[i][j] == "G") {
 					tempArr.add(new Flag(j*gridLen, i*gridLen, getPlayer(2)));
 					tempArr.add(new Goal(j*gridLen, i*gridLen, getPlayer(1)));
-				} else if (level[i][j] == "T") {
+				} else if (currLevel[i][j] == "T") {
 					tempArr.add(new Goal(j*gridLen, i*gridLen, getPlayer(2)));
 					tempArr.add(new Flag(j*gridLen, i*gridLen, getPlayer(1)));
 				} else {

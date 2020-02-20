@@ -1,9 +1,8 @@
 class Astar {
-	constructor(level) {
+	constructor() {
 
-		this.height = level.length;
-		this.width = level[0].length;
-		this.level = level;
+		this.height = currLevel.length;
+		this.width = currLevel[0].length;
 
 /*
 		this.start; 
@@ -53,7 +52,7 @@ class Astar {
 
 	// Checks if this position is a wall or not
 	isWall(pos) {
-		if (this.level[pos.y][[pos.x]] == "W") {
+		if (currLevel[pos.y][[pos.x]] == "W") {
 			return true;
 		}
 		return false;

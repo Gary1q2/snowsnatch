@@ -134,6 +134,9 @@ var debug = false;
 
 var money = 0;
 
+var currLevel;  // Global level array of current level in play - keeps track of walls that break
+
+
 window.onload = function() {
 	game = new Game();
 	requestAnimationFrame(gameLoop);
