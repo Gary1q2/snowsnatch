@@ -1153,11 +1153,11 @@ class Bot extends Player {
 
 
 				// Decide whether to attack or not 
-				/*} else if (this.task != TASK.attack && this.shouldBotAttack() && this.attackBanTimer == 0) {
+				} else if (this.task != TASK.attack && this.shouldBotAttack() && this.attackBanTimer == 0) {
 
 					this.task = TASK.attack;
 					this.path = [];
-			*/
+			
 
 
 				// Get flag or go home   (has to be idle... otherwise all cases would just get to this)
@@ -1438,36 +1438,40 @@ class Bot extends Player {
 
 	shouldBotAttack() {
 
-		// Chance to attack if enemy approaching the base trying to cap flag
-		var defendBaseChance = 0.1;
-		var defendRadius = 9;
+		// Can't attack during mid dodge
+		if (!this.dodging) {
 
-		// Chance to attack if enemy is within a certain number of axes away
-		var fewAxesAwayChance = 0.02;
-		var numAxesAway = 3;
+			// Chance to attack if enemy approaching the base trying to cap flag
+			var defendBaseChance = 0.1;
+			var defendRadius = 9;
 
-		// Chance to attack if bot has a flag
-		var hasFlagChance = 0.005;
+			// Chance to attack if enemy is within a certain number of axes away
+			var fewAxesAwayChance = 0.02;
+			var numAxesAway = 3;
 
-		// Enemy trying to capture flag.... DEFEND if in range
-		if (this.enemyCloseToBase() && !playerArr[0].hasFlag && this.checkEnemyWithinRadius(defendRadius)) {
-			if (Math.random() <= defendBaseChance) {
-				return true;
-			}
+			// Chance to attack if bot has a flag
+			var hasFlagChance = 0.005;
+
+			// Enemy trying to capture flag.... DEFEND if in range
+			if (this.enemyCloseToBase() && !playerArr[0].hasFlag && this.checkEnemyWithinRadius(defendRadius)) {
+				if (Math.random() <= defendBaseChance) {
+					return true;
+				}
 
 
-		// Enemy is a few axes away
-		} else if (this.checkEnemyWithinAxes(numAxesAway)) {
+			// Enemy is a few axes away
+			} else if (this.checkEnemyWithinAxes(numAxesAway)) {
 
-			// Less chance to attack if bot has flag... just go cap
-			if (this.hasFlag) {
-				if (Math.random() <= hasFlagChance) {
-			    	return true;
-			    }
+				// Less chance to attack if bot has flag... just go cap
+				if (this.hasFlag) {
+					if (Math.random() <= hasFlagChance) {
+				    	return true;
+				    }
 
-			// Otherwise just SHOOOT THEM
-			} else if (Math.random() <= fewAxesAwayChance) {
-				return true;
+				// Otherwise just SHOOOT THEM
+				} else if (Math.random() <= fewAxesAwayChance) {
+					return true;
+				}
 			}
 		}
 
@@ -1540,13 +1544,36 @@ class Bot extends Player {
 
 			// Nothing around, dodge anywhere
 			} else {
-				if ((this.targetSnowball.getXAnchor() + this.targetSnowball.width/2) <= (this.getXAnchor()+this.width/2)) {
-					dodgePos.x += 1;
-					console.log("RIGHT");
-				} else {
-					dodgePos.x -= 1;
-					console.log("LEFT");
+
+				// Check if snowball would hit bot if bot was in the current dodgePos
+				var killzone = false;
+				var gapToEdge = (this.img.width-this.width)/2;
+				if ((this.targetSnowball.getXAnchor()+this.targetSnowball.width) >= (dodgePos.x*gridLen+gapToEdge) &&
+					(this.targetSnowball.getXAnchor() <= (dodgePos.x*gridLen+gridLen-gapToEdge))) {
+					killzone = true;
 				}
+
+				// Only move if currPos is killzone
+				if (killzone) {
+
+					// Dodge right if more clearance 
+					if ((this.targetSnowball.getXAnchor() + this.targetSnowball.width/2) <= (this.getXAnchor()+this.width/2)) {
+						dodgePos.x += 1;
+						console.log("RIGHT");
+
+					// Dodge left if more clearance
+					} else {
+						dodgePos.x -= 1;
+						console.log("LEFT");
+					}
+
+				// Dodge BACK to same spot because it is the safe spot
+				} else {
+					// Same dodgePos
+				}
+
+
+
 				console.log("targetsnowball x = " + this.targetSnowball.getXAnchor()+4 +   "   bot x = " + this.getXAnchor() + 10);	
 			}
 		}
@@ -1577,13 +1604,34 @@ class Bot extends Player {
 
 			// Nothing around, dodge anywhere
 			} else {
-				if ((this.targetSnowball.getYAnchor()+ Math.floor(this.targetSnowball.height/2))  <= (this.getYAnchor()+Math.floor(this.height/2))) {
-					dodgePos.y += 1;
-					console.log("DOWN");
-				} else {
-					dodgePos.y -= 1;
-					console.log("UP");
+
+				// Check if snowball would hit bot if bot was in the current dodgePos
+				var killzone = false;
+				var gapToEdge = (this.img.height-this.height)/2;
+				if ((this.targetSnowball.getYAnchor()+this.targetSnowball.height) >= (dodgePos.y*gridLen+gapToEdge) &&
+					(this.targetSnowball.getYAnchor() <= (dodgePos.y*gridLen+gridLen-gapToEdge))) {
+					killzone = true;
 				}
+
+				// Only move if currPos is killzone
+				if (killzone) {
+
+					// Dodge down if more clearance
+					if ((this.targetSnowball.getYAnchor()+ Math.floor(this.targetSnowball.height/2)) <= (this.getYAnchor()+Math.floor(this.height/2))) {
+						dodgePos.y += 1;
+						console.log("DOWN");
+
+					// Dodge up if more clearance
+					} else {
+						dodgePos.y -= 1;
+						console.log("UP");		
+					}			
+
+				// Dodge BACK to same spot because it is the safe spot
+				} else {
+					// Same dodgePos
+				}
+
 				console.log("targetsnowball y = " + this.targetSnowball.getYAnchor()+4 +   "   bot y = " + this.getYAnchor() + 10);
 			}
 		}
