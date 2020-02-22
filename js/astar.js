@@ -63,7 +63,7 @@ class Astar {
 	   array          - path successful
 	   empty array    - no valid path
 	*/
-	search(start, goal) {
+	search(start, goal, enemyLoc) {
 		this.initArray();
 
 		// If the start is the goal... just return the path to itself
@@ -126,6 +126,7 @@ class Astar {
 					return this.getPath(neighbour);
 
 				} else {
+
 					var newG = this.array[currentNode.y][currentNode.x].g + 1;
 
 

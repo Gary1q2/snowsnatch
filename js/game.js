@@ -252,7 +252,19 @@ class Game {
 
 	// Load the levels and players and all objects into their arrays
 	generateLevel() {
-		currLevel = levels[this.level];
+
+		// Copy level data into global level array
+		currLevel = new Array(numHeight);
+		for (var i = 0; i < numHeight; i++) {
+			currLevel[i] = new Array(numWidth);
+		}
+		var temp = levels[this.level];
+		for (var i = 0; i < currLevel.length; i++) {
+			for (var j = 0; j < currLevel[i].length; j++) {
+				currLevel[i][j] = temp[i][j];
+			}
+		}
+
 
 		// Create players first to have reference
 		for (var i = 0; i < numHeight; i++) {
