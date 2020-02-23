@@ -879,7 +879,6 @@ class Player extends Entity {
 		// Reset the pathing array, current position && flag array if bot dies
 		if (this instanceof(Bot)) {
 			this.path = [];
-			this.flag = [];
 			this.currPos = this.startPos;
 			this.task = TASK.idle;
 			console.log("i died and im a bot -> my path array reset");
@@ -1069,9 +1068,6 @@ class Bot extends Player {
 		// Array containing grids which bot needs to go to
 		this.path = [];
 
-		// Array containing possible grid location of the flag
-		this.flag = [];
-
 
 		this.dodgeTime = 20; // Cooldown before dodging again
 		this.dodgeTimer = 0;
@@ -1126,6 +1122,8 @@ class Bot extends Player {
 		this.checkedBalls = [];  // List of all snowballs already checked
 
 		this.dodging = false;
+
+		this.sieging = false;
 	}
 
 	update() {
@@ -1167,35 +1165,18 @@ class Bot extends Player {
 					} else {
 						this.task = TASK.goHome; 
 					}
-					this.flag = []; // Reset the flag array to empty
 				}
 
 
 
 				// Generate path to get the flag
 				if (this.task == TASK.getFlag && this.path.length == 0) {
-
-					// Generate possible locations of the flag
-					if (this.flag.length == 0) {
-						this.flag = this.findFlagLoc();		
-
-
-					// No flag found at previous location, pop off		
-					} else {
-						console.log("Not in previous flag position, POPPED OFF");
-						this.flag.shift();
-					}
-
-					// Find path to the flag
-					if (this.flag.length != 0) {
-						this.path = this.astar.search(this.currPos, this.flag[0], this.findEnemyLoc());
-					}
+					this.path = this.astar.search(this.currPos, this.findFlagLoc(), this.findEnemyLoc());
 
 
 				// Generate path to go home
 				} else if (this.task == TASK.goHome && this.path.length == 0) {
 					this.path = this.astar.search(this.currPos, this.goal, this.findEnemyLoc());
-
 
 
 				// Dodging a bullet
@@ -1209,7 +1190,7 @@ class Bot extends Player {
 						if (this.dodgeWaitTime > 0) {
 							this.waitTimer = this.dodgeWaitTime;
 						} else {
-							this.waitTime = 1;
+							this.waitTimer = 1;
 						}
 
 						this.dodging = true;
@@ -1289,7 +1270,7 @@ class Bot extends Player {
 								if ((this.dodgeWaitTime-gridLen/this.speed) > 0) {
 									this.waitTimer = this.dodgeWaitTime-gridLen/this.speed;
 								} else {
-									this.waitTime = 1;
+									this.waitTimer = 1;
 								}
 
 								console.log("finished dodging.... dodgeWaitTime = " + this.waitTimer);
@@ -2083,7 +2064,6 @@ class Bot extends Player {
 			}
 		}
 
-
 		var list = [];
 		for (var i = 0; i < currLevel.length; i++) {
 			for (var j = 0; j < currLevel[i].length; j++) {
@@ -2111,7 +2091,83 @@ class Bot extends Player {
 				}
 			}
 		}
-		return list;	
+
+
+		// Get flag's anchor position
+		var flag = {
+			x: flag.getXAnchor(),
+			y: flag.getYAnchor(),
+			width: flag.width,
+			height: flag.height
+		};	
+
+		var grid;
+		if (list.length == 1) {
+			grid = list[0];
+
+		} else if (list.length == 2) {
+			// Overlapping horizontal tiles
+			if (list[0].y == list[1].y) {
+				var box1Hor = (list[0].x+1)*gridLen-flag.x;
+				var box2Hor = flag.width - box1Hor;
+
+				if (box1Hor >= box2Hor) {
+					grid = list[0];
+				} else {
+					grid = list[1];
+				}
+
+			// Overlapping vertical tiles
+			} else {
+				var box1Ver = (list[0].y+1)*gridLen-flag.y;
+				var box2Ver = flag.height - box1Ver;
+
+				if (box1Ver >= box2Ver) {
+					grid = list[0];
+				} else {
+					grid = list[1];
+				}
+			}	
+			
+		} else {
+			var box1Hor = (list[0].x+1)*gridLen-flag.x;
+			var box1Ver = (list[0].y+1)*gridLen-flag.y;
+			var box2Hor = flag.width - box1Hor;
+			var box2Ver = box1Ver;
+			var box3Hor = box1Hor;
+			var box3Ver = flag.height - box1Ver;
+			var box4Hor = box2Hor;
+			var box4Ver = box3Ver;
+
+			var b1 = box1Hor + box1Ver;
+			var b2 = box2Hor + box2Ver;
+			var b3 = box3Hor + box3Ver;
+			var b4 = box4Hor + box4Ver; 
+
+			if (b1 >= b2 && b1 >= b3 && b1 >= b4) {
+				grid = list[0];
+				//console.log("b1");
+			} else if (b2 > b1 && b2 > b3 && b2 > b4) {
+				grid = list[1];
+				//console.log("b2");
+			} else if (b3 > b1 && b3 > b2 && b3 > b4) {
+				grid = list[2];
+				//console.log("b2");
+			} else {
+				grid = list[3];
+				//console.log("b2");
+			}/*
+			console.log(box1Hor);
+			console.log(box1Ver);
+			console.log(box2Hor);
+			console.log(box2Ver);
+			console.log(box3Hor);
+			console.log(box3Ver);
+			console.log(box4Hor);
+			console.log(box4Ver);*/
+		}
+
+		return grid;	
 	}
 
 	// Move from current x,y position to given position  - only if there is no wall
