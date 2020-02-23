@@ -1205,10 +1205,16 @@ class Bot extends Player {
 						this.dodging = true;
 					} else {
 						this.task = TASK.wait;
-						this.waitTimer = this.dodgeWaitTime;
+
+						if (this.dodgeWaitTime > 0) {
+							this.waitTimer = this.dodgeWaitTime;
+						} else {
+							this.waitTime = 1;
+						}
+
 						this.dodging = true;
 						this.path = [];
-						console.log("DIDN't STEP INTO A SNOWBALL.... wait a second");
+						console.log("DIDN't STEP INTO A SNOWBALL....    waitTimer = " + this.waitTimer);
 					}
 
 
@@ -1269,7 +1275,14 @@ class Bot extends Player {
 							} else if (this.task == TASK.dodge) {
 								this.task = TASK.wait;
 								this.dodging = false;
-								this.waitTimer = this.dodgeWaitTime - gridLen/this.speed;   // Need to minus time it takes to get to the dodging spot
+
+								// Need to minus time it takes to get to the dodging spot
+								if (this.dodgeWaitTime-gridLen/this.speed > 0) {
+									this.waitTimer = this.dodgeWaitTime-gridLen/this.speed;
+								} else {
+									this.waitTime = 1;
+								}
+
 								console.log("finished dodging.... dodgeWaitTime = " + this.waitTimer);
 
 							} else {
@@ -1547,7 +1560,7 @@ class Bot extends Player {
 
 				// Check if snowball would hit bot if bot was in the current dodgePos
 				var killzone = false;
-				var gapToEdge = (this.img.width-this.width)/2;
+				var gapToEdge = (this.img.width/this.nCol-this.width)/2;
 				if ((this.targetSnowball.getXAnchor()+this.targetSnowball.width) >= (dodgePos.x*gridLen+gapToEdge) &&
 					(this.targetSnowball.getXAnchor() <= (dodgePos.x*gridLen+gridLen-gapToEdge))) {
 					killzone = true;
@@ -1607,7 +1620,7 @@ class Bot extends Player {
 
 				// Check if snowball would hit bot if bot was in the current dodgePos
 				var killzone = false;
-				var gapToEdge = (this.img.height-this.height)/2;
+				var gapToEdge = (this.img.height/this.nRow-this.height)/2;
 				if ((this.targetSnowball.getYAnchor()+this.targetSnowball.height) >= (dodgePos.y*gridLen+gapToEdge) &&
 					(this.targetSnowball.getYAnchor() <= (dodgePos.y*gridLen+gridLen-gapToEdge))) {
 					killzone = true;
@@ -1700,7 +1713,9 @@ class Bot extends Player {
 
 							console.log("snowball y = " + ok + "      player y = " + omg);
 
-							this.dodgeWaitTime = Math.floor((this.x-snowball.x)/snowball.speed + this.img.width/snowball.speed);
+							console.log("snowball x = "+ snowball.x + "    player x ="+this.x);
+
+							this.dodgeWaitTime = Math.floor((this.x-snowball.x)/snowball.speed + this.img.width/this.nCol/snowball.speed);
 							this.targetSnowball = snowball;
 							this.checkedBalls.push(snowball.id);
 
@@ -1758,7 +1773,7 @@ class Bot extends Player {
 						if (testCollisionRectRect(rect1, rect2)) {
 							console.log("IT PASSES THROUGH FUCKK  LEFTTT current task =" + this.task);
 
-							this.dodgeWaitTime = Math.floor((snowball.x-this.x)/snowball.speed + this.img.width/snowball.speed);
+							this.dodgeWaitTime = Math.floor((snowball.x-this.x)/snowball.speed + this.img.width/this.nCol/snowball.speed);
 							this.targetSnowball = snowball;
 							this.checkedBalls.push(snowball.id);
 
@@ -1813,7 +1828,7 @@ class Bot extends Player {
 
 						if (testCollisionRectRect(rect1, rect2)) {
 							console.log("IT PASSES THROUGH FUCKK  DOWNNN current task =" + this.task);
-							this.dodgeWaitTime = Math.floor((this.y-snowball.y)/snowball.speed + this.img.height/snowball.speed);
+							this.dodgeWaitTime = Math.floor((this.y-snowball.y)/snowball.speed + this.img.height/this.nRow/snowball.speed);
 							this.targetSnowball = snowball;
 							this.checkedBalls.push(snowball.id);
 
@@ -1870,7 +1885,7 @@ class Bot extends Player {
 
 						if (testCollisionRectRect(rect1, rect2)) {
 							console.log("IT PASSES THROUGH FUCKK   UPPP current task =" + this.task);
-							this.dodgeWaitTime = Math.floor((snowball.y-this.y)/snowball.speed + this.img.height/snowball.speed);
+							this.dodgeWaitTime = Math.floor((snowball.y-this.y)/snowball.speed + this.img.height/this.nRow/snowball.speed);
 							this.targetSnowball = snowball;
 							this.checkedBalls.push(snowball.id);
 
