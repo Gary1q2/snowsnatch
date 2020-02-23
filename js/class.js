@@ -1245,16 +1245,25 @@ class Bot extends Player {
 					if (this.x != this.path[0].x*gridLen || this.y != this.path[0].y*gridLen) {
 						this.moveToPos(this.path[0]);
 
+						// Change currPos once moved over the border
+						if (this.currPosCrossedBorder(this.currPos, this.path[0], this.x, this.y)) {
+
+							console.log("CROSSED BORDERRR");
+
+							// Store the alleySave position in case in a corridor and need to run back
+							if (this.prevPos.y == this.currPos.y && this.currPos.y != this.path[0].y) {
+								this.alleySave = this.prevPos;
+							}						
+							this.prevPos = this.currPos;
+							this.currPos = this.path[0];
+						} else {
+							//console.log("nooooo");
+						}
+
+
 					// Reached spot, pop off AND MOVE TO NEW SPOT
 					} else {
 
-						// Store the alleySave position in case in a corridor and need to run back
-						if (this.prevPos.y == this.currPos.y && this.currPos.y != this.path[0].y) {
-							this.alleySave = this.prevPos;
-						}
-
-						this.prevPos = this.currPos;
-						this.currPos = this.path[0];
 						this.path.shift();
 
 						// Still have somewhere to go.. so keep going
@@ -1277,7 +1286,7 @@ class Bot extends Player {
 								this.dodging = false;
 
 								// Need to minus time it takes to get to the dodging spot
-								if (this.dodgeWaitTime-gridLen/this.speed > 0) {
+								if ((this.dodgeWaitTime-gridLen/this.speed) > 0) {
 									this.waitTimer = this.dodgeWaitTime-gridLen/this.speed;
 								} else {
 									this.waitTime = 1;
@@ -1353,6 +1362,45 @@ class Bot extends Player {
 		super.update();
 	}
 
+
+	// Checks if player has JUST crossed over the border
+	// Returns true or false
+	currPosCrossedBorder(currPos, dest, x, y) {
+
+		// Moving horizontal
+		if (currPos.y == dest.y) {
+
+			// Moving right
+			if (currPos.x < dest.x) {
+				if (x == (currPos.x*gridLen + gridLen/2)) {
+					return true;
+				}
+				
+			// Moving left
+			} else {
+				if (x == (currPos.x*gridLen - gridLen/2)) {
+					return true;
+				}
+			}
+
+		// Moving vertical
+		} else {
+
+			// Moving down
+			if (currPos.y < dest.y) {
+				if (y == (currPos.y*gridLen + gridLen/2)) {
+					return true;
+				}
+
+			// Moving up
+			} else {
+				if (y == (currPos.y*gridLen - gridLen/2)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
 
 	// Calculate path for player to move to and ATTACK
 	attack() {
@@ -1659,8 +1707,8 @@ class Bot extends Player {
 	// Checks if any incoming snowballs are gonna hit the bot
 	// This function tells the bot either to continue moving OR stop in order to dodge the bullet.
 	checkDodge() {
-		var maxDist = 100;
-		var minDist = 40;
+		var maxDist = 50;
+		var minDist = 20;
 		var randDist = Math.floor((maxDist-minDist) * Math.random());
 
 		// ONLY SNOWBALLS AT THE MOMENT
