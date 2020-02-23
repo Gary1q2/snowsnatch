@@ -606,6 +606,7 @@ class Crate extends Entity {
 				this.broken = true;
 				this.waitTimer = this.waitTime;
 				playSound(crateOpen_snd);
+				currLevel[this.y/gridLen][this.x/gridLen] = 0;
 
 				// Give random gun
 				var rand = Math.random();
@@ -626,8 +627,9 @@ class Crate extends Entity {
 	     		while (true) {
 	     			var temp_y = Math.floor(Math.random()*numHeight);
 	     			var temp_x = Math.floor(Math.random()*numWidth);
-	     			if (levels[game.level][temp_y][temp_x] != "W") {
+	     			if (currLevel[temp_y][temp_x] != "W" && currLevel[temp_y][temp_x] != "C") {
 	     				tempArr.add(new Crate(temp_x*gridLen, temp_y*gridLen));
+	     				currLevel[temp_y][temp_x] = "C";
 	     				break;
 	     			}
 	     		}
@@ -1147,11 +1149,15 @@ class Bot extends Player {
 
 
 				// Decide whether to attack or not 
-				} else if (this.task != TASK.attack && this.shouldBotAttack() && this.attackBanTimer == 0) {
+				} else if (this.task != TASK.attack && this.shouldBotAttack() && this.attackBanTimer == 0 && this.task != TASK.getCrate) {
 
 					this.task = TASK.attack;
 					this.path = [];
 			
+
+				// Get a crate for weapon if only have snowgun
+				} else if (this.task != TASK.getCrate && this.gun instanceof SnowGun) {
+					this.task = TASK.getCrate;
 
 
 				// Get flag or go home   (has to be idle... otherwise all cases would just get to this)
@@ -1206,6 +1212,17 @@ class Bot extends Player {
 						this.task = TASK.idle;
 					}
 
+				// Get a crate
+				} else if (this.task == TASK.getCrate && this.path.length == 0) {
+					var route = this.findNearestCratePath();
+					if (route.length != 0) {
+						this.path = route;
+						console.log("GOING TO GET A CRATE YAY");
+					} else {
+						this.task = TASK.idle;
+					}
+
+
 
 				// Don't do anything
 				} else if (this.task == TASK.idle) {
@@ -1223,8 +1240,6 @@ class Bot extends Player {
 
 						// Change currPos once moved over the border
 						if (this.currPosCrossedBorder(this.currPos, this.path[0], this.x, this.y)) {
-
-							console.log("CROSSED BORDERRR");
 
 							// Store the alleySave position in case in a corridor and need to run back
 							if (this.prevPos.y == this.currPos.y && this.currPos.y != this.path[0].y) {
@@ -1269,6 +1284,11 @@ class Bot extends Player {
 								}
 
 								console.log("finished dodging.... dodgeWaitTime = " + this.waitTimer);
+
+							// Finished getting crate
+							} else if (this.task == TASK.getCrate) {
+								this.task = TASK.idle;
+								console.log("got that weapon yay");
 
 							} else {
 								console.log("before idle..? = " + this.task);
@@ -1336,6 +1356,54 @@ class Bot extends Player {
 
 		// Common functions dealing with updates to player
 		super.update();
+	}
+
+
+
+	// Returns the path to the nearest crate from bot currPos
+	findNearestCratePath() {
+		
+		// Get location of all crates
+		var crateLocList = [];
+		for (var i of tempArr.array) {
+			for (var j of i) {
+				if (j instanceof Crate && !j.dead) {
+					crateLocList.push({
+						x: j.x/gridLen,
+						y: j.y/gridLen
+					});
+				}
+			}
+		}	
+
+		// Find closest crate (manhattan distance)
+		var minDist = -1;
+		var index = -1;
+		for (var i = 0; i < crateLocList.length; i++) {
+			var currDist = Math.abs(this.currPos.x-crateLocList[i].x)+Math.abs(this.currPos.y-crateLocList[i].y);
+			if (minDist == -1) {
+				minDist = currDist;
+				index = i;
+			} else {
+				if (currDist < minDist) {
+					minDist = currDist;
+					index = i;
+				}
+			}
+		}
+
+		var crateLoc = {
+			x: crateLocList[index].x,
+			y: crateLocList[index].y
+		}
+
+		var path = this.astar.search(this.currPos, crateLoc, this.findEnemyLoc());
+
+		if (path.length != 0) {
+			return path;
+		} else {
+			return [];
+		}
 	}
 
 
@@ -1498,7 +1566,7 @@ class Bot extends Player {
 		}		
 	}
 
-
+	// Determines if the bot should attack or not
 	shouldBotAttack() {
 
 		// Can't attack during mid dodge
