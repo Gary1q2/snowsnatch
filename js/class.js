@@ -1122,8 +1122,6 @@ class Bot extends Player {
 		this.checkedBalls = [];  // List of all snowballs already checked
 
 		this.dodging = false;
-
-		this.sieging = false;
 	}
 
 	update() {
@@ -1133,8 +1131,6 @@ class Bot extends Player {
 
 			// Only move if allowed
 			if (!this.dead && this.canMoveTimer <= 0) {
-
-
 
 
 				// Decide what task the bot needs to do
@@ -1149,6 +1145,8 @@ class Bot extends Player {
 				// Wait for a bit if you have to wait
 				} else if (this.task == TASK.wait) {
 
+
+				// Testing out instant kill
 
 				// Decide whether to attack or not 
 				} else if (this.task != TASK.attack && this.shouldBotAttack() && this.attackBanTimer == 0) {
@@ -1171,7 +1169,7 @@ class Bot extends Player {
 
 				// Generate path to get the flag
 				if (this.task == TASK.getFlag && this.path.length == 0) {
-					this.path = this.astar.search(this.currPos, this.findFlagLoc(), this.findEnemyLoc());
+					this.path = this.astar.search(this.currPos, this.findOwnFlagLoc(), this.findEnemyLoc());
 
 
 				// Generate path to go home
@@ -1215,7 +1213,6 @@ class Bot extends Player {
 				} else if (this.task == TASK.idle) {
 					console.log("in idle");
 				}
-
 
 
 
@@ -1477,6 +1474,32 @@ class Bot extends Player {
 		return false;
 	}
 
+	// Get bot's own flag object
+	getOwnFlag() {
+		for (var i of tempArr.array) {
+			for (var j of i) {
+				if (j instanceof Flag) {
+					if (j.owner.playerID == this.playerID) {
+						return j;
+					}
+				}
+			}
+		}	
+	}
+
+	// Get enemy's flag object
+	getEnemyFlag() {
+		for (var i of tempArr.array) {
+			for (var j of i) {
+				if (j instanceof Flag) {
+					if (j.owner.playerID != this.playerID) {
+						return j;
+					}
+				}
+			}
+		}		
+	}
+
 
 	shouldBotAttack() {
 
@@ -1485,7 +1508,9 @@ class Bot extends Player {
 
 			// Chance to attack if enemy approaching the base trying to cap flag
 			var defendBaseChance = 0.1;
-			var defendRadius = 9;
+			var defendRadius = 5;
+			var enemyRadiusToFlag = 8;
+
 
 			// Chance to attack if enemy is within a certain number of axes away
 			var fewAxesAwayChance = 0.02;
@@ -1494,8 +1519,11 @@ class Bot extends Player {
 			// Chance to attack if bot has a flag
 			var hasFlagChance = 0.005;
 
+
+
+
 			// Enemy trying to capture flag.... DEFEND if in range
-			if (this.enemyCloseToBase() && !playerArr[0].hasFlag && this.checkEnemyWithinRadius(defendRadius)) {
+			if (this.enemyCloseToEnemyFlag(enemyRadiusToFlag) && !playerArr[0].hasFlag && this.checkEnemyWithinRadius(defendRadius)) {
 				if (Math.random() <= defendBaseChance) {
 					return true;
 				}
@@ -1541,12 +1569,16 @@ class Bot extends Player {
 	}
 
 
-	// Checks if the enemy is a certain radius around the bot's goal
-	enemyCloseToBase() {
+	// Checks if the enemy is a certain radius around their own flag (enemy flag is located at bot's base)
+	enemyCloseToEnemyFlag(radius) {
 		var enemyLoc = this.findEnemyLoc();
+		var flag = this.getEnemyFlag()
+		var flagLoc = {
+			x: flag.x/gridLen, 
+			y: flag.y/gridLen
+		}
 
-		var radius = 5;
-		if (Math.abs(enemyLoc.x-this.goal.x) <= radius && Math.abs(enemyLoc.y-this.goal.y) <= radius) {
+		if (Math.abs(enemyLoc.x-flagLoc.x) <= radius && Math.abs(enemyLoc.y-flagLoc.y) <= radius) {
 			return true;
 		}
 		return false;
@@ -2049,21 +2081,111 @@ class Bot extends Player {
 		return grid;
 	}
 
-	// Find the grids that the flag is currently in
-	findFlagLoc() {
+	// Find the grid that the given object is located in (MUST BE 20x20 or SMALLER)
+	findObjectLoc(obj) {
 
-		// Find the flag object
-		var flag;
-		for (var i of tempArr.array) {
-			for (var j of i) {
-				if (j instanceof Flag) {
-					if (j.owner.playerID == this.playerID) {
-						flag = j;
-					}
+		if (obj.width > gridLen || obj.height > gridLen) {
+			console.log("INVALID OBJECT passed into findObjectedLoc()");
+			return -1;
+		}
+
+		var list = [];
+		for (var i = 0; i < currLevel.length; i++) {
+			for (var j = 0; j < currLevel[i].length; j++) {
+
+				// Check which grid the object is in
+				var rect1 = {
+					x: obj.getXAnchor(),
+					y: obj.getYAnchor(),
+					width: obj.width,
+					height: obj.height
+				};
+				var rect2 = {
+					x: j*gridLen,
+					y: i*gridLen,
+					width: gridLen,
+					height: gridLen
+				};
+
+				// Push the coordinates of the grid
+				if (testCollisionRectRect(rect1, rect2)) {
+					list.push({
+						x: j,
+						y: i
+					});
 				}
 			}
 		}
 
+
+		// Get object's anchor position
+		var object = {
+			x: obj.getXAnchor(),
+			y: obj.getYAnchor(),
+			width: obj.width,
+			height: obj.height
+		};	
+
+		var grid;
+		if (list.length == 1) {
+			grid = list[0];
+
+		} else if (list.length == 2) {
+			// Overlapping horizontal tiles
+			if (list[0].y == list[1].y) {
+				var box1Hor = (list[0].x+1)*gridLen-object.x;
+				var box2Hor = object.width - box1Hor;
+
+				if (box1Hor >= box2Hor) {
+					grid = list[0];
+				} else {
+					grid = list[1];
+				}
+
+			// Overlapping vertical tiles
+			} else {
+				var box1Ver = (list[0].y+1)*gridLen-object.y;
+				var box2Ver = object.height - box1Ver;
+
+				if (box1Ver >= box2Ver) {
+					grid = list[0];
+				} else {
+					grid = list[1];
+				}
+			}	
+
+		} else {
+			var box1Hor = (list[0].x+1)*gridLen-object.x;
+			var box1Ver = (list[0].y+1)*gridLen-object.y;
+			var box2Hor = object.width - box1Hor;
+			var box2Ver = box1Ver;
+			var box3Hor = box1Hor;
+			var box3Ver = object.height - box1Ver;
+			var box4Hor = box2Hor;
+			var box4Ver = box3Ver;
+			var b1 = box1Hor + box1Ver;
+			var b2 = box2Hor + box2Ver;
+			var b3 = box3Hor + box3Ver;
+			var b4 = box4Hor + box4Ver; 
+			if (b1 >= b2 && b1 >= b3 && b1 >= b4) {
+				grid = list[0];
+			} else if (b2 > b1 && b2 > b3 && b2 > b4) {
+				grid = list[1];
+			} else if (b3 > b1 && b3 > b2 && b3 > b4) {
+				grid = list[2];
+			} else {
+				grid = list[3];
+			}
+		}
+		return grid;	
+	}
+
+
+
+
+	// Find the grids that our flag is currently in
+	findOwnFlagLoc() {
+		var flag = this.getOwnFlag();
 		var list = [];
 		for (var i = 0; i < currLevel.length; i++) {
 			for (var j = 0; j < currLevel[i].length; j++) {
@@ -2128,7 +2250,7 @@ class Bot extends Player {
 					grid = list[1];
 				}
 			}	
-			
+
 		} else {
 			var box1Hor = (list[0].x+1)*gridLen-flag.x;
 			var box1Ver = (list[0].y+1)*gridLen-flag.y;
@@ -2138,35 +2260,20 @@ class Bot extends Player {
 			var box3Ver = flag.height - box1Ver;
 			var box4Hor = box2Hor;
 			var box4Ver = box3Ver;
-
 			var b1 = box1Hor + box1Ver;
 			var b2 = box2Hor + box2Ver;
 			var b3 = box3Hor + box3Ver;
 			var b4 = box4Hor + box4Ver; 
-
 			if (b1 >= b2 && b1 >= b3 && b1 >= b4) {
 				grid = list[0];
-				//console.log("b1");
 			} else if (b2 > b1 && b2 > b3 && b2 > b4) {
 				grid = list[1];
-				//console.log("b2");
 			} else if (b3 > b1 && b3 > b2 && b3 > b4) {
 				grid = list[2];
-				//console.log("b2");
 			} else {
 				grid = list[3];
-				//console.log("b2");
-			}/*
-			console.log(box1Hor);
-			console.log(box1Ver);
-			console.log(box2Hor);
-			console.log(box2Ver);
-			console.log(box3Hor);
-			console.log(box3Ver);
-			console.log(box4Hor);
-			console.log(box4Ver);*/
+			}
 		}
-
 		return grid;	
 	}
 
