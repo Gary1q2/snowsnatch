@@ -727,11 +727,11 @@ class Wall extends Entity {
 class Player extends Entity {
 	constructor(x, y, playerID, startFace) {
 		var pengColor;
-		//if (playerID == 1) {
+		if (playerID == 1) {
 			pengColor = peng;
-		//} else {
-		//	pengColor = peng2;
-		//}
+		} else {
+			pengColor = peng2;
+		}
 
 		super(x, y, 14, 14, pengColor, 1, 3, [0,1], 0,0);
 
@@ -866,11 +866,11 @@ class Player extends Entity {
 
 		// Player 1 vs player 2
 		var temp;
-		//if (this.playerID == 1) {
+		if (this.playerID == 1) {
 			temp = playerDie_img;
-		//} else {
-		//	temp = player2Die_img;
-		//}
+		} else {
+			temp = player2Die_img;
+		}
 		this.changeSprite(temp, 14, 14, 3, 3, [0], 20, 20);
 
 		playSound(die_snd);
@@ -905,11 +905,11 @@ class Player extends Entity {
 		this.y = this.initY;
 
 		var temp;
-		//if (this.playerID == 1) {
+		if (this.playerID == 1) {
 			temp = peng;
-		//} else {
-		//	temp = peng2;
-		//}
+		} else {
+			temp = peng2;
+		}
 
 		// Prepare for new animation
 		this.animIndex = 0;
