@@ -1146,8 +1146,6 @@ class Bot extends Player {
 				} else if (this.task == TASK.wait) {
 
 
-				// Testing out instant kill
-
 				// Decide whether to attack or not 
 				} else if (this.task != TASK.attack && this.shouldBotAttack() && this.attackBanTimer == 0) {
 
@@ -1520,10 +1518,13 @@ class Bot extends Player {
 			var hasFlagChance = 0.005;
 
 
-
+			// Instant kill if enemy is within 2 squares of bot
+			if (this.checkEnemyWithinRadius(2)) {
+				console.log("INSTANT KEEEEEEEEEEEEEL");
+				return true;
 
 			// Enemy trying to capture flag.... DEFEND if in range
-			if (this.enemyCloseToEnemyFlag(enemyRadiusToFlag) && !playerArr[0].hasFlag && this.checkEnemyWithinRadius(defendRadius)) {
+			} else if (this.enemyCloseToEnemyFlag(enemyRadiusToFlag) && !playerArr[0].hasFlag && this.checkEnemyWithinRadius(defendRadius)) {
 				if (Math.random() <= defendBaseChance) {
 					return true;
 				}
