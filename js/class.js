@@ -609,10 +609,10 @@ class Crate extends Entity {
 				currLevel[this.y/gridLen][this.x/gridLen] = 0;
 
 				// Give random gun
-				var rand = Math.random();
+				/*var rand = Math.random();
 				if (rand < 0.2) {
-					i.gun = new LaserGun(i);
-				} else if (rand < 0.4) {
+				*/	i.gun = new LaserGun(i);
+				/*} else if (rand < 0.4) {
 					i.gun = new Shotgun(i);
 	     		} else if (rand < 0.6) {
 	     			i.gun = new Uzi(i);
@@ -620,7 +620,7 @@ class Crate extends Entity {
 	     			i.gun = new RocketLauncher(i);
 	     		} else {
 	     			i.gun = new Mine(i);
-	     		}
+	     		}*/
 	     		
 
 	     		// Spawn crate in random empty spawn
@@ -1149,7 +1149,7 @@ class Bot extends Player {
 
 
 				// Decide whether to attack or not 
-				} else if (this.task != TASK.attack && this.shouldBotAttack() && this.attackBanTimer == 0 && this.task != TASK.getCrate) {
+				} else if (this.task != TASK.attack && this.shouldBotAttack() && this.attackBanTimer == 0 && this.task != TASK.getCrate && this.shootTimer == 0) {
 
 					this.task = TASK.attack;
 					this.path = [];
@@ -1268,7 +1268,14 @@ class Bot extends Player {
 							if (this.task == TASK.attack) {
 								this.angle = this.shootDir;
 								this.shoot();
-								this.task = TASK.idle;
+
+								// Point the gun and shoot it before moving
+								if (this.gun instanceof LaserGun) {
+									this.wait = TASK.wait;
+									this.waitTimer = this.gun.shootTime;
+								} else {
+									this.task = TASK.idle;
+								}
 								console.log("i JUST SHOT AND back to idlee");
 
 							// Finished dodging to the designated spot
@@ -1588,29 +1595,40 @@ class Bot extends Player {
 
 			// Instant kill if enemy is within 2 squares of bot
 			if (this.checkEnemyWithinRadius(2)) {
-				console.log("INSTANT KEEEEEEEEEEEEEL");
+				console.log("INSTANT KEEEEEEEEEEEEEL.................");
 				return true;
 
 			// Enemy trying to capture flag.... DEFEND if in range
-			} else if (this.enemyCloseToEnemyFlag(enemyRadiusToFlag) && !playerArr[0].hasFlag && this.checkEnemyWithinRadius(defendRadius)) {
-				if (Math.random() <= defendBaseChance) {
-					return true;
+			} else if (this.enemyCloseToEnemyFlag(enemyRadiusToFlag) && !playerArr[0].hasFlag) {
+				
+				if (this.gun instanceof SnowGun && this.checkEnemyWithinRadius(defendRadius) ||
+				   (this.gun instanceof Shotgun && this.checkEnemyWithinRadius(3)) ||
+				   (this.gun instanceof LaserGun && this.checkEnemyWithinAxes(3))) {
+					if (Math.random() <= defendBaseChance) {
+						console.log("DEFENDING flag...............");
+						return true;
+					}		
 				}
 
 
-			// Enemy is a few axes away
-			} else if (this.checkEnemyWithinAxes(numAxesAway)) {
-
+			// Enemy in range.... shoot them
+			} else if ((this.gun instanceof SnowGun && this.checkEnemyWithinAxes(numAxesAway)) || 
+				       (this.gun instanceof Shotgun && this.checkEnemyWithinRadius(3)) ||
+				       (this.gun instanceof LaserGun && this.checkEnemyWithinAxes(numAxesAway))) { 
+				
 				// Less chance to attack if bot has flag... just go cap
 				if (this.hasFlag) {
 					if (Math.random() <= hasFlagChance) {
+						console.log("ATTACK DA PLAYER...........");
 				    	return true;
 				    }
 
 				// Otherwise just SHOOOT THEM
 				} else if (Math.random() <= fewAxesAwayChance) {
+					console.log("ATTACK DA PLAYER...........");
 					return true;
 				}
+				
 			}
 		}
 
