@@ -40,6 +40,14 @@ function playSound(audioNode) {
 
 // Checks if two rectangles have a collision (true or false)
 function testCollisionRectRect(rect1, rect2) {
+	if (rect1.width < 0) {
+		rect1.width = -rect1.width;
+		rect1.x -= rect1.width;
+	}
+	if (rect1.height < 0) {
+		rect1.height = -rect1.height;
+		rect1.y -= rect1.height;
+	}
 	return rect1.x < rect2.x + rect2.width 
 		&& rect2.x < rect1.x + rect1.width
 		&& rect1.y < rect2.y + rect2.height

@@ -320,8 +320,8 @@ class LaserGun extends Gun {
 			var beamWidth = 4;
 			var beamDist = 400;
 
-			var anchorX = this.player.x-this.player.centerX+this.player.img.width/this.player.nCol/2-this.player.width/2;
-			var anchorY = this.player.y-this.player.centerY+this.player.img.height/this.player.nRow/2-this.player.height/2;
+			var anchorX = this.player.getXAnchor();
+			var anchorY = this.player.getYAnchor();
 
 			if (this.player.angle == DIR.left) {
 				ctx.fillRect(anchorX+this.player.width/2, anchorY+this.player.height/2-beamWidth/2, -beamDist, beamWidth);
