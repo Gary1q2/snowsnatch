@@ -1140,6 +1140,8 @@ class Bot extends Player {
 
 
 		this.mineList = [];  // Location of all the mines
+
+		this.skipMine = false;
 	}
 
 	update() {
@@ -1206,8 +1208,14 @@ class Bot extends Player {
 
 						var route = this.attack();
 						if (route.length != 0) {
+							this.skipMine = false;
 							this.path = route;
 						} else {
+							// If no path found, SKIP MINES
+							if (this.path.length == 0) {
+								this.skipMine = true;
+								console.log("SKIP MINESS FK");
+							}
 							this.task = TASK.idle;
 						}
 						console.log("outta attack");
@@ -1221,9 +1229,15 @@ class Bot extends Player {
 
 					var route = this.findNearestCratePath();
 					if (route.length != 0) {
+						this.skipMine = false;
 						this.path = route;
 						console.log("GOING TO GET A CRATE YAY");
 					} else {
+						// If no path found, SKIP MINES
+						if (this.path.length == 0) {
+							this.skipMine = true;
+							console.log("SKIP MINESS FK");
+						}
 						this.task = TASK.idle;
 					}
 
@@ -1241,12 +1255,27 @@ class Bot extends Player {
 
 				// Generate path to get the flag
 				} else if (this.task == TASK.getFlag && this.path.length == 0) {
-					this.path = this.astar.search(this.currPos, this.findOwnFlagLoc(), this.findEnemyLoc(), this.getMineLocList());
+					this.path = this.astar.search(this.currPos, this.findOwnFlagLoc(), this.findEnemyLoc(), this.getMineLocList(), this.skipMine);
 
+					// If no path found, SKIP MINES
+					if (this.path.length == 0) {
+						this.skipMine = true;
+						console.log("SKIP MINESS FK");
+					} else {
+						this.skipMine = false;
+					}
 
 				// Generate path to go home
 				} else if (this.task == TASK.goHome && this.path.length == 0) {
-					this.path = this.astar.search(this.currPos, this.goal, this.findEnemyLoc(), this.getMineLocList());
+					this.path = this.astar.search(this.currPos, this.goal, this.findEnemyLoc(), this.getMineLocList(), this.skipMine);
+
+					// If no path found, SKIP MINES
+					if (this.path.length == 0) {
+						this.skipMine = true;
+						console.log("SKIP MINESS FK");
+					} else {
+						this.skipMine = false;
+					}
 				}
 
 
@@ -1439,7 +1468,7 @@ class Bot extends Player {
 			y: crateLocList[index].y
 		}
 
-		var path = this.astar.search(this.currPos, crateLoc, this.findEnemyLoc(), this.getMineLocList());
+		var path = this.astar.search(this.currPos, crateLoc, this.findEnemyLoc(), this.getMineLocList(), this.skipMine);
 
 		if (path.length != 0) {
 			return path;
@@ -1546,7 +1575,7 @@ class Bot extends Player {
 		}
 
 		console.log("astaring");
-		var path = this.astar.search(this.currPos, dest, this.findEnemyLoc(), this.getMineLocList());
+		var path = this.astar.search(this.currPos, dest, this.findEnemyLoc(), this.getMineLocList(), this.skipMine);
 
 		// Couldn't find a path there so.... fk it back to idle
 		if (path.length == 0) {

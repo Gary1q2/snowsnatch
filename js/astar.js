@@ -63,7 +63,7 @@ class Astar {
 	   array          - path successful
 	   empty array    - no valid path
 	*/
-	search(start, goal, enemyLoc, mineLocList) {
+	search(start, goal, enemyLoc, mineLocList, skipMine) {
 		this.initArray();
 
 		// If the start is the goal... just return the path to itself
@@ -119,18 +119,19 @@ class Astar {
 				}
 
 
-				// Don't process if it is a mine
-				var isMine = false;
-				mineLocList.forEach(function (mine) {
-					if (currentNode.x == mine.x && currentNode.y == mine.y) {
-						isMine = true;
-						console.log("found a spot with a mine");
+				// Don't process if it is a mine, skip if no possible way... fk it
+				if (!skipMine) {
+					var isMine = false;
+					mineLocList.forEach(function (mine) {
+						if (currentNode.x == mine.x && currentNode.y == mine.y) {
+							isMine = true;
+							console.log("found a spot with a mine");
+						}
+					});
+					if (isMine) {
+						continue;
 					}
-				});
-				if (isMine) {
-					continue;
 				}
-
 
 
 
