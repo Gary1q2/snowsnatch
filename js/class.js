@@ -620,18 +620,18 @@ class Crate extends Entity {
 				currLevel[this.y/gridLen][this.x/gridLen] = 0;
 
 				// Give random gun
-				/*var rand = Math.random();
-				if (rand < 0.2) {
-				*/	i.gun = new LaserGun(i);
-				/*} else if (rand < 0.4) {
-					i.gun = new Shotgun(i);
-	     		} else if (rand < 0.6) {
+				//var rand = Math.random();
+				//if (rand < 0.2) {
+				//	i.gun = new LaserGun(i);
+				//} else if (rand < 0.4) {
+				//	i.gun = new Shotgun(i);
+	     		//} else if (rand < 0.6) {
 	     			i.gun = new Uzi(i);
-	     		} else if (rand < 0.8) {
-	     			i.gun = new RocketLauncher(i);
-	     		} else {
-	     			i.gun = new Mine(i);
-	     		}*/
+	     		//} else if (rand < 0.8) {
+	     		//	i.gun = new RocketLauncher(i);
+	     		//} else {
+	     		//	i.gun = new Mine(i);
+	     		//}
 	     		
 
 	     		// Spawn crate in random empty spawn
@@ -1129,10 +1129,10 @@ class Bot extends Player {
 		this.attackBanTime = 60;
 		this.attackBanTimer = 0;
 
-		this.targetSnowball;  // Store position of target snowball that we are trying to dodge
+		this.targetProj;  // Store position of target projectile that we are trying to dodge
 		this.targetLaser;     // Store rect of target laser that we are trying to dodge
 
-		this.checkedBalls = [];  // List of all snowballs already checked
+		this.checkedProj = [];  // List of all projectiles already checked
 
 		this.dodging = false;
 
@@ -1157,50 +1157,11 @@ class Bot extends Player {
 					this.waitTimer = 0;  // Reset wait timer, becus need to dodge again
 				
 
-				// Wait for a bit if you have to wait
-				} else if (this.task == TASK.wait) {
-
-
-				// Decide whether to attack or not 
-				} else if (this.task != TASK.attack && this.shouldBotAttack() && this.attackBanTimer == 0 && this.task != TASK.getCrate && this.shootTimer == 0) {
-
-					this.task = TASK.attack;
-					this.path = [];
-			
-
-				// Get a crate for weapon if only have snowgun
-				} else if (this.task != TASK.getCrate && this.gun instanceof SnowGun && !this.dodging) {
-					this.task = TASK.getCrate;
-
-
-				// Get flag or go home   (has to be idle... otherwise all cases would just get to this)
-				} else if (this.task == TASK.idle) {
-					if (!this.hasFlag) {
-						this.task = TASK.getFlag;
-					} else {
-						this.task = TASK.goHome; 
-					}
-				}
-
-
-
-				// Generate path to get the flag
-				if (this.task == TASK.getFlag && this.path.length == 0) {
-					this.path = this.astar.search(this.currPos, this.findOwnFlagLoc(), this.findEnemyLoc());
-
-
-				// Generate path to go home
-				} else if (this.task == TASK.goHome && this.path.length == 0) {
-					this.path = this.astar.search(this.currPos, this.goal, this.findEnemyLoc());
-
-
-				// Dodging a bullet
-				} else if (this.task == TASK.dodge && !this.dodging) {
 					if (this.dodgeMethod == DODGE.move) {
 
 						// Check enemies gun type
 						if (!(playerArr[0].gun instanceof LaserGun)) {
-							this.path = this.dodgeAway(this.targetSnowball);	
+							this.path = this.dodgeAway(this.targetProj);	
 						} else {
 							this.path = this.dodgeAwayLaser();
 						}
@@ -1220,19 +1181,32 @@ class Bot extends Player {
 					}
 
 
-				// Attacking the enemy
-				} else if (this.task == TASK.attack && this.path.length == 0 && this.shootTimer == 0) {
+
+
+				// Wait for a bit if you have to wait
+				} else if (this.task == TASK.wait) {
+
+
+
+				// Decide whether to attack or not 
+				} else if (this.task != TASK.attack && this.shouldBotAttack() && this.attackBanTimer == 0 && this.task != TASK.getCrate && this.shootTimer == 0 && !playerArr[0].dead) {
+					this.task = TASK.attack;
+					this.path = [];
+
 					var route = this.attack();
 					if (route.length != 0) {
 						this.path = route;
-
-					// No path was found at that distance... just cancel shooting;
 					} else {
 						this.task = TASK.idle;
 					}
+					console.log("outta attack");
+					console.log(this.path);
 
-				// Get a crate
-				} else if (this.task == TASK.getCrate && this.path.length == 0) {
+				// Get a crate for weapon if only have snowgun
+				} else if (this.task != TASK.getCrate && this.gun instanceof SnowGun && !this.dodging) {
+					this.task = TASK.getCrate;
+					this.path = [];
+
 					var route = this.findNearestCratePath();
 					if (route.length != 0) {
 						this.path = route;
@@ -1242,11 +1216,31 @@ class Bot extends Player {
 					}
 
 
-
-				// Don't do anything
+				// In idle.... either get flag or go home
 				} else if (this.task == TASK.idle) {
-					console.log("in idle");
+					if (!this.hasFlag) {
+						this.task = TASK.getFlag;
+
+					} else {
+						this.task = TASK.goHome; 
+					}
+
+
+
+				// Generate path to get the flag
+				} else if (this.task == TASK.getFlag && this.path.length == 0) {
+					this.path = this.astar.search(this.currPos, this.findOwnFlagLoc(), this.findEnemyLoc());
+
+
+				// Generate path to go home
+				} else if (this.task == TASK.goHome && this.path.length == 0) {
+					this.path = this.astar.search(this.currPos, this.goal, this.findEnemyLoc());
 				}
+
+
+
+
+
 
 
 
@@ -1484,10 +1478,10 @@ class Bot extends Player {
 
 
 
-
+		console.log("enemy=["+enemyLoc.x+","+enemyLoc.y+"]     currPos=["+this.currPos.x+","+this.currPos.y+"]    moveIn ="+moveIn);
 
 		// X axis is shorter than y axis
-		if (Math.abs(enemyLoc.x-this.currPos.x) < Math.abs(enemyLoc.y-this.currPos.y) && this.checkShootSpotX(enemyLoc, moveIn)) {
+		if ((Math.abs(enemyLoc.x-this.currPos.x) <= Math.abs(enemyLoc.y-this.currPos.y)) && this.checkShootSpotX(enemyLoc, moveIn)) {
 			dest = {
 				x: enemyLoc.x,
 				y: this.currPos.y
@@ -1502,7 +1496,7 @@ class Bot extends Player {
 			}
 
 		// Y axis is shorter than x axis
-		} else if (Math.abs(enemyLoc.x-this.currPos.x) > Math.abs(enemyLoc.y-this.currPos.y) && this.checkShootSpotY(enemyLoc, moveIn)) {
+		} else if ((Math.abs(enemyLoc.x-this.currPos.x) > Math.abs(enemyLoc.y-this.currPos.y)) && this.checkShootSpotY(enemyLoc, moveIn)) {
 			dest = {
 				x: this.currPos.x,
 				y: enemyLoc.y
@@ -1528,14 +1522,15 @@ class Bot extends Player {
 			return [];
 		}
 
+		console.log("astaring");
 		var path = this.astar.search(this.currPos, dest, this.findEnemyLoc());
 
 		// Couldn't find a path there so.... fk it back to idle
 		if (path.length == 0) {
-			//console.log("FAILED no path to DEST["+dest.x+","+dest.y+"]");
+			console.log("FAILED no path to DEST["+dest.x+","+dest.y+"]");
 			return [];
 		} else {
-			//console.log("Found path to DEST["+dest.x+","+dest.y+"]     curr dest["+this.currPos.x+","+this.currPos.y+"]");
+			console.log("Found path to DEST["+dest.x+","+dest.y+"]     curr dest["+this.currPos.x+","+this.currPos.y+"]");
 			this.attackFail = 0;
 			return path;
 		}
@@ -1546,6 +1541,7 @@ class Bot extends Player {
 
 	// Check if shooting spot is free when moving on X axis
 	checkShootSpotX(enemyLoc, moveIn) {
+		console.log("shootSpotX");
 		if (enemyLoc.y < this.currPos.y && currLevel[this.currPos.y-moveIn][enemyLoc.x] != "W") {
 			return true;
 		} else if (enemyLoc.y >= this.currPos.y && currLevel[this.currPos.y+moveIn][enemyLoc.x] != "W") {
@@ -1557,6 +1553,7 @@ class Bot extends Player {
 
 	// Check if shooting spot is free when moving on Y axis
 	checkShootSpotY(enemyLoc, moveIn) {
+		console.log("shootSpotY");
 		if (enemyLoc.x < this.currPos.x && currLevel[enemyLoc.y][this.currPos.x-moveIn] != "W") {
 			return true;
 		} else if (enemyLoc.x >= this.currPos.x && currLevel[enemyLoc.y][this.currPos.x+moveIn] != "W") {
@@ -1619,9 +1616,11 @@ class Bot extends Player {
 			// Enemy trying to capture flag.... DEFEND if in range
 			} else if (this.enemyCloseToEnemyFlag(enemyRadiusToFlag) && !playerArr[0].hasFlag) {
 				
-				if (this.gun instanceof SnowGun && this.checkEnemyWithinRadius(defendRadius) ||
-				   (this.gun instanceof Shotgun && this.checkEnemyWithinRadius(3)) ||
-				   (this.gun instanceof LaserGun && this.checkEnemyWithinAxes(3))) {
+				if ((this.gun instanceof SnowGun && this.checkEnemyWithinRadius(defendRadius)) ||
+				    (this.gun instanceof Shotgun && this.checkEnemyWithinRadius(3)) ||
+				    (this.gun instanceof LaserGun && this.checkEnemyWithinAxes(3)) ||
+				    (this.gun instanceof RocketLauncher && this.checkEnemyWithinAxes(3)) ||
+				    (this.gun instanceof Uzi && this.checkEnemyWithinAxes(3))) {
 					if (Math.random() <= defendBaseChance) {
 						//console.log("DEFENDING flag...............");
 						return true;
@@ -1632,7 +1631,9 @@ class Bot extends Player {
 			// Enemy in range.... shoot them
 			} else if ((this.gun instanceof SnowGun && this.checkEnemyWithinAxes(numAxesAway)) || 
 				       (this.gun instanceof Shotgun && this.checkEnemyWithinRadius(3)) ||
-				       (this.gun instanceof LaserGun && this.checkEnemyWithinAxes(numAxesAway))) { 
+				       (this.gun instanceof LaserGun && this.checkEnemyWithinAxes(numAxesAway)) ||
+				       (this.gun instanceof RocketLauncher && this.checkEnemyWithinAxes(3)) ||
+				       (this.gun instanceof Uzi && this.checkEnemyWithinAxes(3))) { 
 				
 				// Less chance to attack if bot has flag... just go cap
 				if (this.hasFlag) {
@@ -1759,7 +1760,7 @@ class Bot extends Player {
 	}
 
 	// Return a path thats a square away - dodges appropriately
-	dodgeAway(snowball) {
+	dodgeAway(proj) {
 		var dodgePos = this.currPos;
 
 		// Dodge in a random direction UNLESS at the edge of level or wall, then dodges away
@@ -1772,27 +1773,27 @@ class Bot extends Player {
 			// Edge or wall LEFT of player
 			} else if (dodgePos.x == 0 || currLevel[dodgePos.y][dodgePos.x-1] == "W") {
 
-				// ONLY move right if the snowball is in the LEFTEST column
-				if (snowball.getXAnchor() <= (dodgePos.x*gridLen+gridLen)) {
+				// ONLY move right if the proj is in the LEFTEST column
+				if (proj.getXAnchor() <= (dodgePos.x*gridLen+gridLen)) {
 					dodgePos.x += 1;
 				}
 
 			// Edge of wall RIGHT of player
 			} else if (dodgePos.x == currLevel[0].length-1 || currLevel[dodgePos.y][dodgePos.x+1] == "W") {
 
-				// ONLY move left if the snowball is in the RIGHTEST column
-				if (snowball.getXAnchor() + snowball.width >= (dodgePos.x*gridLen)) {
+				// ONLY move left if the proj is in the RIGHTEST column
+				if (proj.getXAnchor() + proj.width >= (dodgePos.x*gridLen)) {
 					dodgePos.x -= 1;
 				}
 
 			// Nothing around, dodge anywhere
 			} else {
 
-				// Check if snowball would hit bot if bot was in the current dodgePos
+				// Check if proj would hit bot if bot was in the current dodgePos
 				var killzone = false;
 				var gapToEdge = (this.img.width/this.nCol-this.width)/2;
-				if ((snowball.getXAnchor()+snowball.width) >= (dodgePos.x*gridLen+gapToEdge) &&
-					(snowball.getXAnchor() <= (dodgePos.x*gridLen+gridLen-gapToEdge))) {
+				if ((proj.getXAnchor()+proj.width) >= (dodgePos.x*gridLen+gapToEdge) &&
+					(proj.getXAnchor() <= (dodgePos.x*gridLen+gridLen-gapToEdge))) {
 					killzone = true;
 				}
 
@@ -1800,7 +1801,7 @@ class Bot extends Player {
 				if (killzone) {
 
 					// Dodge right if more clearance 
-					if ((snowball.getXAnchor() + snowball.width/2) <= (this.getXAnchor()+this.width/2)) {
+					if ((proj.getXAnchor() + proj.width/2) <= (this.getXAnchor()+this.width/2)) {
 						dodgePos.x += 1;
 						console.log("RIGHT");
 
@@ -1817,7 +1818,7 @@ class Bot extends Player {
 
 
 
-				console.log("targetsnowball x = " + snowball.getXAnchor()+4 +   "   bot x = " + this.getXAnchor() + 10);	
+				console.log("targetproj x = " + proj.getXAnchor()+4 +   "   bot x = " + this.getXAnchor() + 10);	
 			}
 		}
 
@@ -1832,27 +1833,27 @@ class Bot extends Player {
 			// Edge or wall ABOVE player
 			} else if (dodgePos.y == 0 || currLevel[dodgePos.y-1][dodgePos.x] == "W") {
 
-				// ONLY move down if the snowball is in the highest row
-				if (snowball.getYAnchor() <= (dodgePos.y*gridLen+gridLen)) {
+				// ONLY move down if the proj is in the highest row
+				if (proj.getYAnchor() <= (dodgePos.y*gridLen+gridLen)) {
 					dodgePos.y += 1;
 				}
 
 			// Edge or wall BELOW player
 			} else if (dodgePos.y == currLevel.length-1 || currLevel[dodgePos.y+1][dodgePos.x] == "W") {
 
-				// ONLY move up if the snowball is in the lowest row
-				if (snowball.getYAnchor() + snowball.height >= (dodgePos.y*gridLen)) {
+				// ONLY move up if the proj is in the lowest row
+				if (proj.getYAnchor() + proj.height >= (dodgePos.y*gridLen)) {
 					dodgePos.y -= 1;
 				}
 
 			// Nothing around, dodge anywhere
 			} else {
 
-				// Check if snowball would hit bot if bot was in the current dodgePos
+				// Check if proj would hit bot if bot was in the current dodgePos
 				var killzone = false;
 				var gapToEdge = (this.img.height/this.nRow-this.height)/2;
-				if ((snowball.getYAnchor()+snowball.height) >= (dodgePos.y*gridLen+gapToEdge) &&
-					(snowball.getYAnchor() <= (dodgePos.y*gridLen+gridLen-gapToEdge))) {
+				if ((proj.getYAnchor()+proj.height) >= (dodgePos.y*gridLen+gapToEdge) &&
+					(proj.getYAnchor() <= (dodgePos.y*gridLen+gridLen-gapToEdge))) {
 					killzone = true;
 				}
 
@@ -1860,7 +1861,7 @@ class Bot extends Player {
 				if (killzone) {
 
 					// Dodge down if more clearance
-					if ((snowball.getYAnchor()+ Math.floor(snowball.height/2)) <= (this.getYAnchor()+Math.floor(this.height/2))) {
+					if ((proj.getYAnchor()+ Math.floor(proj.height/2)) <= (this.getYAnchor()+Math.floor(this.height/2))) {
 						dodgePos.y += 1;
 						console.log("DOWN");
 
@@ -1875,7 +1876,7 @@ class Bot extends Player {
 					// Same dodgePos
 				}
 
-				console.log("targetsnowball y = " + snowball.getYAnchor()+4 +   "   bot y = " + this.getYAnchor() + 10);
+				console.log("targetproj y = " + proj.getYAnchor()+4 +   "   bot y = " + this.getYAnchor() + 10);
 			}
 		}
 
@@ -1886,78 +1887,95 @@ class Bot extends Player {
 		return list;
 	}
 
-	// Checks if any incoming snowballs are gonna hit the bot
+	// Update player position helper function
+	updatePos(pos, angle, speed, multiple) {
+		if (angle == DIR.left) {
+			if (pos.x > 0) {
+				pos.x -= speed * multiple;
+			}
+		} else if (angle == DIR.right) {
+			if (pos.x < numWidth*gridLen) {
+				pos.x += speed * multiple;
+			}
+		} else if (angle == DIR.up) {
+			if (pos.y > 0) {
+				pos.y -= speed * multiple;
+			}
+		} else {
+			if (pos.y < numHeight*gridLen) {
+				pos.y += speed * multiple;
+			}
+		}
+		return pos;
+	}
+
+
+
+	// Checks if any incoming projs are gonna hit the bot
 	// This function tells the bot either to continue moving OR stop in order to dodge the bullet.
 	checkDodge() {
-		var maxDist = 50;
-		var minDist = 20;
-		var randDist = Math.floor((maxDist-minDist) * Math.random());
 
-		// ONLY SNOWBALLS AT THE MOMENT
 		for (var i = 0; i < tempArr.array[3].length; i++) {
-			var snowball = tempArr.array[3][i];
 
-			// Detecting enemy snowballs
-			if (snowball instanceof Snowball && !this.checkedBalls.includes(snowball.id) && !snowball.dead && snowball.owner.playerID != this.playerID) {
+			// Detecting enemy snowballs + rockets
+			var proj = tempArr.array[3][i];
+			if ((proj instanceof Snowball || proj instanceof Missile || proj instanceof Pellet) && !this.checkedProj.includes(proj.id) && !proj.dead && proj.owner.playerID != this.playerID) {
 
-				// Snowballs that are moving RIGHT towards the bot  - only 80 pixels within
-				if (snowball.x < this.x && snowball.dir == DIR.right && this.x - snowball.x <= minDist+randDist) {
-					var snowballPos = {
-						x: snowball.x,
-						y: snowball.y
+				var maxDist;
+				var minDist;
+				var multiple;
+				if (proj instanceof Snowball || proj instanceof Pellet) {
+					maxDist = 50;
+					minDist = 20;
+					multiple = 10;
+				} else {
+					minDist = 100;
+					maxDist = 150;
+					multiple = 1;
+				}
+
+				var randDist = Math.floor((maxDist-minDist) * Math.random());
+
+
+				// Projectiles that are moving RIGHT towards the bot 
+				if (proj.x < this.x && proj.dir == DIR.right && this.x - proj.x <= minDist+randDist) {
+					var projPos = {
+						x: proj.x,
+						y: proj.y
 					};
 					var playerPos = {
 						x: this.x,
 						y: this.y
 					};
 
-					var ok = snowballPos.y;
-					var omg = playerPos.y;
-					
+					while (projPos.x < playerPos.x) {
+						projPos.x += proj.hspeed * multiple;
+						projPos.y += proj.vspeed * multiple;
 
-
-					var multiple = 10;
-					while (snowballPos.x < playerPos.x) {
-						snowballPos.x += snowball.speed * multiple;
 
 						if (this.moving) {
-							if (this.angle == DIR.left) {
-								playerPos.x -= this.speed * multiple;
-							} else if (this.angle == DIR.right) {
-								playerPos.x += this.speed * multiple;
-							} else if (this.angle == DIR.up) {
-								playerPos.y -= this.speed * multiple;
-							} else {
-								playerPos.y += this.speed * multiple;
-							}
+							playerPos = this.updatePos(playerPos, this.angle, this.speed, multiple);
 						}
 
-						var rect1 = snowball.getRectAt(snowballPos.x, snowballPos.y);
+						var rect1 = proj.getRectAt(projPos.x, projPos.y);
 						var rect2 = this.getRectAt(playerPos.x, playerPos.y);
-						//ctx.fillRect(rect1.x, rect1.y, snowball.width, snowball.height);
-						//ctx.fillRect(rect2.x, rect2.y, this.width, this.height);
-
 						if (testCollisionRectRect(rect1, rect2)) {
+
 							console.log("IT PASSES THROUGH FUCKK  RIGHTT current task =" + this.task +    "dist looked at = " + minDist+"+"+randDist);
+							console.log("proj x = "+ proj.x + "    player x ="+this.x);
 
-
-							console.log("snowball y = " + ok + "      player y = " + omg);
-
-							console.log("snowball x = "+ snowball.x + "    player x ="+this.x);
-
-							this.dodgeWaitTime = Math.floor((this.x-snowball.x)/snowball.speed + this.img.width/this.nCol/snowball.speed);
-							this.targetSnowball = snowball;
-							this.checkedBalls.push(snowball.id);
+							this.dodgeWaitTime = Math.floor((this.x-proj.x)/proj.speed + this.img.width/this.nCol/proj.speed);
+							this.targetProj = proj;
+							this.checkedProj.push(proj.id);
 
 							// Special case where bot is inline with enemy shooting
-							var rect1 = snowball.getRectAt(this.x, snowball.y);
+							var rect1 = proj.getRectAt(this.x, proj.y);
 							var rect2 = this.getRectAt(this.x, this.y);
 							if (testCollisionRectRect(rect1, rect2)) {
 								console.log("Directly INLINEEEEEE");
 								this.dodgeMethod = DODGE.move;
 								return DIR.right;
 							}
-
 
 							if (this.angle == DIR.up || this.angle == DIR.down) {
 								this.dodgeMethod = DODGE.stop;
@@ -1968,47 +1986,36 @@ class Bot extends Player {
 						}
 					}
 					
-				} else if (snowball.x > this.x && snowball.dir == DIR.left && snowball.x - this.x <= minDist+randDist) {
-					var snowballPos = {
-						x: snowball.x,
-						y: snowball.y
+				} else if (proj.x > this.x && proj.dir == DIR.left && proj.x - this.x <= minDist+randDist) {
+					var projPos = {
+						x: proj.x,
+						y: proj.y
 					};
 					var playerPos = {
 						x: this.x,
 						y: this.y
 					};
 
-					// Check if snowball crosses over the player
-					var multiple = 10;
-					while (snowballPos.x > playerPos.x) {
-						snowballPos.x -= snowball.speed * multiple;
+					// Check if proj crosses over the player
+					while (projPos.x > playerPos.x) {
+						projPos.x += proj.hspeed * multiple;
+						projPos.y += proj.vspeed * multiple;
 
 						if (this.moving) {
-							if (this.angle == DIR.left) {
-								playerPos.x -= this.speed * multiple;
-							} else if (this.angle == DIR.right) {
-								playerPos.x += this.speed * multiple;
-							} else if (this.angle == DIR.up) {
-								playerPos.y -= this.speed * multiple;
-							} else {
-								playerPos.y += this.speed * multiple;
-							}
+							playerPos = this.updatePos(playerPos, this.angle, this.speed, multiple);
 						}
 
-						var rect1 = snowball.getRectAt(snowballPos.x, snowballPos.y);
+						var rect1 = proj.getRectAt(projPos.x, projPos.y);
 						var rect2 = this.getRectAt(playerPos.x, playerPos.y);
-						//ctx.fillRect(rect1.x, rect1.y, snowball.width, snowball.height);
-						//ctx.fillRect(rect2.x, rect2.y, this.width, this.height);
-
 						if (testCollisionRectRect(rect1, rect2)) {
 							console.log("IT PASSES THROUGH FUCKK  LEFTTT current task =" + this.task);
 
-							this.dodgeWaitTime = Math.floor((snowball.x-this.x)/snowball.speed + this.img.width/this.nCol/snowball.speed);
-							this.targetSnowball = snowball;
-							this.checkedBalls.push(snowball.id);
+							this.dodgeWaitTime = Math.floor((proj.x-this.x)/proj.speed + this.img.width/this.nCol/proj.speed);
+							this.targetProj = proj;
+							this.checkedProj.push(proj.id);
 
 							// Special case where bot is inline with enemy shooting
-							var rect1 = snowball.getRectAt(this.x, snowball.y);
+							var rect1 = proj.getRectAt(this.x, proj.y);
 							var rect2 = this.getRectAt(this.x, this.y);
 							if (testCollisionRectRect(rect1, rect2)) {
 								console.log("Directly INLINEEEEEE");
@@ -2024,46 +2031,39 @@ class Bot extends Player {
 							return DIR.left;
 						}
 					}
-				} else if (snowball.y < this.y && snowball.dir == DIR.down && this.y - snowball.y <= minDist+randDist) {
-					var snowballPos = {
-						x: snowball.x,
-						y: snowball.y
+
+
+				} else if (proj.y < this.y && proj.dir == DIR.down && this.y - proj.y <= minDist+randDist) {
+					var projPos = {
+						x: proj.x,
+						y: proj.y
 					};
 					var playerPos = {
 						x: this.x,
 						y: this.y
 					};
 
-					// Check if snowball crosses over the player
-					var multiple = 10;
-					while (snowballPos.y < playerPos.y) {
-						snowballPos.y += snowball.speed * multiple;
+					// Check if proj crosses over the player
+					while (projPos.y < playerPos.y) {
+						projPos.x += proj.hspeed * multiple;
+						projPos.y += proj.vspeed * multiple;
 
 						if (this.moving) {
-							if (this.angle == DIR.left) {
-								playerPos.x -= this.speed * multiple;
-							} else if (this.angle == DIR.right) {
-								playerPos.x += this.speed * multiple;
-							} else if (this.angle == DIR.up) {
-								playerPos.y -= this.speed * multiple;
-							} else {
-								playerPos.y += this.speed * multiple;
-							}
+							playerPos = this.updatePos(playerPos, this.angle, this.speed, multiple);
 						}
 
-						var rect1 = snowball.getRectAt(snowballPos.x, snowballPos.y);
+						var rect1 = proj.getRectAt(projPos.x, projPos.y);
 						var rect2 = this.getRectAt(playerPos.x, playerPos.y);
-						//ctx.fillRect(rect1.x, rect1.y, snowball.width, snowball.height);
-						//ctx.fillRect(rect2.x, rect2.y, this.width, this.height);
+
 
 						if (testCollisionRectRect(rect1, rect2)) {
 							console.log("IT PASSES THROUGH FUCKK  DOWNNN current task =" + this.task);
-							this.dodgeWaitTime = Math.floor((this.y-snowball.y)/snowball.speed + this.img.height/this.nRow/snowball.speed);
-							this.targetSnowball = snowball;
-							this.checkedBalls.push(snowball.id);
+							this.dodgeWaitTime = Math.floor((this.y-proj.y)/proj.speed + this.img.height/this.nRow/proj.speed);
+							this.targetProj = proj;
+							this.checkedProj.push(proj.id);
 
 							// Special case where bot is inline with enemy shooting
-							var rect1 = snowball.getRectAt(snowball.x, this.y);
+							var rect1 = proj.getRectAt(proj.x, this.y);
 							var rect2 = this.getRectAt(this.x, this.y);
 							if (testCollisionRectRect(rect1, rect2)) {
 								console.log("Directly INLINEEEEEE");
@@ -2080,47 +2080,43 @@ class Bot extends Player {
 						}
 					}		
 
-				} else if (snowball.y > this.y && snowball.dir == DIR.up && snowball.y - this.y <= minDist+randDist) {
-					var snowballPos = {
-						x: snowball.x,
-						y: snowball.y
+				} else if (proj.y > this.y && proj.dir == DIR.up && proj.y - this.y <= minDist+randDist) {
+					var projPos = {
+						x: proj.x,
+						y: proj.y
 					};
 					var playerPos = {
 						x: this.x,
 						y: this.y
 					};
 
+					//console.log("projPos.y = " + projPos.y);
+					//console.log("playerPos.y = " + playerPos.y);
 
-					// Check if snowball crosses over the player
-					var multiple = 10;
-					while (snowballPos.y > playerPos.y) {
+					// Check if proj crosses over the player
+					while (projPos.y > playerPos.y) {
 
-						snowballPos.y -= snowball.speed * multiple;
+						console.log(projPos.y);
+						projPos.x += proj.hspeed * multiple;
+						projPos.y += proj.vspeed * multiple;
+
+						
 						if (this.moving) {
-							if (this.angle == DIR.left) {
-								playerPos.x -= this.speed * multiple;
-							} else if (this.angle == DIR.right) {
-								playerPos.x += this.speed * multiple;
-							} else if (this.angle == DIR.up) {
-								playerPos.y -= this.speed * multiple;
-							} else {
-								playerPos.y += this.speed * multiple;
-							}
+							playerPos = this.updatePos(playerPos, this.angle, this.speed, multiple);
 						}
 
-						var rect1 = snowball.getRectAt(snowballPos.x, snowballPos.y);
+						var rect1 = proj.getRectAt(projPos.x, projPos.y);
 						var rect2 = this.getRectAt(playerPos.x, playerPos.y);
-						//ctx.fillRect(rect1.x, rect1.y, snowball.width, snowball.height);
-						//ctx.fillRect(rect2.x, rect2.y, this.width, this.height);
+
 
 						if (testCollisionRectRect(rect1, rect2)) {
 							console.log("IT PASSES THROUGH FUCKK   UPPP current task =" + this.task);
-							this.dodgeWaitTime = Math.floor((snowball.y-this.y)/snowball.speed + this.img.height/this.nRow/snowball.speed);
-							this.targetSnowball = snowball;
-							this.checkedBalls.push(snowball.id);
+							this.dodgeWaitTime = Math.floor((proj.y-this.y)/proj.speed + this.img.height/this.nRow/proj.speed);
+							this.targetProj = proj;
+							this.checkedProj.push(proj.id);
 
 							// Special case where bot is inline with enemy shooting
-							var rect1 = snowball.getRectAt(snowball.x, this.y);
+							var rect1 = proj.getRectAt(proj.x, this.y);
 							var rect2 = this.getRectAt(this.x, this.y);
 							if (testCollisionRectRect(rect1, rect2)) {
 								console.log("Directly INLINEEEEEE");
@@ -2139,6 +2135,7 @@ class Bot extends Player {
 				}
 			}
 		}
+
 
 
 		// Dodging laserbeams...
@@ -2176,12 +2173,8 @@ class Bot extends Player {
 				height: beamDist
 			};
 
-			console.log("enterrr");
-			console.log(upRect);
-			console.log(this.getRect());
-			var timeToWait = 90;
 
-
+			var timeToWait = 60;
 
 			// Overlapping the possible laser beam archs and dodge away from them
 			if (testCollisionRectRect(rightRect, this.getRect())) {
@@ -2189,7 +2182,6 @@ class Bot extends Player {
 				this.targetLaser = rightRect;
 				this.dodgeWaitTime = timeToWait;
 				this.dodgedLaser = true;
-		
 				console.log("shot rightt");
 				return DIR.right;
 			} else if (testCollisionRectRect(leftRect, this.getRect())) {
@@ -2215,10 +2207,6 @@ class Bot extends Player {
 				return DIR.down;
 			}		
 		}
-
-		console.log("dodgeLaser = " + this.dodgedLaser);
-		console.log("shootTimer = " + this.shootTimer +"    enemyShootTimer = " + enemy.shootTimer);
-
 		return false;
 	}
 

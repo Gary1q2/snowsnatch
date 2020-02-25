@@ -477,9 +477,9 @@ class MineBomb extends Bullet {
 class Missile extends Bullet {
 	constructor(x, y, owner, dir) {
 		if (dir == DIR.left || dir == DIR.right) {
-			super(x, y, 14, 6, missile_img, 2, 2, [0,1,2,3], 0, 0, owner, dir);
+			super(x, y, 14, 8, missile_img, 2, 2, [0,1,2,3], 0, 0, owner, dir);
 		} else {
-			super(x, y, 6, 14, missile_img, 2, 2, [0,1,2,3], 0, 0, owner, dir);
+			super(x, y, 8, 14, missile_img, 2, 2, [0,1,2,3], 0, 0, owner, dir);
 		}
 		
 		this.speed = 1;
@@ -493,6 +493,14 @@ class Missile extends Bullet {
 		this.ticker = this.speedTickTime;  // Variable to count the ticking
 
 		this.smokeTicker = 5;
+
+
+		this.id = Math.random();  // Random ID for missile
+
+
+
+		this.hspeed = 0;
+		this.vspeed = 0;
 
 		playSound(missileLaunch_snd);
 	}
@@ -529,14 +537,17 @@ class Missile extends Bullet {
 
 	updateMovement() {
 		if (this.dir == DIR.left) {
-			this.x -= this.speed;
+			this.hspeed = -this.speed;
 		} else if (this.dir == DIR.right) {
-			this.x += this.speed;
+			this.hspeed = this.speed;
 		} else if (this.dir == DIR.up) {
-			this.y -= this.speed;
-		} else {
-			this.y += this.speed;
-		}
+			this.vspeed = -this.speed;
+		} else if (this.dir == DIR.down) {
+			this.hspeed = this.speed;
+		}	
+
+		this.x += this.hspeed;
+		this.y += this.vspeed;
 	}
 	// Create explosion
 	explode() {
@@ -566,21 +577,33 @@ class Pellet extends Bullet {
 		super(x, y, 4, 4, pellet_img, 1, 1, [0], 0, 0, owner, dir);
 		this.moveTimer = moveTime;
 		this.deadTimer = deadTime;
-
 		this.speed = speed;
-		this.spreadAngle = spread;
+		this.angle = dir;
+		this.id = Math.random();  // Random ID for pellet
 
-		// Choose top or bottom spread
-		this.angle = Math.floor(Math.random()*this.spreadAngle/2) * Math.PI/180;
+		// Invert the angle or not
+		this.invert = 1;
 		if (Math.random() > 0.5) {
-			this.angle = -this.angle;
+			this.invert = -1;
 		}
 
 		// Separating speed in horizontal and vertical
-		this.hspeed = this.speed * Math.cos(this.angle);
-		this.vspeed = this.speed * Math.sin(this.angle);
-
-		this.setAngle(this.dir);
+		var angle = Math.floor(Math.random()*spread/2) * Math.PI/180;
+		var h = this.speed * Math.cos(angle);
+		var v = this.speed * Math.sin(angle);
+		if (this.dir == DIR.left) {
+			this.hspeed = -h;
+			this.vspeed = v*this.invert;
+		} else if (this.dir == DIR.right) {
+			this.hspeed = h;
+			this.vspeed = v*this.invert;
+		} else if (this.dir == DIR.up) {
+			this.hspeed = v*this.invert;
+			this.vspeed = -h;
+		} else {
+			this.hspeed = v*this.invert;
+			this.vspeed = h;
+		}
 	}	
 
 	update() {
@@ -613,19 +636,8 @@ class Pellet extends Bullet {
 		}		
 	}
 	updateMovement() {
-		if (this.dir == DIR.left) {
-			this.x -= this.hspeed;
-			this.y -= this.vspeed;
-		} else if (this.dir == DIR.right) {
-			this.x += this.hspeed;
-			this.y += this.vspeed;
-		} else if (this.dir == DIR.up) {
-			this.x -= this.vspeed;
-			this.y -= this.hspeed;
-		} else {
-			this.x += this.vspeed;
-			this.y += this.hspeed;
-		}
+		this.x += this.hspeed;
+		this.y += this.vspeed;
 	}
 	// Check if out of bounds or hit some terrain
 	checkDead() {
@@ -736,6 +748,19 @@ class Snowball extends Bullet {
 		this.speed = 2;
 		this.breaking = false;   // Showing breaking animation
 		this.id = Math.random();  // Random ID for snowball
+
+		this.hspeed = 0;
+		this.vspeed = 0;
+
+		if (this.dir == DIR.left) {
+			this.hspeed = -this.speed;
+		} else if (this.dir == DIR.right) {
+			this.hspeed = this.speed;
+		} else if (this.dir == DIR.up) {
+			this.vspeed = -this.speed;
+		} else if (this.dir == DIR.down) {
+			this.vspeed = this.speed;
+		}	
 	}
 
 	update() {
@@ -782,19 +807,8 @@ class Snowball extends Bullet {
 	}
 
 	updateMovement() {
-		if (this.dir == DIR.left) {
-			this.x -= this.speed;
-			this.moveTimer = this.moveTime;
-		} else if (this.dir == DIR.right) {
-			this.x += this.speed;
-			this.moveTimer = this.moveTime;
-		} else if (this.dir == DIR.up) {
-			this.y -= this.speed;
-			this.moveTimer = this.moveTime;
-		} else if (this.dir == DIR.down) {
-			this.y += this.speed;
-			this.moveTimer = this.moveTime;
-		}	
+		this.x += this.hspeed;
+		this.y += this.vspeed;
 	}
 
 	// Check if out of bounds or hit some terrain
