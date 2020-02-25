@@ -86,7 +86,7 @@ class Mine extends Gun {
 	}
 	shoot() {
 		this.shooting = true;
-		tempArr.add(new MineBomb(this.x, this.y, this.player.playerID));
+		tempArr.add(new MineBomb(this.x, this.y, this.player));
 		playSound(mineDrop_snd);
 	}
 }
@@ -462,7 +462,7 @@ class MineBomb extends Bullet {
 	// Check if hitting anyone
 	checkHit() {
 		for (var i of playerArr) {
-			if (this.owner != i.playerID && this.collideWith(i) && !i.dead) {
+			if (this.owner.playerID != i.playerID && this.collideWith(i) && !i.dead) {
 				this.explode();
 			}
 		}

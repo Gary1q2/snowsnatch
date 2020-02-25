@@ -626,11 +626,11 @@ class Crate extends Entity {
 				//} else if (rand < 0.4) {
 				//	i.gun = new Shotgun(i);
 	     		//} else if (rand < 0.6) {
-	     			i.gun = new Uzi(i);
+	     		//	i.gun = new Uzi(i);
 	     		//} else if (rand < 0.8) {
 	     		//	i.gun = new RocketLauncher(i);
 	     		//} else {
-	     		//	i.gun = new Mine(i);
+	     			i.gun = new Mine(i);
 	     		//}
 	     		
 
@@ -1137,6 +1137,9 @@ class Bot extends Player {
 		this.dodging = false;
 
 		this.dodgedLaser = false;
+
+
+		this.mineList = [];  // Location of all the mines
 	}
 
 	update() {
@@ -1193,14 +1196,23 @@ class Bot extends Player {
 					this.task = TASK.attack;
 					this.path = [];
 
-					var route = this.attack();
-					if (route.length != 0) {
-						this.path = route;
-					} else {
+					// Place a mine right on the spot
+					if (this.gun instanceof Mine) {
+						this.shoot();
 						this.task = TASK.idle;
+
+					// Otherwise go and shoot the enemy
+					} else {
+
+						var route = this.attack();
+						if (route.length != 0) {
+							this.path = route;
+						} else {
+							this.task = TASK.idle;
+						}
+						console.log("outta attack");
+						console.log(this.path);
 					}
-					console.log("outta attack");
-					console.log(this.path);
 
 				// Get a crate for weapon if only have snowgun
 				} else if (this.task != TASK.getCrate && this.gun instanceof SnowGun && !this.dodging) {
@@ -1229,12 +1241,12 @@ class Bot extends Player {
 
 				// Generate path to get the flag
 				} else if (this.task == TASK.getFlag && this.path.length == 0) {
-					this.path = this.astar.search(this.currPos, this.findOwnFlagLoc(), this.findEnemyLoc());
+					this.path = this.astar.search(this.currPos, this.findOwnFlagLoc(), this.findEnemyLoc(), this.getMineLocList());
 
 
 				// Generate path to go home
 				} else if (this.task == TASK.goHome && this.path.length == 0) {
-					this.path = this.astar.search(this.currPos, this.goal, this.findEnemyLoc());
+					this.path = this.astar.search(this.currPos, this.goal, this.findEnemyLoc(), this.getMineLocList());
 				}
 
 
@@ -1377,7 +1389,18 @@ class Bot extends Player {
 		super.update();
 	}
 
+	// Return the location of all the mines by the enemy
+	getMineLocList() {
+		var list = [];
+		for (var i = 0; i < tempArr.array[2].length; i++) {
 
+			var mine = tempArr.array[2][i];
+			if (mine instanceof MineBomb && mine.owner.playerID != this.playerID && !mine.dead) {
+				list.push(this.findObjectLoc(mine));
+			}
+		}
+		return list;
+	}
 
 	// Returns the path to the nearest crate from bot currPos
 	findNearestCratePath() {
@@ -1416,7 +1439,7 @@ class Bot extends Player {
 			y: crateLocList[index].y
 		}
 
-		var path = this.astar.search(this.currPos, crateLoc, this.findEnemyLoc());
+		var path = this.astar.search(this.currPos, crateLoc, this.findEnemyLoc(), this.getMineLocList());
 
 		if (path.length != 0) {
 			return path;
@@ -1523,7 +1546,7 @@ class Bot extends Player {
 		}
 
 		console.log("astaring");
-		var path = this.astar.search(this.currPos, dest, this.findEnemyLoc());
+		var path = this.astar.search(this.currPos, dest, this.findEnemyLoc(), this.getMineLocList());
 
 		// Couldn't find a path there so.... fk it back to idle
 		if (path.length == 0) {
@@ -1607,9 +1630,20 @@ class Bot extends Player {
 			// Chance to attack if bot has a flag
 			var hasFlagChance = 0.005;
 
+			// Chance to put a mine down when near your own base
+			var chanceToPutMine = 0.2;
+
+			// Radius before bot instant kills the enemy (normal weapons, excluding shotgun)
+			var normalKillZone = 2;
 
 			// Instant kill if enemy is within 2 squares of bot
-			if (this.checkEnemyWithinRadius(2)) {
+			if ((this.gun instanceof Shotgun && this.checkEnemyWithinRadius(3)) ||
+				(this.gun instanceof SnowGun && this.checkEnemyWithinRadius(normalKillZone)) ||
+				(this.gun instanceof LaserGun && this.checkEnemyWithinRadius(normalKillZone)) ||
+				(this.gun instanceof RocketLauncher && this.checkEnemyWithinRadius(normalKillZone)) ||
+				(this.gun instanceof Uzi && this.checkEnemyWithinRadius(normalKillZone)) ||
+				(this.gun instanceof Shotgun && this.checkEnemyWithinRadius(normalKillZone)) ||
+				(this.gun instanceof Mine && this.checkEnemyWithinRadius(3))) {
 				//console.log("INSTANT KEEEEEEEEEEEEEL.................");
 				return true;
 
@@ -1620,7 +1654,8 @@ class Bot extends Player {
 				    (this.gun instanceof Shotgun && this.checkEnemyWithinRadius(3)) ||
 				    (this.gun instanceof LaserGun && this.checkEnemyWithinAxes(3)) ||
 				    (this.gun instanceof RocketLauncher && this.checkEnemyWithinAxes(3)) ||
-				    (this.gun instanceof Uzi && this.checkEnemyWithinAxes(3))) {
+				    (this.gun instanceof Uzi && this.checkEnemyWithinAxes(3)) ||
+				    (this.gun instanceof Shotgun && this.checkEnemyWithinRadius(3))) {
 					if (Math.random() <= defendBaseChance) {
 						//console.log("DEFENDING flag...............");
 						return true;
@@ -1633,7 +1668,8 @@ class Bot extends Player {
 				       (this.gun instanceof Shotgun && this.checkEnemyWithinRadius(3)) ||
 				       (this.gun instanceof LaserGun && this.checkEnemyWithinAxes(numAxesAway)) ||
 				       (this.gun instanceof RocketLauncher && this.checkEnemyWithinAxes(3)) ||
-				       (this.gun instanceof Uzi && this.checkEnemyWithinAxes(3))) { 
+				       (this.gun instanceof Uzi && this.checkEnemyWithinAxes(3)) ||
+				       (this.gun instanceof Shotgun && this.checkEnemyWithinRadius(3))) { 
 				
 				// Less chance to attack if bot has flag... just go cap
 				if (this.hasFlag) {
@@ -1648,6 +1684,11 @@ class Bot extends Player {
 					return true;
 				}
 				
+			// Put mines somewhere around base
+			} else if (this.gun instanceof Mine && this.checkMyselfWithinBase(3)) {
+				if (Math.random() <= chanceToPutMine) {
+					return true;
+				}
 			}
 		}
 
@@ -1674,6 +1715,13 @@ class Bot extends Player {
 		return false;
 	}
 
+	// Check if myself (as a bot) is within certain radius of my base
+	checkMyselfWithinBase(radius) {
+		if (Math.abs(this.goal.x-this.currPos.x) <= radius && Math.abs(this.goal.y-this.currPos.y) <= radius) {
+			return true;
+		}
+		return false;
+	}
 
 	// Checks if the enemy is a certain radius around their own flag (enemy flag is located at bot's base)
 	enemyCloseToEnemyFlag(radius) {
@@ -2100,7 +2148,7 @@ class Bot extends Player {
 						projPos.x += proj.hspeed * multiple;
 						projPos.y += proj.vspeed * multiple;
 
-						
+
 						if (this.moving) {
 							playerPos = this.updatePos(playerPos, this.angle, this.speed, multiple);
 						}
@@ -2317,6 +2365,7 @@ class Bot extends Player {
 
 		return grid;
 	}
+
 
 	// Find the grid that the given object is located in (MUST BE 20x20 or SMALLER)
 	findObjectLoc(obj) {
