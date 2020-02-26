@@ -620,18 +620,18 @@ class Crate extends Entity {
 				currLevel[this.y/gridLen][this.x/gridLen] = 0;
 
 				// Give random gun
-				//var rand = Math.random();
-				//if (rand < 0.2) {
-				//	i.gun = new LaserGun(i);
-				//} else if (rand < 0.4) {
-				//	i.gun = new Shotgun(i);
-	     		//} else if (rand < 0.6) {
-	     		//	i.gun = new Uzi(i);
-	     		//} else if (rand < 0.8) {
-	     		//	i.gun = new RocketLauncher(i);
-	     		//} else {
+				var rand = Math.random();
+				if (rand < 0.2) {
+					i.gun = new LaserGun(i);
+				} else if (rand < 0.4) {
+					i.gun = new Shotgun(i);
+	     		} else if (rand < 0.6) {
+	     			i.gun = new Uzi(i);
+	     		} else if (rand < 0.8) {
+	     			i.gun = new RocketLauncher(i);
+	     		} else {
 	     			i.gun = new Mine(i);
-	     		//}
+	     		}
 	     		
 
 	     		// Spawn crate in random empty spawn
@@ -2122,6 +2122,7 @@ class Bot extends Player {
 
 					// Check if proj crosses over the player
 					while (projPos.y < playerPos.y) {
+						console.log("proj y = " + projPos.y + "    player y = " + playerPos.y);
 						projPos.x += proj.hspeed * multiple;
 						projPos.y += proj.vspeed * multiple;
 
@@ -2173,7 +2174,7 @@ class Bot extends Player {
 					// Check if proj crosses over the player
 					while (projPos.y > playerPos.y) {
 
-						console.log(projPos.y);
+						console.log("proj y = "+projPos.y+"player y = " + playerPos.y);
 						projPos.x += proj.hspeed * multiple;
 						projPos.y += proj.vspeed * multiple;
 

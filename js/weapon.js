@@ -113,7 +113,7 @@ class RocketLauncher extends Gun {
 	shoot() {
 		this.shooting = true;
 		this.ammo--;
-		tempArr.add(new Missile(this.x, this.y, this.player.playerID, this.player.angle));
+		tempArr.add(new Missile(this.x, this.y, this.player, this.player.angle));
 
 		// Prepare for new animation
 		this.animIndex = 0;
@@ -143,7 +143,7 @@ class Uzi extends Gun {
 	// Shoot the gun (create bullet)
 	shoot() {
 		this.shooting = true;
-		tempArr.add(new Pellet(this.x, this.y, this.player.playerID, this.player.angle, -1, -1, 2, 10));
+		tempArr.add(new Pellet(this.x, this.y, this.player, this.player.angle, -1, -1, 2, 10));
 		
 		playSound(uziShoot_snd);
 
@@ -199,7 +199,7 @@ class Shotgun extends Gun {
 	shoot() {
 		this.shooting = true;
 		for (var i = 0; i < 6; i++) {
-			tempArr.add(new Pellet(this.x, this.y, this.player.playerID, this.player.angle, 6+Math.floor(Math.random()*10), 17, 5, 40));
+			tempArr.add(new Pellet(this.x, this.y, this.player, this.player.angle, 6+Math.floor(Math.random()*10), 17, 5, 40));
 		}
 		playSound(shotgunShoot_snd);
 
@@ -232,7 +232,7 @@ class SnowGun extends Gun {
 	// Shoot the gun (create bullet + recoil)
 	shoot() {
 		this.shooting = true;
-		tempArr.add(new Snowball(this.x, this.y, this.player.playerID, this.player.angle));
+		tempArr.add(new Snowball(this.x, this.y, this.player, this.player.angle));
 		playSound(shoot_snd);
 
 		// Prepare for new animation
@@ -274,19 +274,19 @@ class LaserGun extends Gun {
 				this.ammo--;
 				if (this.player.angle == DIR.left) {
 					for (var i = this.x-this.player.width/2; i > -20; i-=20) {
-						tempArr.add(new LaserBlast(i, this.y, this.player.playerID, this.player.angle));
+						tempArr.add(new LaserBlast(i, this.y, this.player, this.player.angle));
 					}
 				} else if (this.player.angle == DIR.right) {
 					for (var i = this.x+this.player.width/2; i < canvas.width; i+=20) {
-						tempArr.add(new LaserBlast(i, this.y, this.player.playerID, this.player.angle));
+						tempArr.add(new LaserBlast(i, this.y, this.player, this.player.angle));
 					}
 				} else if (this.player.angle == DIR.up) {
 					for (var i = this.y-this.player.height/2; i > -20; i-=20) {
-						tempArr.add(new LaserBlast(this.x, i, this.player.playerID, this.player.angle));
+						tempArr.add(new LaserBlast(this.x, i, this.player, this.player.angle));
 					}
 				} else {
 					for (var i = this.y+this.player.height/2; i < canvas.height; i+=20) {
-						tempArr.add(new LaserBlast(this.x, i, this.player.playerID, this.player.angle));
+						tempArr.add(new LaserBlast(this.x, i, this.player, this.player.angle));
 					}
 				}
 				playSound(lasershoot_snd);
@@ -409,7 +409,7 @@ class Explosion extends Bullet {
 	// Check if hitting anyone or any walls
 	checkHit() {
 		for (var i of playerArr) {
-			if (this.owner != i.playerID && this.collideWith(i) && !i.dead) {
+			if (this.owner.playerID != i.playerID && this.collideWith(i) && !i.dead) {
 				console.log("REKTT player " + i.playerID + "died...");
 				i.die(this.dir);
 			}
@@ -484,7 +484,7 @@ class Missile extends Bullet {
 		
 		this.speed = 1;
 		this.maxSpeed = 6;
-		this.setAngle(this.dir);
+		this.setAngle(dir);
 
 		this.delayBeforeSpeed = 20;   // How long to wait before speeding up
 
@@ -497,10 +497,21 @@ class Missile extends Bullet {
 
 		this.id = Math.random();  // Random ID for missile
 
-
-
 		this.hspeed = 0;
 		this.vspeed = 0;
+
+		if (this.dir == DIR.left) {
+			this.hspeed = -this.speed;
+		} else if (this.dir == DIR.right) {
+			this.hspeed = this.speed;
+		} else if (this.dir == DIR.up) {
+			this.vspeed = -this.speed;
+		} else if (this.dir == DIR.down) {
+			this.vspeed = this.speed;
+		}	
+
+
+		console.log(this.dir);
 
 		playSound(missileLaunch_snd);
 	}
@@ -543,11 +554,12 @@ class Missile extends Bullet {
 		} else if (this.dir == DIR.up) {
 			this.vspeed = -this.speed;
 		} else if (this.dir == DIR.down) {
-			this.hspeed = this.speed;
+			this.vspeed = this.speed;
 		}	
 
 		this.x += this.hspeed;
 		this.y += this.vspeed;
+		console.log("vspeed = " + this.vspeed);
 	}
 	// Create explosion
 	explode() {
@@ -558,7 +570,7 @@ class Missile extends Bullet {
 	// Check if hitting anyone
 	checkHit() {
 		for (var i of playerArr) {
-			if (this.owner != i.playerID && this.collideWith(i) && !i.dead) {
+			if (this.owner.playerID != i.playerID && this.collideWith(i) && !i.dead) {
 				this.explode();
 			}
 		}
@@ -661,7 +673,7 @@ class Pellet extends Bullet {
 	// Check if hitting anyone
 	checkHit() {
 		for (var i of playerArr) {
-			if (this.owner != i.playerID && this.collideWith(i) && !i.dead) {
+			if (this.owner.playerID != i.playerID && this.collideWith(i) && !i.dead) {
 				console.log("REKTT player " + i.playerID + "died...");
 				i.die(this.dir);
 			}
@@ -726,7 +738,7 @@ class LaserBlast extends Bullet {
 	checkHit() {
 		if (this.hurtTimer > 0) {
 			for (var i of playerArr) {
-				if (this.owner != i.playerID && this.collideWith(i) && !i.dead) {
+				if (this.owner.playerID != i.playerID && this.collideWith(i) && !i.dead) {
 					console.log("REKTT player " + i.playerID + " died...");
 					i.die(this.dir);
 				}
@@ -825,7 +837,7 @@ class Snowball extends Bullet {
 	// Check if hitting anyone
 	checkHit() {
 		for (var i of playerArr) {
-			if (this.owner != i.playerID && this.collideWith(i) && !i.dead) {
+			if (this.owner.playerID != i.playerID && this.collideWith(i) && !i.dead) {
 				console.log("REKTT player " + i.playerID + " died...");
 				this.break();
 				i.die(this.dir);
