@@ -128,6 +128,13 @@ var timer_img = new Image();
 timer_img.src = "img/timer.png";
 
 
+var p1Join_img = new Image();
+p1Join_img.src = "img/p1Join.png";
+var p2Join_img = new Image();
+p2Join_img.src = "img/p2Join.png";
+var p1p2Join_img = new Image();
+p1p2Join_img.src = "img/p1p2Join.png";
+
 
 
 

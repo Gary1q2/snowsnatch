@@ -14,6 +14,10 @@ class Game {
 		this.gameover = false;
 
 		this.justOffedControls = false;
+
+		// Players pressing ready
+		this.p1Pressed = false;
+		this.p2Pressed = false;
 	}
 
 	// Head to selection screen
@@ -27,6 +31,10 @@ class Game {
 		for (var i = 0; i < temp.length; i++) {
 			temp[i].style.visibility = "visible";
 		}
+		document.getElementById("goButton").style.visibility = "hidden";
+
+		this.p1Pressed = false;
+		this.p2Pressed = false;
 
 		// Set level name div to get the level name
 		document.getElementById("levelName").innerHTML = levelNames[this.level];
@@ -131,7 +139,37 @@ class Game {
 
 	// Update the selection screen loop
 	updateSelect() {
-		ctx.drawImage(selectionScreen_img, 0, 0);	
+		ctx.drawImage(selectionScreen_img, 0, 0);
+
+
+		// Show press to join for P1
+		if (!this.p1Pressed && !this.p2Pressed) {
+			ctx.drawImage(p1Join_img, 0, 0);
+
+			if (Keys.space) {
+				this.p1Pressed = true;
+				document.getElementById("goButton").style.visibility = "visible";
+				playSound(snowbreak_snd);
+			}
+
+		// Show press to join for P2
+		} else if (this.p1Pressed && !this.p2Pressed) {
+			ctx.drawImage(p2Join_img, 0, 0);
+
+            if (Keys.f) {
+            	this.p2Pressed = true;
+            	this.bot = false;
+           		playSound(snowbreak_snd);
+            }
+
+		} else if (this.p1Pressed && this.p2Pressed) {
+			ctx.drawImage(p1p2Join_img, 0, 0);
+		}
+
+
+
+
+		//if p1 and p2 not pressed ---> check for L to be pressed
 	}
 
 	// Update the control screen loop

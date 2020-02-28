@@ -52,7 +52,7 @@ class Mine extends Gun {
 		this.gunID = 6;
 
 		this.shootTime = 1;
-		this.ammo = 2;
+		this.ammo = 1;
 
 		this.shootTime = 20;
 		this.animDelayTime = 20;
@@ -317,7 +317,7 @@ class LaserGun extends Gun {
 		if (this.chargeTimer > 0) {
 			ctx.fillStyle = "red";
 			ctx.globalAlpha = 0.3;
-			var beamWidth = 4;
+			var beamWidth = 12;
 			var beamDist = 400;
 
 			var anchorX = this.player.getXAnchor();
@@ -409,7 +409,7 @@ class Explosion extends Bullet {
 	// Check if hitting anyone or any walls
 	checkHit() {
 		for (var i of playerArr) {
-			if (this.owner.playerID != i.playerID && this.collideWith(i) && !i.dead) {
+			if (this.collideWith(i) && !i.dead) {
 				console.log("REKTT player " + i.playerID + "died...");
 				i.die(this.dir);
 			}
@@ -462,7 +462,7 @@ class MineBomb extends Bullet {
 	// Check if hitting anyone
 	checkHit() {
 		for (var i of playerArr) {
-			if (this.owner.playerID != i.playerID && this.collideWith(i) && !i.dead) {
+			if (this.collideWith(i) && !i.dead) {
 				this.explode();
 			}
 		}
@@ -689,10 +689,10 @@ class LaserBlast extends Bullet {
 		var tall;
 		if (dir == DIR.left || dir == DIR.right) {
 			wide = 20;
-			tall = 8;
+			tall = 16;
 		} else {
 			wide = 8;
-			tall = 20;
+			tall = 16;
 		}
 		super(x, y, wide, tall, laserBeam_img, 2, 3, [0,1,2], 0, 0, owner, dir);
 		this.aliveTimer = 30;  // How long to stay alive for

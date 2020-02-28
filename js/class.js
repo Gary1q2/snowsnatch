@@ -621,17 +621,17 @@ class Crate extends Entity {
 
 				// Give random gun
 				var rand = Math.random();
-				if (rand < 0.2) {
+				//if (rand < 0.2) {
 					i.gun = new LaserGun(i);
-				} else if (rand < 0.4) {
-					i.gun = new Shotgun(i);
-	     		} else if (rand < 0.6) {
-	     			i.gun = new Uzi(i);
-	     		} else if (rand < 0.8) {
-	     			i.gun = new RocketLauncher(i);
-	     		} else {
-	     			i.gun = new Mine(i);
-	     		}
+				//} else if (rand < 0.4) {
+				//	i.gun = new Shotgun(i);
+	     		//} else if (rand < 0.6) {
+	     		//	i.gun = new Uzi(i);
+	     		//} else if (rand < 0.8) {
+	     		//	i.gun = new RocketLauncher(i);
+	     		//} else {
+	     		//	i.gun = new Mine(i);
+	     		//}
 	     		
 
 	     		// Spawn crate in random empty spawn
