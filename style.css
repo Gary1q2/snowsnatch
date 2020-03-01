@@ -99,10 +99,13 @@ body {
 	font-family: "custom";
 	visibility: hidden;
 }
+#tinyMenuButton {
+	position: absolute;
+	top: 2px;
+	right: 2px;
 
-
-
-
+	visibility: hidden;
+}
 
 
 
@@ -112,14 +115,14 @@ body {
 	visibility: hidden;
 }
 #levelLeft {
-	left: 350px;
-	top: 220px;
+	left: 355px;
+	top: 210px;
 
 	height: 80px;
 }
 #levelRight {
-	left: 1100px;
-	top: 220px;
+	left: 1130px;
+	top: 210px;
 
 	height: 80px;
 }
@@ -132,9 +135,11 @@ body {
 	font-size: 50px;
 }
 #levelName {
-	left: 600px;
-	top: 30px;
+	left: 450px;
+	top: 5px;
+	width: 720px;
 
+	text-align: center;
 	font-family: "custom";
 	font-size: 60px;
 }
@@ -183,12 +188,22 @@ body {
 
 /* Loner menu button */
 #backToMenuButton {
-	position: relative;
+	position: absolute;
 	top: 475px;
 	left: 50px;
 
 	height: 80px;
 	width: auto;
 
+	visibility: hidden;
+}
+
+#rematchButton {
+	position: absolute;
+	top: 475px;
+	left: 400px;
+
+	height: 80px;
+	width: auto;
 	visibility: hidden;
 }

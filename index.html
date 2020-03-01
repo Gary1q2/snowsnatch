@@ -19,7 +19,8 @@
 					<img id="winnerImg" src="img/winBack.png" alt="Winner">
 					<div id="winnerText">Winner</div>
 				</div>
-
+				<img id="rematchButton" onmouseover="changeImage(this, rematchButtonFlash_img)" onmouseout="changeImage(this, rematchButton_img)" onclick="game.toCTFScreen()" src="img/rematchButton.png" alt="rematchButton">
+				<img id="tinyMenuButton" onmouseover="changeImage(this, menuButtonFlash_img)" onmouseout="changeImage(this, menuButton_img)" onclick="game.toMenuScreen()" src="img/menuButton.png" alt="menuButton">
 
 				<!--Menu screen-->
 				<img class="menuScreen" id="playButton" onmouseover="changeImage(this, playButtonFlash_img)" onmouseout="changeImage(this, playButton_img)" onclick="game.toSelectionScreen()" src="img/playButton.png" alt="playButton">
@@ -29,8 +30,8 @@
 
 				<!--Selection screen-->
 				<img id="goButton" class="selectScreen" onmouseover="changeImage(this, goButtonFlash_img)" onmouseout="changeImage(this, goButton_img)" onclick="game.toCTFScreen()" src="img/goButton.png" alt="goButton">
-				<!--<img id="levelLeft" class="selectScreen" onmouseover="changeImage(this, arrowFlipFlash_img)" onmouseout="changeImage(this, arrowFlip_img)" onclick="prevLevel()" src="img/arrowFlip.png" alt="levelLeft">
-				<img id="levelRight" class="selectScreen" onmouseover="changeImage(this, arrowFlash_img)" onmouseout="changeImage(this, arrow_img)" onclick="nextLevel()" src="img/arrow.png" alt="levelLeft">-->
+				<img id="levelLeft" class="selectScreen" onmouseover="changeImage(this, arrowFlipFlash_img)" onmouseout="changeImage(this, arrowFlip_img)" onclick="prevLevel()" src="img/arrowFlip.png" alt="levelLeft">
+				<img id="levelRight" class="selectScreen" onmouseover="changeImage(this, arrowFlash_img)" onmouseout="changeImage(this, arrow_img)" onclick="nextLevel()" src="img/arrow.png" alt="levelLeft">
 				<div id="levelName" class="selectScreen">Level name</div>
 
 

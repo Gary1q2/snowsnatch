@@ -4,6 +4,13 @@ function nextLevel() {
 		game.level++;
 		document.getElementById("levelName").innerHTML = levelNames[game.level];
 		playSound(snowbreak_snd);
+
+		// Hide button if reach end
+		if (game.level == levels.length-1) {
+			document.getElementById("levelRight").style.visibility = "hidden";
+		}
+
+		document.getElementById("levelLeft").style.visibility = "visible";
 	}
 	console.log(game.level);
 }
@@ -14,6 +21,13 @@ function prevLevel() {
 		game.level--;
 		document.getElementById("levelName").innerHTML = levelNames[game.level];
 		playSound(snowbreak_snd);
+
+		// Hide button if reach end
+		if (game.level == 0) {
+			document.getElementById("levelLeft").style.visibility = "hidden";
+		}
+
+		document.getElementById("levelRight").style.visibility = "visible";
 	}
 	console.log(game.level);
 }

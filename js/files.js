@@ -111,6 +111,11 @@ var unlockButton_img = new Image();
 unlockButton_img.src = "img/unlockButton.png";
 var unlockButtonFlash_img = new Image();
 unlockButtonFlash_img.src = "img/unlockButtonFlash.png";
+var rematchButton_img = new Image();
+rematchButton_img.src = "img/rematchButton.png";
+var rematchButtonFlash_img = new Image();
+rematchButtonFlash_img.src = "img/rematchButtonFlash.png";
+
 
 var unlockScreen_img = new Image();
 unlockScreen_img.src = "img/unlockScreen.png";

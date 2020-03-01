@@ -32,6 +32,7 @@ class Game {
 			temp[i].style.visibility = "visible";
 		}
 		document.getElementById("goButton").style.visibility = "hidden";
+		document.getElementById("levelLeft").style.visibility = "hidden";
 
 		this.p1Pressed = false;
 		this.p2Pressed = false;
@@ -80,7 +81,10 @@ class Game {
 		for (var i = 0; i < temp.length; i++) {
 			temp[i].style.visibility = "hidden";
 		}
+		document.getElementById("rematchButton").style.visibility = "hidden";
+		document.getElementById("winnerBoard").style.visibility = "hidden";
 
+		document.getElementById("tinyMenuButton").style.visibility = "visible";
 		document.getElementById("ammo1").style.visibility = "visible";
 
 		// Reset these variables
@@ -127,6 +131,10 @@ class Game {
 		document.getElementById("scoreCTF").style.visibility = "hidden";
 		document.getElementById("winnerBoard").style.visibility = "hidden";
 
+		document.getElementById("rematchButton").style.visibility = "hidden";
+
+		document.getElementById("tinyMenuButton").style.visibility = "hidden";
+
 		this.gamestate = GAMESTATE.menu;
 
 		playSound(snowbreak_snd);
@@ -140,7 +148,7 @@ class Game {
 	// Update the selection screen loop
 	updateSelect() {
 		ctx.drawImage(selectionScreen_img, 0, 0);
-
+		this.drawLevelDisplay(this.level);
 
 		// Show press to join for P1
 		if (!this.p1Pressed && !this.p2Pressed) {
@@ -235,6 +243,7 @@ class Game {
 			winnerBoard.childNodes[3].innerHTML = "Player " + this.winner + " wins!";
 					
 			document.getElementById("backToMenuButton").style.visibility = "visible";
+			document.getElementById("rematchButton").style.visibility = "visible";
 		}		
 	}
 
@@ -337,6 +346,41 @@ class Game {
 				}
 			}
 		}
+	}
+
+	// Draw the display for the level in selection screen
+	drawLevelDisplay(level) {
+		var array = levels[level];
+
+		var xPos = 140;
+		var yPos = 20;
+		var size = 12;
+		for (var i = 0; i < array.length; i++) {
+			for (var j = 0; j < array[i].length; j++) {
+				var value = array[i][j];
+				if (value == "W") {
+					ctx.drawImage(wall, 0, 0, 20, 20, xPos+j*size, yPos+i*size, size, size);
+				} else if (value == "C") {
+					ctx.drawImage(snow_img, 6, 6, 20, 20, xPos+j*size, yPos+i*size, size, size);
+					ctx.drawImage(crate_img, 0, 0, 20, 20, xPos+j*size, yPos+i*size, size, size);
+				} else if (value == "G") {
+					ctx.drawImage(goal_img, 0, 0, 20, 20, xPos+j*size, yPos+i*size, size, size);
+					//ctx.drawImage(flagBlue_img, 0, 0, 20, 20, xPos+j*size, yPos+i*size-size, size, size);
+				} else if (value == "T") {
+					ctx.drawImage(goal_img, 0, 0, 20, 20, xPos+j*size, yPos+i*size, size, size);
+					//ctx.drawImage(flagGreen_img, 0, 0, 20, 20, xPos+j*size, yPos+i*size-size, size, size);
+				} else if (value == "1") {
+					ctx.drawImage(snow_img, 6, 6, 20, 20, xPos+j*size, yPos+i*size, size, size);
+					ctx.drawImage(peng, 0, 0, 20, 20, xPos+j*size, yPos+i*size, size, size);
+				} else if (value == "2") {
+					ctx.drawImage(snow_img, 6, 6, 20, 20, xPos+j*size, yPos+i*size, size, size);
+					ctx.drawImage(peng2, 0, 0, 20, 20, xPos+j*size, yPos+i*size, size, size);
+				} else if (value == "0") {
+					ctx.drawImage(snow_img, 6, 6, 20, 20, xPos+j*size, yPos+i*size, size, size);
+				}
+			}
+		}
+
 	}
 
 	// Display ready, fight message
