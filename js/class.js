@@ -235,7 +235,6 @@ class Entity {
 
 
 
-
 class Smoke extends Entity {
 	constructor(x, y, dir) {
 		super(x, y, 20, 20, smoke_img, 3, 3, [0,1,2,3,4,5], 0, 0);

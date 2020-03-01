@@ -22,6 +22,10 @@ class Game {
 		// Offsets for the scrolling background
 		this.scrollXOff = 0;
 		this.scrollYOff = 0;
+
+
+		this.p1JoinBounce = new Entity(50, 15, 20, 20, p1JoinBounce_img, 2, 3, [0,1,2,3,4,5], 0, 0);
+		this.p2JoinBounce = new Entity(50, 82, 20, 20, p2JoinBounce_img, 2, 3, [0,1,2,3,4,5], 0, 0);
 	}
 
 	// Head to selection screen
@@ -156,9 +160,11 @@ class Game {
 		ctx.drawImage(selectionScreen_img, 0, 0);
 		this.drawLevelDisplay(this.level);
 
+
 		// Show press to join for P1
 		if (!this.p1Pressed && !this.p2Pressed) {
 			ctx.drawImage(p1Join_img, 0, 0);
+			this.p1JoinBounce.update();
 
 			if (Keys.space) {
 				this.p1Pressed = true;
@@ -169,6 +175,7 @@ class Game {
 		// Show press to join for P2
 		} else if (this.p1Pressed && !this.p2Pressed) {
 			ctx.drawImage(p2Join_img, 0, 0);
+			this.p2JoinBounce.update();
 
             if (Keys.f) {
             	this.p2Pressed = true;

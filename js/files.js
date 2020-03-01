@@ -144,6 +144,11 @@ p1p2Join_img.src = "img/p1p2Join.png";
 var scrollingBack_img = new Image();
 scrollingBack_img.src = "img/scrollingBack.png";
 
+var p1JoinBounce_img = new Image();
+p1JoinBounce_img.src = "img/p1JoinBounce.png";
+var p2JoinBounce_img = new Image();
+p2JoinBounce_img.src = "img/p2JoinBounce.png";
+
 
 // Sounds
 var shoot_snd = document.createElement("audio");
