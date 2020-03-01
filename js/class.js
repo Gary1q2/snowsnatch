@@ -621,17 +621,17 @@ class Crate extends Entity {
 
 				// Give random gun
 				var rand = Math.random();
-				//if (rand < 0.2) {
+				if (rand < 0.2) {
 					i.gun = new LaserGun(i);
-				//} else if (rand < 0.4) {
-				//	i.gun = new Shotgun(i);
-	     		//} else if (rand < 0.6) {
-	     		//	i.gun = new Uzi(i);
-	     		//} else if (rand < 0.8) {
-	     		//	i.gun = new RocketLauncher(i);
-	     		//} else {
-	     		//	i.gun = new Mine(i);
-	     		//}
+				} else if (rand < 0.4) {
+					i.gun = new Shotgun(i);
+	     		} else if (rand < 0.6) {
+	     			i.gun = new Uzi(i);
+	     		} else if (rand < 0.8) {
+	     			i.gun = new RocketLauncher(i);
+	     		} else {
+	     			i.gun = new Mine(i);
+	     		}
 	     		
 
 	     		// Spawn crate in random empty spawn
@@ -1424,7 +1424,7 @@ class Bot extends Player {
 		for (var i = 0; i < tempArr.array[2].length; i++) {
 
 			var mine = tempArr.array[2][i];
-			if (mine instanceof MineBomb && mine.owner.playerID != this.playerID && !mine.dead) {
+			if (mine instanceof MineBomb && !mine.dead) {
 				list.push(this.findObjectLoc(mine));
 			}
 		}
@@ -1693,9 +1693,9 @@ class Bot extends Player {
 
 
 			// Enemy in range.... shoot them
-			} else if ((this.gun instanceof SnowGun && this.checkEnemyWithinAxes(numAxesAway)) || 
+			} else if ((this.gun instanceof SnowGun && this.checkEnemyWithinAxes(3)) || 
 				       (this.gun instanceof Shotgun && this.checkEnemyWithinRadius(3)) ||
-				       (this.gun instanceof LaserGun && this.checkEnemyWithinAxes(numAxesAway)) ||
+				       (this.gun instanceof LaserGun && this.checkEnemyWithinAxes(3)) ||
 				       (this.gun instanceof RocketLauncher && this.checkEnemyWithinAxes(3)) ||
 				       (this.gun instanceof Uzi && this.checkEnemyWithinAxes(3)) ||
 				       (this.gun instanceof Shotgun && this.checkEnemyWithinRadius(3))) { 

@@ -126,7 +126,7 @@ class Uzi extends Gun {
 		super(0, 100, 8, 8, uzi_img, 2, 2, [0], 0, 0, player);
 		this.gunID = 4;
  
-		this.shootTime = 15;
+		this.shootTime = 25;
 		this.ammo = 15;
 		document.getElementById("ammo"+this.player.playerID).style.visibility = "visible";
 	}
