@@ -18,6 +18,10 @@ class Game {
 		// Players pressing ready
 		this.p1Pressed = false;
 		this.p2Pressed = false;
+
+		// Offsets for the scrolling background
+		this.scrollXOff = 0;
+		this.scrollYOff = 0;
 	}
 
 	// Head to selection screen
@@ -142,11 +146,13 @@ class Game {
 
 	// Update the menu loop
 	updateMenu() {
+		this.drawScrollingBack();
 		ctx.drawImage(titleBack_img, 0, 0);
 	}
 
 	// Update the selection screen loop
 	updateSelect() {
+		this.drawScrollingBack();
 		ctx.drawImage(selectionScreen_img, 0, 0);
 		this.drawLevelDisplay(this.level);
 
@@ -182,6 +188,7 @@ class Game {
 
 	// Update the control screen loop
 	updateControl() {
+		this.drawScrollingBack();
 		ctx.drawImage(controlBack_img, 0, 0);
 	}
 
@@ -345,6 +352,21 @@ class Game {
 					snowArr.add(new Snow(j*gridLen, i*gridLen));
 				}
 			}
+		}
+	}
+
+	// Draw the scrolling background
+	drawScrollingBack() {
+		ctx.drawImage(scrollingBack_img, Math.floor(this.scrollXOff), Math.floor(this.scrollYOff));
+		ctx.drawImage(scrollingBack_img, Math.floor(this.scrollXOff), Math.floor(this.scrollYOff)+200);
+		ctx.drawImage(scrollingBack_img, Math.floor(this.scrollXOff)+400, Math.floor(this.scrollYOff));
+		ctx.drawImage(scrollingBack_img, Math.floor(this.scrollXOff)+400, Math.floor(this.scrollYOff)+200);
+
+		this.scrollXOff -= 0.5;
+		this.scrollYOff -= 0.25;
+		if (this.scrollYOff <= -200) {
+			this.scrollXOff = 0;
+			this.scrollYOff = 0;
 		}
 	}
 

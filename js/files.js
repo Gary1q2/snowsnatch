@@ -141,6 +141,8 @@ var p1p2Join_img = new Image();
 p1p2Join_img.src = "img/p1p2Join.png";
 
 
+var scrollingBack_img = new Image();
+scrollingBack_img.src = "img/scrollingBack.png";
 
 
 // Sounds
