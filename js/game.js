@@ -23,7 +23,7 @@ class Game {
 		this.scrollXOff = 0;
 		this.scrollYOff = 0;
 
-
+		// Bouncing animation for P1 and P2 join
 		this.p1JoinBounce = new Entity(50, 15, 20, 20, p1JoinBounce_img, 2, 3, [0,1,2,3,4,5], 0, 0);
 		this.p2JoinBounce = new Entity(50, 82, 20, 20, p2JoinBounce_img, 2, 3, [0,1,2,3,4,5], 0, 0);
 	}

@@ -441,7 +441,7 @@ class Timer extends Entity {
 class Flag extends Entity {
 	constructor(x, y, owner) {
 
-		// player 1 = green, player 2 = blue
+		// player 1 = red, player 2 = blue
 		var flagColor;
 		if (owner.playerID == 1) {
 			flagColor = flagGreen_img;
@@ -466,6 +466,16 @@ class Flag extends Entity {
 		this.respawnTime = 20*60;
 
 		this.timer;
+
+
+		// Arrow telling player to take the flag
+		this.capArrow;
+		if (owner.playerID == 1) {
+		    this.capArrow = new Entity(this.x, this.y-40, 20, 20, capArrowBlue_img, 4, 4, [0,1,2,3,4,5,6,7,8,9,10,11,12], 0, 0);
+		} else {
+			this.capArrow = new Entity(this.x, this.y-40, 20, 20, capArrowRed_img, 4, 4, [0,1,2,3,4,5,6,7,8,9,10,11,12], 0, 0);
+		}
+		this.touchOnce = false;  // If player has touched their flag at least once or not
 	}
 	update() {
 		// Check if player got it
@@ -479,6 +489,11 @@ class Flag extends Entity {
 		}
 		
 		this.draw()
+
+		if (!this.touchOnce) {
+			this.capArrow.update();
+		}
+
 
 		// Draw collision to show players how to get it
 		if (!this.atGoal && !this.acquired) {
@@ -521,6 +536,10 @@ class Flag extends Entity {
 				this.acquired = true;
 				this.atGoal = false;
 				this.owner.hasFlag = true;
+
+				if (!this.touchOnce) {
+					this.touchOnce = true;
+				}
 				playSound(flagGot_snd);
 				break;
 			}
@@ -654,12 +673,24 @@ class Goal extends Entity {
 	constructor(x, y, owner) {
 		super(x, y, 20, 20, goal_img, 1, 1, [0], 0,0);
 		this.owner = owner;
+
+		// Arrow telling player to bring the flag back to their base
+		this.capArrow;
+		if (owner.playerID == 1) {
+		    this.capArrow = new Entity(this.x, this.y-20, 20, 20, capArrowBlue_img, 4, 4, [0,1,2,3,4,5,6,7,8,9,10,11,12], 0, 0);
+		} else {
+			this.capArrow = new Entity(this.x, this.y-20, 20, 20, capArrowRed_img, 4, 4, [0,1,2,3,4,5,6,7,8,9,10,11,12], 0, 0);
+		}
 	}
 	update() {
 		this.checkGoal();
 		this.draw();
 		if (debug) {
 			this.drawCol();
+		}
+
+		if (this.owner.score == 0 && this.owner.hasFlag) {
+			this.capArrow.update();
 		}
 	}
 

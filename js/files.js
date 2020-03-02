@@ -148,6 +148,10 @@ var p1JoinBounce_img = new Image();
 p1JoinBounce_img.src = "img/p1JoinBounce.png";
 var p2JoinBounce_img = new Image();
 p2JoinBounce_img.src = "img/p2JoinBounce.png";
+var capArrowBlue_img = new Image();
+capArrowBlue_img.src = "img/capArrowBlue.png";
+var capArrowRed_img = new Image();
+capArrowRed_img.src = "img/capArrowRed.png";
 
 
 // Sounds
