@@ -48,6 +48,8 @@ class Game {
 		// Set level name div to get the level name
 		document.getElementById("levelName").innerHTML = levelNames[this.level];
 
+		this.level = 0;
+
 		this.gamestate = GAMESTATE.selection;
 		playSound(snowbreak_snd);
 	}
