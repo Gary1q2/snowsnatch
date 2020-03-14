@@ -934,9 +934,12 @@ class Player extends Entity {
 
 	// Respawn the player
 	respawn() {
-		this.gun = new SnowGun(this);
-		this.dead = false;
-		this.dying = false;
+
+		// Back to original spot
+		this.x = this.initX;
+		this.y = this.initY;
+
+
 
 		// Reset these so player faces correct direction once they respawn if they hold the keys
 		this.moving = false;
@@ -944,9 +947,6 @@ class Player extends Entity {
 
 		this.firstKeyPress = DIR.none;
 
-		// Back to original spot
-		this.x = this.initX;
-		this.y = this.initY;
 
 		var temp;
 		if (this.playerID == 1) {
@@ -963,6 +963,11 @@ class Player extends Entity {
 
 		this.setAngle(this.startFace);
 		this.changeSprite(temp, 14, 14, 1, 3, [0, 1], 0,0);
+
+		this.gun = new SnowGun(this);
+
+		this.dead = false;
+		this.dying = false;
 	}
 }
 
