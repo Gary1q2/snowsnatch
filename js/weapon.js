@@ -317,7 +317,7 @@ class LaserGun extends Gun {
 		if (this.chargeTimer > 0) {
 			ctx.fillStyle = "red";
 			ctx.globalAlpha = 0.3;
-			var beamWidth = 12;
+			var beamWidth = 8;
 			var beamDist = 400;
 
 			var anchorX = this.player.getXAnchor();
@@ -689,10 +689,10 @@ class LaserBlast extends Bullet {
 		var tall;
 		if (dir == DIR.left || dir == DIR.right) {
 			wide = 20;
-			tall = 16;
+			tall = 8;
 		} else {
 			wide = 8;
-			tall = 16;
+			tall = 20;
 		}
 		super(x, y, wide, tall, laserBeam_img, 2, 3, [0,1,2], 0, 0, owner, dir);
 		this.aliveTimer = 30;  // How long to stay alive for
