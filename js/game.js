@@ -42,13 +42,12 @@ class Game {
 		document.getElementById("goButton").style.visibility = "hidden";
 		document.getElementById("levelLeft").style.visibility = "hidden";
 
-		this.p1Pressed = false;
-		this.p2Pressed = false;
-
 		// Set level name div to get the level name
 		document.getElementById("levelName").innerHTML = levelNames[this.level];
 
 		this.level = 0;
+		this.p1Pressed = false;
+		this.p2Pressed = false;
 
 		this.gamestate = GAMESTATE.selection;
 		playSound(snowbreak_snd);
