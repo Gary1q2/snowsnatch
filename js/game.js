@@ -46,6 +46,7 @@ class Game {
 		document.getElementById("levelName").innerHTML = levelNames[this.level];
 
 		this.level = 0;
+		this.bot = true;
 		this.p1Pressed = false;
 		this.p2Pressed = false;
 
