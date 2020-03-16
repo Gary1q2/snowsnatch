@@ -152,6 +152,10 @@ var capArrowBlue_img = new Image();
 capArrowBlue_img.src = "img/capArrowBlue.png";
 var capArrowRed_img = new Image();
 capArrowRed_img.src = "img/capArrowRed.png";
+var capArrowBlue_up_img = new Image();
+capArrowBlue_up_img.src = "img/capArrowBlue_up.png";
+var capArrowRed_up_img = new Image();
+capArrowRed_up_img.src = "img/capArrowRed_up.png";
 
 
 // Sounds

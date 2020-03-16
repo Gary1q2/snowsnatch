@@ -138,6 +138,12 @@ class Entity {
 		return testCollisionRectRect(rect1, rect2);
 	}
 
+	// Check if player mouse is within collision
+	checkMouseOverCol() {
+
+
+	}
+
 	// Get the object's rectangle at current position
 	getRect() {
 		var rect = {
@@ -234,6 +240,25 @@ class Entity {
 }
 
 
+class LevelArrow extends Entity {
+	constructor(x, y, right) {
+
+		var img;
+		if (right) {
+			img = arrow_img;
+		} else {
+			img = arrowFlip_img;
+		}
+		super(x, y, 22, 22, img, 3, 3, [0,1,2,3,4,5,6,7,8], 0, 0);
+	}
+
+	update() {
+		this.drawAnimated(this.frameSeq);
+		this.drawCol();
+
+		console.log(event.clientX);
+	}
+}
 
 class Smoke extends Entity {
 	constructor(x, y, dir) {
@@ -476,6 +501,8 @@ class Flag extends Entity {
 			this.capArrow = new Entity(this.x, this.y-40, 20, 20, capArrowRed_img, 4, 4, [0,1,2,3,4,5,6,7,8,9,10,11,12], 0, 0);
 		}
 		this.touchOnce = false;  // If player has touched their flag at least once or not
+
+		this.waitBefore = 8 * 60;
 	}
 	update() {
 		// Check if player got it
@@ -490,7 +517,7 @@ class Flag extends Entity {
 		
 		this.draw()
 
-		if (!this.touchOnce) {
+		if (!this.touchOnce && this.waitBefore == 0) {
 			this.capArrow.update();
 		}
 
@@ -500,6 +527,10 @@ class Flag extends Entity {
 			this.timer.update();
 			this.tickRespawn();
 			this.drawCol();
+		}
+
+		if (this.waitBefore > 0) {
+			this.waitBefore--;
 		}
 	}
 
@@ -677,9 +708,9 @@ class Goal extends Entity {
 		// Arrow telling player to bring the flag back to their base
 		this.capArrow;
 		if (owner.playerID == 1) {
-		    this.capArrow = new Entity(this.x, this.y-20, 20, 20, capArrowBlue_img, 4, 4, [0,1,2,3,4,5,6,7,8,9,10,11,12], 0, 0);
+		    this.capArrow = new Entity(this.x, this.y+20, 20, 20, capArrowBlue_up_img, 4, 4, [0,1,2,3,4,5,6,7,8,9,10,11,12], 0, 0);
 		} else {
-			this.capArrow = new Entity(this.x, this.y-20, 20, 20, capArrowRed_img, 4, 4, [0,1,2,3,4,5,6,7,8,9,10,11,12], 0, 0);
+			this.capArrow = new Entity(this.x, this.y+20, 20, 20, capArrowRed_up_img, 4, 4, [0,1,2,3,4,5,6,7,8,9,10,11,12], 0, 0);
 		}
 	}
 	update() {
@@ -2735,7 +2766,7 @@ class ObjectArrayLayered {
 			img: img,
 			x: x,
 			y: y
-		})
+		});
 	}
 
 	// Add entity to layer in array
@@ -2759,17 +2790,16 @@ class ObjectArrayLayered {
 
 			//case "Snow":
 
-			case "Goal":
-				return 0;
 
 			case "Crate":
-				return 1;
+				return 0;
 
 			//case "Wall":
 
 			case "Shell":
 			case "MineBomb":
-				return 2;
+			case "Goal":
+				return 1;
 
 			//case "Player":
 
@@ -2779,7 +2809,7 @@ class ObjectArrayLayered {
 			case "LaserBlast":
 			case "Snowball":
 			case "Flag":
-				return 3;
+				return 2;
 
 			case "Gun":
 			case "RocketLauncher":
@@ -2788,12 +2818,12 @@ class ObjectArrayLayered {
 			case "SnowGun":
 			case "LaserGun":
 			case "Mine":
-				return 4;
+				return 3;
 
 			case "Smoke":
 			case "Explosion":
 			case "Confetti":
-				return 5;
+				return 4;
 		}
 	}
 

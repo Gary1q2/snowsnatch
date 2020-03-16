@@ -188,11 +188,6 @@ class Game {
 		} else if (this.p1Pressed && this.p2Pressed) {
 			ctx.drawImage(p1p2Join_img, 0, 0);
 		}
-
-
-
-
-		//if p1 and p2 not pressed ---> check for L to be pressed
 	}
 
 	// Update the control screen loop
