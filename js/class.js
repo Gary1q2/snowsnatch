@@ -667,34 +667,48 @@ class Crate extends Entity {
 				currLevel[this.y/gridLen][this.x/gridLen] = 0;
 
 				// Give random gun
-				var rand = Math.random();
-				if (rand < 0.2) {
+				//var rand = Math.random();
+				//if (rand < 0.2) {
 					i.gun = new LaserGun(i);
-				} else if (rand < 0.4) {
-					i.gun = new Shotgun(i);
-	     		} else if (rand < 0.6) {
-	     			i.gun = new Uzi(i);
-	     		} else if (rand < 0.8) {
-	     			i.gun = new RocketLauncher(i);
-	     		} else {
-	     			i.gun = new Mine(i);
-	     		}
+				//} else if (rand < 0.4) {
+				//	i.gun = new Shotgun(i);
+	     		//} else if (rand < 0.6) {
+	     		//	i.gun = new Uzi(i);
+	     		//} else if (rand < 0.8) {
+	     		//	i.gun = new RocketLauncher(i);
+	     		//} else {
+	     		//	i.gun = new Mine(i);
+	     		//}
 	     		
-
-	     		// Spawn crate in random empty spawn
-	     		while (true) {
-	     			var temp_y = Math.floor(Math.random()*numHeight);
-	     			var temp_x = Math.floor(Math.random()*numWidth);
-	     			if (currLevel[temp_y][temp_x] != "W" && currLevel[temp_y][temp_x] != "C") {
-	     				tempArr.add(new Crate(temp_x*gridLen, temp_y*gridLen));
-	     				currLevel[temp_y][temp_x] = "C";
-	     				break;
-	     			}
-	     		}
-				
+				this.spawnCrate();
 				break;
 			}
 		}
+	}
+
+	// Spawn crate in random empty spot
+	spawnCrate() {
+
+		// Find all empty spots
+		var emptySpots = [];
+		for (var i = 0; i < currLevel.length; i++) {
+			for (var j = 0; j < currLevel[i].length; j++) {
+				if (currLevel[i][j] == 0) {
+					emptySpots.push({
+						x: j,
+						y: i
+					});
+				}
+			}
+		}
+
+		// Spawn new crate in a random empty spot
+		var index = Math.floor(Math.random()*(emptySpots.length-1));
+		var x_coord = emptySpots[index].x;
+		var y_coord = emptySpots[index].y;
+
+		tempArr.add(new Crate(x_coord*gridLen, y_coord*gridLen));
+		currLevel[y_coord][x_coord] = "C";
 	}
 }
 
@@ -1216,7 +1230,6 @@ class Bot extends Player {
 
 				// Decide what task the bot needs to do
 				this.dodgeWay = this.checkDodge();
-				console.log("dodge = " + this.dodgeWay);
 				if (this.dodgeWay) {
 					this.task = TASK.dodge;
 					this.dodging = false;
@@ -1693,7 +1706,7 @@ class Bot extends Player {
 			var numAxesAway = 3;
 
 			// Chance to attack if bot has a flag
-			var hasFlagChance = 0.005;
+			var hasFlagChance = 0.01;
 
 			// Chance to put a mine down when near your own base
 			var chanceToPutMine = 0.2;
@@ -1709,6 +1722,7 @@ class Bot extends Player {
 				(this.gun instanceof Uzi && this.checkEnemyWithinRadius(normalKillZone)) ||
 				(this.gun instanceof Shotgun && this.checkEnemyWithinRadius(normalKillZone)) ||
 				(this.gun instanceof Mine && this.checkEnemyWithinRadius(3))) {
+				console.log("true to attack!!");
 				return true;
 
 			// Enemy trying to capture flag.... DEFEND if in range
@@ -2007,8 +2021,6 @@ class Bot extends Player {
 			// Detecting enemy snowballs + rockets
 			var proj = tempArr.array[3][i];
 			if ((proj instanceof Snowball || proj instanceof Missile || proj instanceof Pellet) && !this.checkedProj.includes(proj.id) && !proj.dead && proj.owner.playerID != this.playerID) {
-
-				console.log("going right... ")
 				var maxDist;
 				var minDist;
 				var multiple;
