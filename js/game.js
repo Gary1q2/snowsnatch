@@ -26,6 +26,13 @@ class Game {
 		// Bouncing animation for P1 and P2 join
 		this.p1JoinBounce = new Entity(50, 15, 20, 20, p1JoinBounce_img, 2, 3, [0,1,2,3,4,5], 0, 0);
 		this.p2JoinBounce = new Entity(50, 82, 20, 20, p2JoinBounce_img, 2, 3, [0,1,2,3,4,5], 0, 0);
+
+		this.byGary = new Entity(210, 150, 20, 20, byGary_img, 6, 2, [0,1,2,3,4,5,6,7,8,9,10], 0, 0);
+
+		// FPS variables
+		this.filterStr = 20;
+		this.frameTime = 0;
+		this.lastLoop = new Date();
 	}
 
 	// Head to selection screen
@@ -154,6 +161,8 @@ class Game {
 	updateMenu() {
 		this.drawScrollingBack();
 		ctx.drawImage(titleBack_img, 0, 0);
+
+		this.byGary.update();
 	}
 
 	// Update the selection screen loop
@@ -289,8 +298,25 @@ class Game {
 
 		// Set all controls OFF if the screen isn't focused
 		this.offScreenControl();
+
+		// Display FPS if debug mode
+		this.updateFPS();
 	}
 
+	// Update FPS
+	updateFPS() {
+		var thisLoop = new Date();
+		var thisFrameTime = thisLoop - this.lastLoop;
+		this.frameTime += (thisFrameTime - this.frameTime) / this.filterStr;
+		this.lastLoop = thisLoop;
+
+		if (debug) {
+			ctx.save();
+			ctx.font = "30px Arial";
+			ctx.fillText(Math.floor(1000/this.frameTime), 50, 100);
+			ctx.restore();
+		}
+	}
 
 	// Set all controls OFF if the screen isn't focused
 	offScreenControl() {

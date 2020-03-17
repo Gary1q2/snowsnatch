@@ -559,7 +559,6 @@ class Missile extends Bullet {
 
 		this.x += this.hspeed;
 		this.y += this.vspeed;
-		console.log("vspeed = " + this.vspeed);
 	}
 	// Create explosion
 	explode() {

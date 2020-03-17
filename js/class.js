@@ -255,8 +255,6 @@ class LevelArrow extends Entity {
 	update() {
 		this.drawAnimated(this.frameSeq);
 		this.drawCol();
-
-		console.log(event.clientX);
 	}
 }
 
@@ -747,7 +745,6 @@ class Goal extends Entity {
 		this.owner.score++;
 		flag.respawn();
 		playSound(win_snd);
-		console.log("winner");
 	}
 
 	draw() {
@@ -958,7 +955,6 @@ class Player extends Entity {
 			this.currPos = this.startPos;
 			this.task = TASK.idle;
 			this.dodgedLaser = false;
-			console.log("i died and im a bot -> my path array reset");
 		}
 	}
 
@@ -1139,7 +1135,6 @@ class Human extends Player {
 class Bot extends Player {
 	constructor(x, y, playerID, startFace) {
 		super(x, y, playerID, startFace);
-		console.log("I am a bot... i will destroy you...");
 
 		// This isn't updated... so won't update when walls are destroyed
 		this.astar = new Astar();
@@ -1221,6 +1216,7 @@ class Bot extends Player {
 
 				// Decide what task the bot needs to do
 				this.dodgeWay = this.checkDodge();
+				console.log("dodge = " + this.dodgeWay);
 				if (this.dodgeWay) {
 					this.task = TASK.dodge;
 					this.dodging = false;
@@ -1248,7 +1244,6 @@ class Bot extends Player {
 
 						this.dodging = true;
 						this.path = [];
-						console.log("DIDN't STEP INTO A SNOWBALL....    waitTimer = " + this.waitTimer);
 					}
 
 
@@ -1280,12 +1275,9 @@ class Bot extends Player {
 							// If no path found, SKIP MINES
 							if (this.path.length == 0) {
 								this.skipMine = true;
-								console.log("SKIP MINESS FK");
 							}
 							this.task = TASK.idle;
 						}
-						console.log("outta attack");
-						console.log(this.path);
 					}
 
 				// Get a crate for weapon if only have snowgun
@@ -1297,12 +1289,10 @@ class Bot extends Player {
 					if (route.length != 0) {
 						this.skipMine = false;
 						this.path = route;
-						console.log("GOING TO GET A CRATE YAY");
 					} else {
 						// If no path found, SKIP MINES
 						if (this.path.length == 0) {
 							this.skipMine = true;
-							console.log("SKIP MINESS FK");
 						}
 						this.task = TASK.idle;
 					}
@@ -1326,7 +1316,6 @@ class Bot extends Player {
 					// If no path found, SKIP MINES
 					if (this.path.length == 0) {
 						this.skipMine = true;
-						console.log("SKIP MINESS FK");
 					} else {
 						this.skipMine = false;
 					}
@@ -1338,7 +1327,6 @@ class Bot extends Player {
 					// If no path found, SKIP MINES
 					if (this.path.length == 0) {
 						this.skipMine = true;
-						console.log("SKIP MINESS FK");
 					} else {
 						this.skipMine = false;
 					}
@@ -1367,8 +1355,6 @@ class Bot extends Player {
 							}						
 							this.prevPos = this.currPos;
 							this.currPos = this.path[0];
-						} else {
-							//console.log("nooooo");
 						}
 
 
@@ -1398,7 +1384,6 @@ class Bot extends Player {
 								} else {
 									this.task = TASK.idle;
 								}
-								//console.log("i JUST SHOT AND back to idlee");
 
 							// Finished dodging to the designated spot
 							} else if (this.task == TASK.dodge) {
@@ -1413,17 +1398,12 @@ class Bot extends Player {
 									this.waitTimer = 1;
 								}
 
-								console.log("finished dodging.... dodgeWaitTime = " + this.waitTimer);
-
 							// Finished getting crate
 							} else if (this.task == TASK.getCrate) {
 								this.task = TASK.idle;
-								//console.log("got that weapon yay");
 
 							} else {
-								//console.log("before idle..? = " + this.task);
 								this.task = TASK.idle;
-								//console.log("im there now... idle");
 							}
 							
 
@@ -1595,9 +1575,6 @@ class Bot extends Player {
 		};
 
 
-
-		console.log("enemy=["+enemyLoc.x+","+enemyLoc.y+"]     currPos=["+this.currPos.x+","+this.currPos.y+"]    moveIn ="+moveIn);
-
 		// X axis is shorter than y axis
 		if ((Math.abs(enemyLoc.x-this.currPos.x) <= Math.abs(enemyLoc.y-this.currPos.y)) && this.checkShootSpotX(enemyLoc, moveIn)) {
 			dest = {
@@ -1630,25 +1607,20 @@ class Bot extends Player {
 
 		// Not possible to do anything... just return
 		} else {
-			console.log("cant do shit... returning out hehe");
 			this.attackFail++;
 			if (this.attackFail >= 4) {
 				this.attackBanTimer = this.attackBanTime;
 				this.attackFail = 0;
-				console.log("BANNED FROM ATTACKING for 1 SECOND!!!!");
 			}
 			return [];
 		}
 
-		console.log("astaring");
 		var path = this.astar.search(this.currPos, dest, this.findEnemyLoc(), this.getMineLocList(), this.skipMine);
 
 		// Couldn't find a path there so.... fk it back to idle
 		if (path.length == 0) {
-			console.log("FAILED no path to DEST["+dest.x+","+dest.y+"]");
 			return [];
 		} else {
-			console.log("Found path to DEST["+dest.x+","+dest.y+"]     curr dest["+this.currPos.x+","+this.currPos.y+"]");
 			this.attackFail = 0;
 			return path;
 		}
@@ -1659,7 +1631,6 @@ class Bot extends Player {
 
 	// Check if shooting spot is free when moving on X axis
 	checkShootSpotX(enemyLoc, moveIn) {
-		console.log("shootSpotX");
 		if (enemyLoc.y < this.currPos.y && currLevel[this.currPos.y-moveIn][enemyLoc.x] != "W") {
 			return true;
 		} else if (enemyLoc.y >= this.currPos.y && currLevel[this.currPos.y+moveIn][enemyLoc.x] != "W") {
@@ -1671,7 +1642,6 @@ class Bot extends Player {
 
 	// Check if shooting spot is free when moving on Y axis
 	checkShootSpotY(enemyLoc, moveIn) {
-		console.log("shootSpotY");
 		if (enemyLoc.x < this.currPos.x && currLevel[enemyLoc.y][this.currPos.x-moveIn] != "W") {
 			return true;
 		} else if (enemyLoc.x >= this.currPos.x && currLevel[enemyLoc.y][this.currPos.x+moveIn] != "W") {
@@ -1739,7 +1709,6 @@ class Bot extends Player {
 				(this.gun instanceof Uzi && this.checkEnemyWithinRadius(normalKillZone)) ||
 				(this.gun instanceof Shotgun && this.checkEnemyWithinRadius(normalKillZone)) ||
 				(this.gun instanceof Mine && this.checkEnemyWithinRadius(3))) {
-				//console.log("INSTANT KEEEEEEEEEEEEEL.................");
 				return true;
 
 			// Enemy trying to capture flag.... DEFEND if in range
@@ -1752,7 +1721,6 @@ class Bot extends Player {
 				    (this.gun instanceof Uzi && this.checkEnemyWithinAxes(3)) ||
 				    (this.gun instanceof Shotgun && this.checkEnemyWithinRadius(3))) {
 					if (Math.random() <= defendBaseChance) {
-						//console.log("DEFENDING flag...............");
 						return true;
 					}		
 				}
@@ -1769,13 +1737,11 @@ class Bot extends Player {
 				// Less chance to attack if bot has flag... just go cap
 				if (this.hasFlag) {
 					if (Math.random() <= hasFlagChance) {
-						//console.log("ATTACK DA PLAYER...........");
 				    	return true;
 				    }
 
 				// Otherwise just SHOOOT THEM
 				} else if (Math.random() <= fewAxesAwayChance) {
-					//console.log("ATTACK DA PLAYER...........");
 					return true;
 				}
 				
@@ -1843,7 +1809,6 @@ class Bot extends Player {
 			if ((dodgePos.x == 0 || currLevel[dodgePos.y][dodgePos.x-1] == "W") &&
 				(dodgePos.x == currLevel[0].length-1 || currLevel[dodgePos.y][dodgePos.x+1] == "W")) {
 				dodgePos = this.alleySave;
-				console.log("RUNNNNING TO ALLEYSAVE WOOOHOO");
 
 			// Edge or wall LEFT of player
 			} else if (dodgePos.x == 0 || currLevel[dodgePos.y][dodgePos.x-1] == "W") {
@@ -1857,10 +1822,8 @@ class Bot extends Player {
 			} else {
 				if (Math.random() < 0.5) {
 					dodgePos.x += 1;
-					//console.log("RIGHT");
 				} else {
 					dodgePos.x -= 1;
-					//console.log("LEFT");
 				}
 				
 			}
@@ -1872,7 +1835,6 @@ class Bot extends Player {
 			if ((dodgePos.y == 0 || currLevel[dodgePos.y-1][dodgePos.x] == "W") &&
 				(dodgePos.y == currLevel.length-1 || currLevel[dodgePos.y+1][dodgePos.x] == "W")) {
 				dodgePos = this.alleySave;
-				console.log("RUNNNNING TO ALLEYSAVE WOOOHOO");
 
 			// Edge or wall ABOVE player
 			} else if (dodgePos.y == 0 || currLevel[dodgePos.y-1][dodgePos.x] == "W") {
@@ -1886,16 +1848,12 @@ class Bot extends Player {
 			} else {
 				if (Math.random() < 0.5) {
 					dodgePos.y += 1;
-					//console.log("DOWN");	
 				} else {
 					dodgePos.y -= 1;
-					//console.log("UP");	
 				}
 					
 			}
 		}
-
-		console.log("dodging to ["+dodgePos.x+","+dodgePos.y+"]");
 
 		var list = [];
 		list.push(dodgePos);
@@ -1911,7 +1869,6 @@ class Bot extends Player {
 			if ((dodgePos.x == 0 || currLevel[dodgePos.y][dodgePos.x-1] == "W") &&
 				(dodgePos.x == currLevel[0].length-1 || currLevel[dodgePos.y][dodgePos.x+1] == "W")) {
 				dodgePos = this.alleySave;
-				console.log("RUNNNNING TO ALLEYSAVE WOOOHOO");
 
 			// Edge or wall LEFT of player
 			} else if (dodgePos.x == 0 || currLevel[dodgePos.y][dodgePos.x-1] == "W") {
@@ -1946,22 +1903,16 @@ class Bot extends Player {
 					// Dodge right if more clearance 
 					if ((proj.getXAnchor() + proj.width/2) <= (this.getXAnchor()+this.width/2)) {
 						dodgePos.x += 1;
-						console.log("RIGHT");
 
 					// Dodge left if more clearance
 					} else {
 						dodgePos.x -= 1;
-						console.log("LEFT");
 					}
 
 				// Dodge BACK to same spot because it is the safe spot
 				} else {
 					// Same dodgePos
 				}
-
-
-
-				console.log("targetproj x = " + proj.getXAnchor()+4 +   "   bot x = " + this.getXAnchor() + 10);	
 			}
 		}
 
@@ -1971,7 +1922,6 @@ class Bot extends Player {
 			if ((dodgePos.y == 0 || currLevel[dodgePos.y-1][dodgePos.x] == "W") &&
 				(dodgePos.y == currLevel.length-1 || currLevel[dodgePos.y+1][dodgePos.x] == "W")) {
 				dodgePos = this.alleySave;
-				console.log("RUNNNNING TO ALLEYSAVE WOOOHOO");
 
 			// Edge or wall ABOVE player
 			} else if (dodgePos.y == 0 || currLevel[dodgePos.y-1][dodgePos.x] == "W") {
@@ -2006,24 +1956,18 @@ class Bot extends Player {
 					// Dodge down if more clearance
 					if ((proj.getYAnchor()+ Math.floor(proj.height/2)) <= (this.getYAnchor()+Math.floor(this.height/2))) {
 						dodgePos.y += 1;
-						console.log("DOWN");
 
 					// Dodge up if more clearance
 					} else {
-						dodgePos.y -= 1;
-						console.log("UP");		
+						dodgePos.y -= 1;	
 					}			
 
 				// Dodge BACK to same spot because it is the safe spot
 				} else {
 					// Same dodgePos
 				}
-
-				console.log("targetproj y = " + proj.getYAnchor()+4 +   "   bot y = " + this.getYAnchor() + 10);
 			}
 		}
-
-		console.log("dodging to ["+dodgePos.x+","+dodgePos.y+"]");
 
 		var list = [];
 		list.push(dodgePos);
@@ -2064,6 +2008,7 @@ class Bot extends Player {
 			var proj = tempArr.array[3][i];
 			if ((proj instanceof Snowball || proj instanceof Missile || proj instanceof Pellet) && !this.checkedProj.includes(proj.id) && !proj.dead && proj.owner.playerID != this.playerID) {
 
+				console.log("going right... ")
 				var maxDist;
 				var minDist;
 				var multiple;
@@ -2104,9 +2049,6 @@ class Bot extends Player {
 						var rect2 = this.getRectAt(playerPos.x, playerPos.y);
 						if (testCollisionRectRect(rect1, rect2)) {
 
-							console.log("IT PASSES THROUGH FUCKK  RIGHTT current task =" + this.task +    "dist looked at = " + minDist+"+"+randDist);
-							console.log("proj x = "+ proj.x + "    player x ="+this.x);
-
 							this.dodgeWaitTime = Math.floor((this.x-proj.x)/proj.speed + this.img.width/this.nCol/proj.speed);
 							this.targetProj = proj;
 							this.checkedProj.push(proj.id);
@@ -2115,7 +2057,6 @@ class Bot extends Player {
 							var rect1 = proj.getRectAt(this.x, proj.y);
 							var rect2 = this.getRectAt(this.x, this.y);
 							if (testCollisionRectRect(rect1, rect2)) {
-								console.log("Directly INLINEEEEEE");
 								this.dodgeMethod = DODGE.move;
 								return DIR.right;
 							}
@@ -2151,7 +2092,6 @@ class Bot extends Player {
 						var rect1 = proj.getRectAt(projPos.x, projPos.y);
 						var rect2 = this.getRectAt(playerPos.x, playerPos.y);
 						if (testCollisionRectRect(rect1, rect2)) {
-							console.log("IT PASSES THROUGH FUCKK  LEFTTT current task =" + this.task);
 
 							this.dodgeWaitTime = Math.floor((proj.x-this.x)/proj.speed + this.img.width/this.nCol/proj.speed);
 							this.targetProj = proj;
@@ -2161,7 +2101,6 @@ class Bot extends Player {
 							var rect1 = proj.getRectAt(this.x, proj.y);
 							var rect2 = this.getRectAt(this.x, this.y);
 							if (testCollisionRectRect(rect1, rect2)) {
-								console.log("Directly INLINEEEEEE");
 								this.dodgeMethod = DODGE.move;
 								return DIR.left;
 							}
@@ -2188,7 +2127,6 @@ class Bot extends Player {
 
 					// Check if proj crosses over the player
 					while (projPos.y < playerPos.y) {
-						console.log("proj y = " + projPos.y + "    player y = " + playerPos.y);
 						projPos.x += proj.hspeed * multiple;
 						projPos.y += proj.vspeed * multiple;
 
@@ -2201,7 +2139,6 @@ class Bot extends Player {
 
 
 						if (testCollisionRectRect(rect1, rect2)) {
-							console.log("IT PASSES THROUGH FUCKK  DOWNNN current task =" + this.task);
 							this.dodgeWaitTime = Math.floor((this.y-proj.y)/proj.speed + this.img.height/this.nRow/proj.speed);
 							this.targetProj = proj;
 							this.checkedProj.push(proj.id);
@@ -2210,7 +2147,6 @@ class Bot extends Player {
 							var rect1 = proj.getRectAt(proj.x, this.y);
 							var rect2 = this.getRectAt(this.x, this.y);
 							if (testCollisionRectRect(rect1, rect2)) {
-								console.log("Directly INLINEEEEEE");
 								this.dodgeMethod = DODGE.move;
 								return DIR.down;
 							}
@@ -2234,13 +2170,9 @@ class Bot extends Player {
 						y: this.y
 					};
 
-					//console.log("projPos.y = " + projPos.y);
-					//console.log("playerPos.y = " + playerPos.y);
 
 					// Check if proj crosses over the player
 					while (projPos.y > playerPos.y) {
-
-						console.log("proj y = "+projPos.y+"player y = " + playerPos.y);
 						projPos.x += proj.hspeed * multiple;
 						projPos.y += proj.vspeed * multiple;
 
@@ -2254,7 +2186,6 @@ class Bot extends Player {
 
 
 						if (testCollisionRectRect(rect1, rect2)) {
-							console.log("IT PASSES THROUGH FUCKK   UPPP current task =" + this.task);
 							this.dodgeWaitTime = Math.floor((proj.y-this.y)/proj.speed + this.img.height/this.nRow/proj.speed);
 							this.targetProj = proj;
 							this.checkedProj.push(proj.id);
@@ -2263,7 +2194,6 @@ class Bot extends Player {
 							var rect1 = proj.getRectAt(proj.x, this.y);
 							var rect2 = this.getRectAt(this.x, this.y);
 							if (testCollisionRectRect(rect1, rect2)) {
-								console.log("Directly INLINEEEEEE");
 								this.dodgeMethod = DODGE.move;
 								return DIR.up;
 							}
@@ -2326,28 +2256,24 @@ class Bot extends Player {
 				this.targetLaser = rightRect;
 				this.dodgeWaitTime = timeToWait;
 				this.dodgedLaser = true;
-				console.log("shot rightt");
 				return DIR.right;
 			} else if (testCollisionRectRect(leftRect, this.getRect())) {
 				this.dodgeMethod = DODGE.move;
 				this.targetLaser = leftRect;
 				this.dodgeWaitTime = timeToWait;
 				this.dodgedLaser = true;
-				console.log("shot l");
 				return DIR.left;
 			} else if (testCollisionRectRect(upRect, this.getRect())) {
 				this.dodgeMethod = DODGE.move;
 				this.targetLaser = upRect;
 				this.dodgeWaitTime = timeToWait;
 				this.dodgedLaser = true;
-				console.log("shot u");
 				return DIR.up;
 			} else if (testCollisionRectRect(downRect, this.getRect())) {
 				this.dodgeMethod = DODGE.move;
 				this.targetLaser = downRect;
 				this.dodgeWaitTime = timeToWait;
 				this.dodgedLaser = true;
-				console.log("shot d");
 				return DIR.down;
 			}		
 		}
@@ -2438,25 +2364,13 @@ class Bot extends Player {
 
 			if (b1 >= b2 && b1 >= b3 && b1 >= b4) {
 				grid = list[0];
-				//console.log("b1");
 			} else if (b2 > b1 && b2 > b3 && b2 > b4) {
 				grid = list[1];
-				//console.log("b2");
 			} else if (b3 > b1 && b3 > b2 && b3 > b4) {
 				grid = list[2];
-				//console.log("b2");
 			} else {
 				grid = list[3];
-				//console.log("b2");
-			}/*
-			console.log(box1Hor);
-			console.log(box1Ver);
-			console.log(box2Hor);
-			console.log(box2Ver);
-			console.log(box3Hor);
-			console.log(box3Ver);
-			console.log(box4Hor);
-			console.log(box4Ver);*/
+			}
 		}
 
 		return grid;
@@ -2467,7 +2381,6 @@ class Bot extends Player {
 	findObjectLoc(obj) {
 
 		if (obj.width > gridLen || obj.height > gridLen) {
-			console.log("INVALID OBJECT passed into findObjectedLoc()");
 			return -1;
 		}
 
@@ -2773,8 +2686,6 @@ class ObjectArrayLayered {
 	add(entity) {
 
 		var layer = this.determineLayer(entity);
-		//console.log("put " + entity.constructor.name + " in layer " + layer);
-
 		for (var i = 0; i < this.array[layer].length; i++) {
 			if (this.array[layer][i].dead) {
 				this.array[layer][i] = entity;
@@ -2792,14 +2703,14 @@ class ObjectArrayLayered {
 
 
 			case "Crate":
-				return 0;
+				return 1;
 
 			//case "Wall":
 
 			case "Shell":
 			case "MineBomb":
 			case "Goal":
-				return 1;
+				return 2;
 
 			//case "Player":
 
@@ -2809,7 +2720,7 @@ class ObjectArrayLayered {
 			case "LaserBlast":
 			case "Snowball":
 			case "Flag":
-				return 2;
+				return 3;
 
 			case "Gun":
 			case "RocketLauncher":
@@ -2818,12 +2729,12 @@ class ObjectArrayLayered {
 			case "SnowGun":
 			case "LaserGun":
 			case "Mine":
-				return 3;
+				return 4;
 
 			case "Smoke":
 			case "Explosion":
 			case "Confetti":
-				return 4;
+				return 5;
 		}
 	}
 

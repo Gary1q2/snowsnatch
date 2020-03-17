@@ -157,6 +157,8 @@ capArrowBlue_up_img.src = "img/capArrowBlue_up.png";
 var capArrowRed_up_img = new Image();
 capArrowRed_up_img.src = "img/capArrowRed_up.png";
 
+var byGary_img = new Image();
+byGary_img.src = "img/byGary.png";
 
 // Sounds
 var shoot_snd = document.createElement("audio");
