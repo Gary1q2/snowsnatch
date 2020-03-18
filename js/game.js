@@ -213,7 +213,7 @@ class Game {
 	// Main arena update
 	updateArena() {
 		// Update and draw EVERYTHING
-		ctx.drawImage(bg, 0, 0);
+		ctx.drawImage(bg_img, 0, 0);
 		snowArr.update();
 
 		tempArr.updateLayer(0);
@@ -411,7 +411,7 @@ class Game {
 			for (var j = 0; j < array[i].length; j++) {
 				var value = array[i][j];
 				if (value == "W") {
-					ctx.drawImage(wall, 0, 0, 20, 20, xPos+j*size, yPos+i*size, size, size);
+					ctx.drawImage(wall_img, 0, 0, 20, 20, xPos+j*size, yPos+i*size, size, size);
 				} else if (value == "C") {
 					ctx.drawImage(snow_img, 6, 6, 20, 20, xPos+j*size, yPos+i*size, size, size);
 					ctx.drawImage(crate_img, 0, 0, 20, 20, xPos+j*size, yPos+i*size, size, size);
@@ -423,10 +423,10 @@ class Game {
 					//ctx.drawImage(flagGreen_img, 0, 0, 20, 20, xPos+j*size, yPos+i*size-size, size, size);
 				} else if (value == "1") {
 					ctx.drawImage(snow_img, 6, 6, 20, 20, xPos+j*size, yPos+i*size, size, size);
-					ctx.drawImage(peng, 0, 0, 20, 20, xPos+j*size, yPos+i*size, size, size);
+					ctx.drawImage(peng_img, 0, 0, 20, 20, xPos+j*size, yPos+i*size, size, size);
 				} else if (value == "2") {
 					ctx.drawImage(snow_img, 6, 6, 20, 20, xPos+j*size, yPos+i*size, size, size);
-					ctx.drawImage(peng2, 0, 0, 20, 20, xPos+j*size, yPos+i*size, size, size);
+					ctx.drawImage(peng2_img, 0, 0, 20, 20, xPos+j*size, yPos+i*size, size, size);
 				} else if (value == "0") {
 					ctx.drawImage(snow_img, 6, 6, 20, 20, xPos+j*size, yPos+i*size, size, size);
 				}

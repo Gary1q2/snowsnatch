@@ -1,17 +1,19 @@
-var peng = new Image();
-peng.src = "img/player.png";
-var peng2 = new Image();
-peng2.src = "img/player2.png";
-var block = new Image();
-block.src = "img/block.png";
-var gunImg = new Image();
-gunImg.src = "img/gun.png";
-var bg = new Image();
-bg.src = "img/bg.png";
-var snowball = new Image();
-snowball.src = "img/snowball.png";
-var wall = new Image();
-wall.src = "img/wall.png";
+
+
+var peng_img = new Image();
+peng_img.src = "img/player.png";
+var peng2_img = new Image();
+peng2_img.src = "img/player2.png";
+var gun_img = new Image();
+gun_img.src = "img/gun.png";
+var bg_img = new Image();
+bg_img.src = "img/bg.png";
+var snowball_img = new Image();
+snowball_img.src = "img/snowball.png";
+var wall_img = new Image();
+wall_img.src = "img/wall.png";
+
+
 var laserGun_img = new Image();
 laserGun_img.src = "img/laserGun.png";
 var laserBeam_img = new Image();
@@ -159,6 +161,10 @@ capArrowRed_up_img.src = "img/capArrowRed_up.png";
 
 var byGary_img = new Image();
 byGary_img.src = "img/byGary.png";
+
+
+
+
 
 // Sounds
 var shoot_snd = document.createElement("audio");

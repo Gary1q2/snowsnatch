@@ -212,7 +212,7 @@ class Shotgun extends Gun {
 
 class SnowGun extends Gun {
 	constructor(player) {
-		super(0, 100, 8, 8, gunImg, 2, 2, [0], 0,0, player);
+		super(0, 100, 8, 8, gun_img, 2, 2, [0], 0,0, player);
 		this.gunID = 1;
 		this.shootTime = 60;
 		this.shooting = false;
@@ -755,7 +755,7 @@ class LaserBlast extends Bullet {
 }
 class Snowball extends Bullet {
 	constructor(x, y, owner, dir) {
-		super(x, y, 6, 6, snowball, 3, 2, [0], 0,0, owner, dir);
+		super(x, y, 6, 6, snowball_img, 3, 2, [0], 0,0, owner, dir);
 		this.speed = 2;
 		this.breaking = false;   // Showing breaking animation
 		this.id = Math.random();  // Random ID for snowball

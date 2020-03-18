@@ -768,7 +768,7 @@ class Goal extends Entity {
 
 class Wall extends Entity {
 	constructor(x, y) {
-		super(x, y, 20, 20, wall, 4, 4, [0], 0,0);
+		super(x, y, 20, 20, wall_img, 4, 4, [0], 0,0);
 
 		this.dead = false;
 		this.maxHp = 10;
@@ -811,9 +811,9 @@ class Player extends Entity {
 	constructor(x, y, playerID, startFace) {
 		var pengColor;
 		if (playerID == 1) {
-			pengColor = peng;
+			pengColor = peng_img;
 		} else {
-			pengColor = peng2;
+			pengColor = peng2_img;
 		}
 
 		super(x, y, 14, 14, pengColor, 1, 3, [0,1], 0,0);
@@ -1018,9 +1018,9 @@ class Player extends Entity {
 
 		var temp;
 		if (this.playerID == 1) {
-			temp = peng;
+			temp = peng_img;
 		} else {
-			temp = peng2;
+			temp = peng2_img;
 		}
 
 		// Prepare for new animation
