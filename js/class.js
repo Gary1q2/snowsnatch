@@ -667,10 +667,10 @@ class Crate extends Entity {
 				currLevel[this.y/gridLen][this.x/gridLen] = 0;
 
 				// Give random gun
-				var rand = Math.random();
-				if (rand < 0.2) {
+				//var rand = Math.random();
+				//if (rand < 0.2) {
 					i.gun = new LaserGun(i);
-				} else if (rand < 0.4) {
+				/*} else if (rand < 0.4) {
 					i.gun = new Shotgun(i);
 	     		} else if (rand < 0.6) {
 	     			i.gun = new Uzi(i);
@@ -678,7 +678,7 @@ class Crate extends Entity {
 	     			i.gun = new RocketLauncher(i);
 	     		} else {
 	     			i.gun = new Mine(i);
-	     		}
+	     		}*/
 	     		
 				this.spawnCrate();
 				break;
@@ -1244,6 +1244,8 @@ class Bot extends Player {
 		this.mineList = [];  // Location of all the mines
 
 		this.skipMine = false;
+
+		this.searchDist = 8; // Distance enemy is away before homing
 	}
 
 	update() {
@@ -1294,22 +1296,40 @@ class Bot extends Player {
 
 
 				// Homing onto the enemy if you have laser gun
-				} else if (this.task == TASK.homing) {
+				} else if (this.task == TASK.homing && this.path.length == 0) {
 					console.log("IM HOMING");
+
 					var enemy = playerArr[0];
-					if (Math.abs(enemy.x - this.x) < Math.abs(enemy.y - this.y)) {
-						if (enemy.x < this.x) {
-							this.x -= this.speed;
-						} else {
-							this.x += this.speed;
+					if (this.angle == DIR.left || this.angle == DIR.right) {
+						if (this.y - enemy.y >= this.searchDist) {  // Enemy is above
+							console.log("Above");
+							this.path.push({
+								x: this.currPos.x,
+								y: this.currPos.y-1
+							});
+						} else if (this.y - enemy.y <= -this.searchDist) {  // Enemy is below
+							console.log("BELOWW");
+							this.path.push({
+								x: this.currPos.x,
+								y: this.currPos.y+1
+							});
 						}
-					} else {
-						if (enemy.y < this.y) {
-							this.y -= this.speed;
-						} else {
-							this.y += this.speed;
+					} else if (this.angle == DIR.up || this.angle == DIR.down) {
+						if (this.x - enemy.x >= this.searchDist) {  // Enemy is left
+							console.log("Left");
+							this.path.push({
+								x: this.currPos.x-1,
+								y: this.currPos.y
+							});
+						} else if (this.x - enemy.x <= -this.searchDist) {  // Enemy is right
+							console.log("Right");
+							this.path.push({
+								x: this.currPos.x+1,
+								y: this.currPos.y
+							});
 						}
 					}
+
 
 				// Decide whether to attack or not 
 				} else if (this.task != TASK.attack && this.shouldBotAttack() && this.attackBanTimer == 0 && this.task != TASK.getCrate && this.shootTimer == 0 && !playerArr[0].dead) {
@@ -1459,16 +1479,16 @@ class Bot extends Player {
 							} else if (this.task == TASK.getCrate) {
 								this.task = TASK.idle;
 
+							// Homing on enemy
+							} else if (this.task == TASK.homing) {
+
+
 							} else {
 								this.task = TASK.idle;
 							}
-							
-
 						}
-
-
-
 					}
+
 
 					if (this.moving == false) {
 						this.moving = true;
@@ -2654,6 +2674,10 @@ class Bot extends Player {
 				this.setAngle(DIR.up);
 			}
 		}			
+
+		if (this.task == TASK.homing) {
+			this.setAngle(this.shootDir);
+		}
 	}
 
 
