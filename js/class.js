@@ -667,18 +667,18 @@ class Crate extends Entity {
 				currLevel[this.y/gridLen][this.x/gridLen] = 0;
 
 				// Give random gun
-				//var rand = Math.random();
-				//if (rand < 0.2) {
+				var rand = Math.random();
+				if (rand < 0.2) {
 					i.gun = new LaserGun(i);
-				//} else if (rand < 0.4) {
-				//	i.gun = new Shotgun(i);
-	     		//} else if (rand < 0.6) {
-	     		//	i.gun = new Uzi(i);
-	     		//} else if (rand < 0.8) {
-	     		//	i.gun = new RocketLauncher(i);
-	     		//} else {
-	     		//	i.gun = new Mine(i);
-	     		//}
+				} else if (rand < 0.4) {
+					i.gun = new Shotgun(i);
+	     		} else if (rand < 0.6) {
+	     			i.gun = new Uzi(i);
+	     		} else if (rand < 0.8) {
+	     			i.gun = new RocketLauncher(i);
+	     		} else {
+	     			i.gun = new Mine(i);
+	     		}
 	     		
 				this.spawnCrate();
 				break;
@@ -849,7 +849,10 @@ class Player extends Entity {
 		this.hasFlag = false;
 
 
-		this.animDelayTime = 20;   // Set animation speed for initial idling
+		this.animDelayTime = 6;   // Set animation speed for initial idling
+
+		this.invulnTimer = 0;
+		this.invulnTime = 70;
 	}
 
 	// Update function that only updates the basics
@@ -872,10 +875,18 @@ class Player extends Entity {
 			}
 		}
 
-		this.canMoveTimer--;
+
+		if (this.canMoveTimer > 0) {
+			this.canMoveTimer--;
+		}
 		if (this.shootTimer > 0) {
 			this.shootTimer--;
 		}
+		if (this.invulnTimer > 0) {
+			this.invulnTimer--;
+		}
+
+
 	}
 
 	updateAmmoHUD() {
@@ -892,13 +903,25 @@ class Player extends Entity {
 		// Alive sprite
 		if (!this.dead) {
 
-			// Walking animation
-			if (this.moving) {
-				this.drawAnimated([0, 2]);
+			// Draw invulnerable blinking
+			if (this.invulnTimer > 0) {
+				if (this.moving) {
+					this.drawAnimated([0, 2, 3]);
+				} else {
+					this.drawAnimated([0,0,3,3]);
+				}	
 
-			// Idle animation
+			// Normal animations
 			} else {
-				this.drawAnimated(this.frameSeq);
+
+				// Walking animation
+				if (this.moving) {
+					this.drawAnimated([0, 2]);
+
+				// Idle animation
+				} else {
+					this.drawAnimated([0,0,0,1,1,1]);
+				}
 			}
 
 		// Dead sprite
@@ -933,42 +956,46 @@ class Player extends Entity {
 
 	// Get the player to die
 	die(bulletDir) {
-		this.dead = true;
-		this.dying = true;
 
-		this.animDelayTime = 4;
+		// Only get hit if not invulnerable
+		if (this.invulnTimer == 0) {
+			this.dead = true;
+			this.dying = true;
 
-		this.respawnTimer = this.respawnTime;
+			this.animDelayTime = 4;
 
-		this.shootTimer = 0;
-		
-		// Die with the right direction animation
-		this.setAngle(DIR.right);
+			this.respawnTimer = this.respawnTime;
 
-		// Prepare for new animation
-		this.animIndex = 0;
-		this.animDelay = 0;
+			this.shootTimer = 0;
+			
+			// Die with the right direction animation
+			this.setAngle(DIR.right);
 
-		// Player 1 vs player 2
-		var temp;
-		if (this.playerID == 1) {
-			temp = playerDie_img;
-		} else {
-			temp = player2Die_img;
-		}
-		this.changeSprite(temp, 14, 14, 3, 3, [0], 20, 20);
+			// Prepare for new animation
+			this.animIndex = 0;
+			this.animDelay = 0;
 
-		playSound(die_snd);
-		playSound(die2_snd);
+			// Player 1 vs player 2
+			var temp;
+			if (this.playerID == 1) {
+				temp = playerDie_img;
+			} else {
+				temp = player2Die_img;
+			}
+			this.changeSprite(temp, 14, 14, 3, 3, [0], 20, 20);
+
+			playSound(die_snd);
+			playSound(die2_snd);
 
 
 
-		// Reset the pathing array, current position && flag array if bot dies
-		if (this instanceof(Bot)) {
-			this.path = [];
-			this.currPos = this.startPos;
-			this.task = TASK.idle;
-			this.dodgedLaser = false;
+			// Reset the pathing array, current position && flag array if bot dies
+			if (this instanceof(Bot)) {
+				this.path = [];
+				this.currPos = this.startPos;
+				this.task = TASK.idle;
+				this.dodgedLaser = false;
+			}
 		}
 	}
 
@@ -999,13 +1026,15 @@ class Player extends Entity {
 		// Prepare for new animation
 		this.animIndex = 0;
 		this.animDelay = 0;
-		this.animDelayTime = 20;
+		this.animDelayTime = 6;
 
 
 		this.setAngle(this.startFace);
 		this.changeSprite(temp, 14, 14, 1, 3, [0, 1], 0,0);
 
 		this.gun = new SnowGun(this);
+
+		this.invulnTimer = this.invulnTime;
 
 		this.dead = false;
 		this.dying = false;
@@ -1033,7 +1062,7 @@ class Human extends Player {
 	update() {
 
 		// Register keypresses for moving & shooting
-		if (!this.dead && this.canMoveTimer <= 0) {
+		if (!this.dead && this.canMoveTimer == 0) {
 			this.updateKeypress();
 			if (this.shootKey) {
 				this.shoot();
@@ -1069,7 +1098,6 @@ class Human extends Player {
 				// Prepare for new animation - idle to walking
 				this.animIndex = 0;
 				this.animDelay = 0;
-				this.animDelayTime = 6;
 			}
 		} else {
 			if (this.moving) {
@@ -1078,7 +1106,6 @@ class Human extends Player {
 				// Prepare for new animation - walking to idle
 				this.animIndex = 0;
 				this.animDelay = 0;
-				this.animDelayTime = 20;
 			}
 
 			this.firstKeyPress = DIR.none;
@@ -1225,7 +1252,7 @@ class Bot extends Player {
 		if (!game.gameover) {
 
 			// Only move if allowed
-			if (!this.dead && this.canMoveTimer <= 0) {
+			if (!this.dead && this.canMoveTimer == 0) {
 
 
 				// Decide what task the bot needs to do
@@ -1266,6 +1293,23 @@ class Bot extends Player {
 				} else if (this.task == TASK.wait) {
 
 
+				// Homing onto the enemy if you have laser gun
+				} else if (this.task == TASK.homing) {
+					console.log("IM HOMING");
+					var enemy = playerArr[0];
+					if (Math.abs(enemy.x - this.x) < Math.abs(enemy.y - this.y)) {
+						if (enemy.x < this.x) {
+							this.x -= this.speed;
+						} else {
+							this.x += this.speed;
+						}
+					} else {
+						if (enemy.y < this.y) {
+							this.y -= this.speed;
+						} else {
+							this.y += this.speed;
+						}
+					}
 
 				// Decide whether to attack or not 
 				} else if (this.task != TASK.attack && this.shouldBotAttack() && this.attackBanTimer == 0 && this.task != TASK.getCrate && this.shootTimer == 0 && !playerArr[0].dead) {
@@ -1392,7 +1436,7 @@ class Bot extends Player {
 
 								// Point the gun and shoot it before moving
 								if (this.gun instanceof LaserGun) {
-									this.wait = TASK.wait;
+									this.task = TASK.homing;
 									this.waitTimer = this.gun.shootTime;
 								} else {
 									this.task = TASK.idle;
@@ -1432,7 +1476,6 @@ class Bot extends Player {
 						// Preparing change in animation - from idle to walking
 						this.animIndex = 0;
 						this.animDelay = 0;
-						this.animDelayTime = 6;
 					}
 				} else {
 
@@ -1442,7 +1485,6 @@ class Bot extends Player {
 						// Prepare for new animation - walking to idle
 						this.animIndex = 0;
 						this.animDelay = 0;
-						this.animDelayTime = 20;
 					}
 				}
 
