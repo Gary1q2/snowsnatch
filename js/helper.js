@@ -1,3 +1,41 @@
+// Load all images and sound files
+function loadFiles(sources, callback) {
+
+	var loaded = 0;
+	var numImages = Object.keys(sources).length;
+	console.log("num of images = " + numImages);
+
+
+	for (var src in sources) {
+		console.log(src);
+		img[src] = new Image();
+		img[src].onload = function() {
+			loaded++;
+			if (loaded >= numImages) {
+				callback();
+			}
+		};
+		img[src].src = sources[src];
+	}
+}
+
+// Start everything after all files have been loaded
+function afterLoaded() {
+	game = new Game();
+	filesLoaded = true;
+	console.log("Finished loading files!!");
+
+	// Make menu buttons visible
+	document.getElementById("playButton").style.visibility = "visible";
+	document.getElementById("controlButton").style.visibility = "visible";
+
+	// Get rid of loading text
+	document.getElementById("loadingText").style.visibility = "hidden";
+
+	requestAnimationFrame(gameLoop);
+}
+
+
 // Preview next level
 function nextLevel() {
 	if (game.level < levels.length-1) {

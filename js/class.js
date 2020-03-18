@@ -245,9 +245,9 @@ class LevelArrow extends Entity {
 
 		var img;
 		if (right) {
-			img = arrow_img;
+			img = img['arrow'];
 		} else {
-			img = arrowFlip_img;
+			img = img['arrowFlip'];
 		}
 		super(x, y, 22, 22, img, 3, 3, [0,1,2,3,4,5,6,7,8], 0, 0);
 	}
@@ -260,7 +260,7 @@ class LevelArrow extends Entity {
 
 class Smoke extends Entity {
 	constructor(x, y, dir) {
-		super(x, y, 20, 20, smoke_img, 3, 3, [0,1,2,3,4,5], 0, 0);
+		super(x, y, 20, 20, img['smoke'], 3, 3, [0,1,2,3,4,5], 0, 0);
 		this.animDelayTime = 8;
 		this.dead = false;
 
@@ -380,15 +380,15 @@ class Confetti extends Entity {
 		var imgColor;
 		var temp = Math.random()*5;
 		if (temp < 1) {
-			imgColor = confettiBlue_img;
+			imgColor = img['confettiBlue'];
 		} else if (temp < 2) {
-			imgColor = confettiGreen_img;
+			imgColor = img['confettiGreen'];
 		} else if (temp < 3) {
-			imgColor = confettiPurple_img;
+			imgColor = img['confettiPurple'];
 		} else if (temp < 4) {
-			imgColor = confettiRed_img;
+			imgColor = img['confettiRed'];
 		} else {
-			imgColor = confettiYellow_img;
+			imgColor = img['confettiYellow'];
 		}
 
 		super(x, y, 2, 2, imgColor, 2, 2, [0,1,2,3], 0, 0);
@@ -446,7 +446,7 @@ class Confetti extends Entity {
 
 class Timer extends Entity {
 	constructor(x, y, time) {
-		super(x, y, 10, 10, timer_img, 4, 4, [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15], 0,0);
+		super(x, y, 10, 10, img['timer'], 4, 4, [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15], 0,0);
 		this.dead = false;
 
 		// 16 is 1 frame more, but lets player see the full red circle
@@ -467,9 +467,9 @@ class Flag extends Entity {
 		// player 1 = red, player 2 = blue
 		var flagColor;
 		if (owner.playerID == 1) {
-			flagColor = flagGreen_img;
+			flagColor = img['flagGreen'];
 		} else {
-			flagColor = flagBlue_img
+			flagColor = img['flagBlue']
 		}
 		super(x, y, 20, 20, flagColor, 1, 2, [0,1], 0, 20);
 		this.dead = false;
@@ -494,9 +494,9 @@ class Flag extends Entity {
 		// Arrow telling player to take the flag
 		this.capArrow;
 		if (owner.playerID == 1) {
-		    this.capArrow = new Entity(this.x, this.y-40, 20, 20, capArrowBlue_img, 4, 4, [0,1,2,3,4,5,6,7,8,9,10,11,12], 0, 0);
+		    this.capArrow = new Entity(this.x, this.y-40, 20, 20, img['capArrowBlue'], 4, 4, [0,1,2,3,4,5,6,7,8,9,10,11,12], 0, 0);
 		} else {
-			this.capArrow = new Entity(this.x, this.y-40, 20, 20, capArrowRed_img, 4, 4, [0,1,2,3,4,5,6,7,8,9,10,11,12], 0, 0);
+			this.capArrow = new Entity(this.x, this.y-40, 20, 20, img['capArrowRed'], 4, 4, [0,1,2,3,4,5,6,7,8,9,10,11,12], 0, 0);
 		}
 		this.touchOnce = false;  // If player has touched their flag at least once or not
 
@@ -589,7 +589,7 @@ class Flag extends Entity {
 
 class Snow extends Entity {
 	constructor(x, y) {
-		super(x, y, 20, 20, snow_img, 4, 3, [0], 6, 6);
+		super(x, y, 20, 20, img['snow'], 4, 3, [0], 6, 6);
 		this.dead = false;
 		this.breaking = false;
 	}
@@ -623,7 +623,7 @@ class Snow extends Entity {
 
 class Crate extends Entity {
 	constructor(x, y) {
-		super(x, y, 20, 20, crate_img, 1, 3, [0, 1], 0, 0);
+		super(x, y, 20, 20, img['crate'], 1, 3, [0, 1], 0, 0);
 		this.dead = false;
 
 		this.broken = false;
@@ -714,15 +714,15 @@ class Crate extends Entity {
 
 class Goal extends Entity {
 	constructor(x, y, owner) {
-		super(x, y, 20, 20, goal_img, 1, 1, [0], 0,0);
+		super(x, y, 20, 20, img['goal'], 1, 1, [0], 0,0);
 		this.owner = owner;
 
 		// Arrow telling player to bring the flag back to their base
 		this.capArrow;
 		if (owner.playerID == 1) {
-		    this.capArrow = new Entity(this.x, this.y+20, 20, 20, capArrowBlue_up_img, 4, 4, [0,1,2,3,4,5,6,7,8,9,10,11,12], 0, 0);
+		    this.capArrow = new Entity(this.x, this.y+20, 20, 20, img['capArrowBlue_up'], 4, 4, [0,1,2,3,4,5,6,7,8,9,10,11,12], 0, 0);
 		} else {
-			this.capArrow = new Entity(this.x, this.y+20, 20, 20, capArrowRed_up_img, 4, 4, [0,1,2,3,4,5,6,7,8,9,10,11,12], 0, 0);
+			this.capArrow = new Entity(this.x, this.y+20, 20, 20, img['capArrowRed_up'], 4, 4, [0,1,2,3,4,5,6,7,8,9,10,11,12], 0, 0);
 		}
 	}
 	update() {
@@ -768,7 +768,7 @@ class Goal extends Entity {
 
 class Wall extends Entity {
 	constructor(x, y) {
-		super(x, y, 20, 20, wall_img, 4, 4, [0], 0,0);
+		super(x, y, 20, 20, img['wall'], 4, 4, [0], 0,0);
 
 		this.dead = false;
 		this.maxHp = 10;
@@ -811,9 +811,9 @@ class Player extends Entity {
 	constructor(x, y, playerID, startFace) {
 		var pengColor;
 		if (playerID == 1) {
-			pengColor = peng_img;
+			pengColor = img['peng'];
 		} else {
-			pengColor = peng2_img;
+			pengColor = img['peng2'];
 		}
 
 		super(x, y, 14, 14, pengColor, 1, 3, [0,1], 0,0);
@@ -942,7 +942,7 @@ class Player extends Entity {
 
 		// Draw AMMO hud
 		if (!(this.gun instanceof SnowGun)) {
-			tempArr.pushHUD(ammo_img, this.x, this.y-10);
+			tempArr.pushHUD(img['ammo'], this.x, this.y-10);
 		}
 	}
 
@@ -978,9 +978,9 @@ class Player extends Entity {
 			// Player 1 vs player 2
 			var temp;
 			if (this.playerID == 1) {
-				temp = playerDie_img;
+				temp = img['playerDie'];
 			} else {
-				temp = player2Die_img;
+				temp = img['player2Die'];
 			}
 			this.changeSprite(temp, 14, 14, 3, 3, [0], 20, 20);
 
@@ -1018,9 +1018,9 @@ class Player extends Entity {
 
 		var temp;
 		if (this.playerID == 1) {
-			temp = peng_img;
+			temp = img['peng'];
 		} else {
-			temp = peng2_img;
+			temp = img['peng2'];
 		}
 
 		// Prepare for new animation

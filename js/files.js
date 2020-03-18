@@ -1,166 +1,104 @@
+var sources = {
+	peng: "img/player.png",
+    peng: "img/player.png",
+    peng2: "img/player2.png",
+    gun: "img/gun.png",
+    bg: "img/bg.png",
+    snowball: "img/snowball.png",
+    wall: "img/wall.png",
+
+    laserGun: "img/laserGun.png",
+    laserBeam: "img/laserBeam.png",
+    shotgun: "img/shotgun.png",
+    crate: "img/crate.png",
+    snow: "img/snow.png",
+    playerDie: "img/playerDie.png",
+    player2Die: "img/player2Die.png",
+    pellet: "img/pellet.png",
+    ammo: "img/ammo.png",
+
+    uzi: "img/uziGun.png",
+    rocketLauncher: "img/rocketLauncher.png",
+    missile: "img/missile.png",
+    explosion: "img/explosion.png",
+
+    titleBack: "img/titlescreen.png",
+    controlBack: "img/controlScreen.png",
+
+    msgReady: "img/msg-ready.png",
+    msgFight: "img/msg-fight.png",
+
+    winBack: "img/winBack.png",
+
+    confettiBlue: "img/confetti_blue.png",
+    confettiGreen: "img/confetti_red.png",
+    confettiPurple: "img/confetti_purple.png",
+    confettiRed: "img/confetti_red.png",
+    confettiYellow: "img/confetti_yellow.png",
+
+    shell: "img/shell.png",
+    shellShotgun: "img/shellShotgun.png",
+
+    smoke: "img/smoke.png",
+    mine: "img/mine.png",
+
+    flagGreen: "img/flagGreen.png",
+    flagBlue: "img/flagBlue.png",
+
+    goal: "img/goal.png",
+
+    selectionScreen: "img/selectionScreen.png",
+
+    menuButton: "img/menuButton.png",
+    menuButtonFlash: "img/menuButtonFlash.png",
+
+    playButton: "img/playButton.png",
+    playButtonFlash: "img/playButtonFlash.png",
+    controlButton: "img/controlButton.png",
+    controlButtonFlash: "img/controlButtonFlash.png",
+    goButton: "img/goButton.png",
+    goButtonFlash: "img/goButtonFlash.png",
+    unlockButton: "img/unlockButton.png",
+    unlockButtonFlash: "img/unlockButtonFlash.png",
+    rematchButton: "img/rematchButton.png",
+    rematchButtonFlash: "img/rematchButtonFlash.png",
+
+    unlockScreen: "img/unlockScreen.png",
+
+    arrow: "img/arrow.png",
+    arrowFlash: "img/arrowFlash.png",
+    arrowFlip: "img/arrowFlip.png",
+    arrowFlipFlash: "img/arrowFlipFlash.png",
+
+    timer: "img/timer.png",
+
+    p1Join: "img/p1Join.png",
+    p2Join: "img/p2Join.png",
+    p1p2Join: "img/p1p2Join.png",
+
+    scrollingBack: "img/scrollingBack.png",
+
+    p1JoinBounce: "img/p1JoinBounce.png",
+    p2JoinBounce: "img/p2JoinBounce.png",
+    capArrowBlue: "img/capArrowBlue.png",
+    capArrowRed: "img/capArrowRed.png",
+    capArrowBlue_up: "img/capArrowBlue_up.png",
+    capArrowRed_up: "img/capArrowRed_up.png",
+
+    byGary: "img/byGary.png"
+};
 
 
-var peng_img = new Image();
-peng_img.src = "img/player.png";
-var peng2_img = new Image();
-peng2_img.src = "img/player2.png";
-var gun_img = new Image();
-gun_img.src = "img/gun.png";
-var bg_img = new Image();
-bg_img.src = "img/bg.png";
-var snowball_img = new Image();
-snowball_img.src = "img/snowball.png";
-var wall_img = new Image();
-wall_img.src = "img/wall.png";
-
-
-var laserGun_img = new Image();
-laserGun_img.src = "img/laserGun.png";
-var laserBeam_img = new Image();
-laserBeam_img.src = "img/laserBeam.png";
-var shotgun_img = new Image();
-shotgun_img.src = "img/shotgun.png";
-var crate_img = new Image();
-crate_img.src = "img/crate.png";
-var snow_img = new Image();
-snow_img.src = "img/snow.png";
-var playerDie_img = new Image();
-playerDie_img.src = "img/playerDie.png";
-var player2Die_img = new Image();
-player2Die_img.src = "img/player2Die.png";
-var pellet_img = new Image();
-pellet_img.src = "img/pellet.png";
-var ammo_img = new Image();
-ammo_img.src = "img/ammo.png";
-
-var uzi_img = new Image();
-uzi_img.src = "img/uziGun.png";
-var rocketLauncher_img = new Image();
-rocketLauncher_img.src = "img/rocketLauncher.png";
-var missile_img = new Image();
-missile_img.src = "img/missile.png";
-var explosion_img = new Image();
-explosion_img.src = "img/explosion.png";
-
-var titleBack_img = new Image();
-titleBack_img.src = "img/titlescreen.png";
-var controlBack_img = new Image();
-controlBack_img.src = "img/controlScreen.png";
-
-var msgReady_img = new Image();
-msgReady_img.src = "img/msg-ready.png";
-var msgFight_img = new Image();
-msgFight_img.src = "img/msg-fight.png";
-
-var winBack_img = new Image();
-winBack_img.src = "img/winBack.png";
 
 
 
 
 
-var confettiBlue_img = new Image();
-confettiBlue_img.src = "img/confetti_blue.png";
-var confettiGreen_img = new Image();
-confettiGreen_img.src = "img/confetti_red.png";
-var confettiPurple_img = new Image();
-confettiPurple_img.src = "img/confetti_purple.png";
-var confettiRed_img = new Image();
-confettiRed_img.src = "img/confetti_red.png";
-var confettiYellow_img = new Image();
-confettiYellow_img.src = "img/confetti_yellow.png";
-
-var shell_img = new Image();
-shell_img.src = "img/shell.png";
-var shellShotgun_img = new Image();
-shellShotgun_img.src = "img/shellShotgun.png";
-
-var smoke_img = new Image();
-smoke_img.src = "img/smoke.png";
-
-var mine_img = new Image();
-mine_img.src = "img/mine.png";
-
-var flagGreen_img = new Image();
-flagGreen_img.src = "img/flagGreen.png";
-var flagBlue_img = new Image();
-flagBlue_img.src = "img/flagBlue.png";
-
-var goal_img = new Image();
-goal_img.src = "img/goal.png";
-
-var selectionScreen_img = new Image();
-selectionScreen_img.src = "img/selectionScreen.png";
-
-var menuButton_img = new Image();
-menuButton_img.src = "img/menuButton.png";
-var menuButtonFlash_img = new Image();
-menuButtonFlash_img.src = "img/menuButtonFlash.png";
-
-var playButton_img = new Image();
-playButton_img.src = "img/playButton.png";
-var playButtonFlash_img = new Image();
-playButtonFlash_img.src = "img/playButtonFlash.png";
-var controlButton_img = new Image();
-controlButton_img.src = "img/controlButton.png";
-var controlButtonFlash_img = new Image();
-controlButtonFlash_img.src = "img/controlButtonFlash.png";
-var goButton_img = new Image();
-goButton_img.src = "img/goButton.png";
-var goButtonFlash_img = new Image();
-goButtonFlash_img.src = "img/goButtonFlash.png";
-var unlockButton_img = new Image();
-unlockButton_img.src = "img/unlockButton.png";
-var unlockButtonFlash_img = new Image();
-unlockButtonFlash_img.src = "img/unlockButtonFlash.png";
-var rematchButton_img = new Image();
-rematchButton_img.src = "img/rematchButton.png";
-var rematchButtonFlash_img = new Image();
-rematchButtonFlash_img.src = "img/rematchButtonFlash.png";
 
 
-var unlockScreen_img = new Image();
-unlockScreen_img.src = "img/unlockScreen.png";
-
-var arrow_img = new Image();
-arrow_img.src = "img/arrow.png";
-var arrowFlash_img = new Image();
-arrowFlash_img.src = "img/arrowFlash.png";
-var arrowFlip_img = new Image();
-arrowFlip_img.src = "img/arrowFlip.png";
-var arrowFlipFlash_img = new Image();
-arrowFlipFlash_img.src = "img/arrowFlipFlash.png";
-
-var timer_img = new Image();
-timer_img.src = "img/timer.png";
 
 
-var p1Join_img = new Image();
-p1Join_img.src = "img/p1Join.png";
-var p2Join_img = new Image();
-p2Join_img.src = "img/p2Join.png";
-var p1p2Join_img = new Image();
-p1p2Join_img.src = "img/p1p2Join.png";
 
-
-var scrollingBack_img = new Image();
-scrollingBack_img.src = "img/scrollingBack.png";
-
-var p1JoinBounce_img = new Image();
-p1JoinBounce_img.src = "img/p1JoinBounce.png";
-var p2JoinBounce_img = new Image();
-p2JoinBounce_img.src = "img/p2JoinBounce.png";
-var capArrowBlue_img = new Image();
-capArrowBlue_img.src = "img/capArrowBlue.png";
-var capArrowRed_img = new Image();
-capArrowRed_img.src = "img/capArrowRed.png";
-var capArrowBlue_up_img = new Image();
-capArrowBlue_up_img.src = "img/capArrowBlue_up.png";
-var capArrowRed_up_img = new Image();
-capArrowRed_up_img.src = "img/capArrowRed_up.png";
-
-var byGary_img = new Image();
-byGary_img.src = "img/byGary.png";
 
 
 

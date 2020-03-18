@@ -24,10 +24,10 @@ class Game {
 		this.scrollYOff = 0;
 
 		// Bouncing animation for P1 and P2 join
-		this.p1JoinBounce = new Entity(50, 15, 20, 20, p1JoinBounce_img, 2, 3, [0,1,2,3,4,5], 0, 0);
-		this.p2JoinBounce = new Entity(50, 82, 20, 20, p2JoinBounce_img, 2, 3, [0,1,2,3,4,5], 0, 0);
+		this.p1JoinBounce = new Entity(50, 15, 20, 20, img['p1JoinBounce'], 2, 3, [0,1,2,3,4,5], 0, 0);
+		this.p2JoinBounce = new Entity(50, 82, 20, 20, img['p2JoinBounce'], 2, 3, [0,1,2,3,4,5], 0, 0);
 
-		this.byGary = new Entity(210, 150, 20, 20, byGary_img, 6, 2, [0,1,2,3,4,5,6,7,8,9,10], 0, 0);
+		this.byGary = new Entity(210, 150, 20, 20, img['byGary'], 6, 2, [0,1,2,3,4,5,6,7,8,9,10], 0, 0);
 
 		// FPS variables
 		this.filterStr = 20;
@@ -160,7 +160,7 @@ class Game {
 	// Update the menu loop
 	updateMenu() {
 		this.drawScrollingBack();
-		ctx.drawImage(titleBack_img, 0, 0);
+		ctx.drawImage(img['titleBack'], 0, 0);
 
 		this.byGary.update();
 	}
@@ -168,13 +168,13 @@ class Game {
 	// Update the selection screen loop
 	updateSelect() {
 		this.drawScrollingBack();
-		ctx.drawImage(selectionScreen_img, 0, 0);
+		ctx.drawImage(img['selectionScreen'], 0, 0);
 		this.drawLevelDisplay(this.level);
 
 
 		// Show press to join for P1
 		if (!this.p1Pressed && !this.p2Pressed) {
-			ctx.drawImage(p1Join_img, 0, 0);
+			ctx.drawImage(img['p1Join'], 0, 0);
 			this.p1JoinBounce.update();
 
 			if (Keys.space) {
@@ -185,7 +185,7 @@ class Game {
 
 		// Show press to join for P2
 		} else if (this.p1Pressed && !this.p2Pressed) {
-			ctx.drawImage(p2Join_img, 0, 0);
+			ctx.drawImage(img['p2Join'], 0, 0);
 			this.p2JoinBounce.update();
 
             if (Keys.f) {
@@ -195,25 +195,25 @@ class Game {
             }
 
 		} else if (this.p1Pressed && this.p2Pressed) {
-			ctx.drawImage(p1p2Join_img, 0, 0);
+			ctx.drawImage(img['p1p2Join'], 0, 0);
 		}
 	}
 
 	// Update the control screen loop
 	updateControl() {
 		this.drawScrollingBack();
-		ctx.drawImage(controlBack_img, 0, 0);
+		ctx.drawImage(img['controlBack'], 0, 0);
 	}
 
 	// Update the unlock screen loop
 	updateUnlock() {
-		ctx.drawImage(unlockScreen_img, 0, 0);
+		ctx.drawImage(img['unlockScreen'], 0, 0);
 	}
 
 	// Main arena update
 	updateArena() {
 		// Update and draw EVERYTHING
-		ctx.drawImage(bg_img, 0, 0);
+		ctx.drawImage(img['bg'], 0, 0);
 		snowArr.update();
 
 		tempArr.updateLayer(0);
@@ -387,10 +387,10 @@ class Game {
 
 	// Draw the scrolling background
 	drawScrollingBack() {
-		ctx.drawImage(scrollingBack_img, Math.floor(this.scrollXOff), Math.floor(this.scrollYOff));
-		ctx.drawImage(scrollingBack_img, Math.floor(this.scrollXOff), Math.floor(this.scrollYOff)+200);
-		ctx.drawImage(scrollingBack_img, Math.floor(this.scrollXOff)+400, Math.floor(this.scrollYOff));
-		ctx.drawImage(scrollingBack_img, Math.floor(this.scrollXOff)+400, Math.floor(this.scrollYOff)+200);
+		ctx.drawImage(img['scrollingBack'], Math.floor(this.scrollXOff), Math.floor(this.scrollYOff));
+		ctx.drawImage(img['scrollingBack'], Math.floor(this.scrollXOff), Math.floor(this.scrollYOff)+200);
+		ctx.drawImage(img['scrollingBack'], Math.floor(this.scrollXOff)+400, Math.floor(this.scrollYOff));
+		ctx.drawImage(img['scrollingBack'], Math.floor(this.scrollXOff)+400, Math.floor(this.scrollYOff)+200);
 
 		this.scrollXOff -= 0.5;
 		this.scrollYOff -= 0.25;
@@ -411,24 +411,24 @@ class Game {
 			for (var j = 0; j < array[i].length; j++) {
 				var value = array[i][j];
 				if (value == "W") {
-					ctx.drawImage(wall_img, 0, 0, 20, 20, xPos+j*size, yPos+i*size, size, size);
+					ctx.drawImage(img['wall'], 0, 0, 20, 20, xPos+j*size, yPos+i*size, size, size);
 				} else if (value == "C") {
-					ctx.drawImage(snow_img, 6, 6, 20, 20, xPos+j*size, yPos+i*size, size, size);
-					ctx.drawImage(crate_img, 0, 0, 20, 20, xPos+j*size, yPos+i*size, size, size);
+					ctx.drawImage(img['snow'], 6, 6, 20, 20, xPos+j*size, yPos+i*size, size, size);
+					ctx.drawImage(img['crate'], 0, 0, 20, 20, xPos+j*size, yPos+i*size, size, size);
 				} else if (value == "G") {
-					ctx.drawImage(goal_img, 0, 0, 20, 20, xPos+j*size, yPos+i*size, size, size);
-					//ctx.drawImage(flagBlue_img, 0, 0, 20, 20, xPos+j*size, yPos+i*size-size, size, size);
+					ctx.drawImage(img['goal'], 0, 0, 20, 20, xPos+j*size, yPos+i*size, size, size);
+					//ctx.drawImage(img['flagBlue'], 0, 0, 20, 20, xPos+j*size, yPos+i*size-size, size, size);
 				} else if (value == "T") {
-					ctx.drawImage(goal_img, 0, 0, 20, 20, xPos+j*size, yPos+i*size, size, size);
-					//ctx.drawImage(flagGreen_img, 0, 0, 20, 20, xPos+j*size, yPos+i*size-size, size, size);
+					ctx.drawImage(img['goal'], 0, 0, 20, 20, xPos+j*size, yPos+i*size, size, size);
+					//ctx.drawImage(img['flagGreen'], 0, 0, 20, 20, xPos+j*size, yPos+i*size-size, size, size);
 				} else if (value == "1") {
-					ctx.drawImage(snow_img, 6, 6, 20, 20, xPos+j*size, yPos+i*size, size, size);
-					ctx.drawImage(peng_img, 0, 0, 20, 20, xPos+j*size, yPos+i*size, size, size);
+					ctx.drawImage(img['snow'], 6, 6, 20, 20, xPos+j*size, yPos+i*size, size, size);
+					ctx.drawImage(img['peng'], 0, 0, 20, 20, xPos+j*size, yPos+i*size, size, size);
 				} else if (value == "2") {
-					ctx.drawImage(snow_img, 6, 6, 20, 20, xPos+j*size, yPos+i*size, size, size);
-					ctx.drawImage(peng2_img, 0, 0, 20, 20, xPos+j*size, yPos+i*size, size, size);
+					ctx.drawImage(img['snow'], 6, 6, 20, 20, xPos+j*size, yPos+i*size, size, size);
+					ctx.drawImage(img['peng2'], 0, 0, 20, 20, xPos+j*size, yPos+i*size, size, size);
 				} else if (value == "0") {
-					ctx.drawImage(snow_img, 6, 6, 20, 20, xPos+j*size, yPos+i*size, size, size);
+					ctx.drawImage(img['snow'], 6, 6, 20, 20, xPos+j*size, yPos+i*size, size, size);
 				}
 			}
 		}
@@ -439,9 +439,9 @@ class Game {
 	displayFightMsg() {
 		if (this.fightMsgTimer != 0) {
 			if (this.fightMsgTimer > 40) {
-				ctx.drawImage(msgReady_img, 140, 80);
+				ctx.drawImage(img['msgReady'], 140, 80);
 			} else {
-				ctx.drawImage(msgFight_img, 140, 80);
+				ctx.drawImage(img['msgFight'], 140, 80);
 			}
 		}
 		if (this.fightMsgTimer > 0) {

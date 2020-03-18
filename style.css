@@ -145,6 +145,26 @@ body {
 }
 
 
+
+
+/* Loading screen stuff*/
+.loadingScreen {
+	position: absolute;
+}
+
+#loadingText {
+	left: 400px;
+	top: 250px;
+	font-size: 100px;
+	font-family: "custom";
+	color: black;
+}
+
+
+
+
+
+
 /* Menu screen buttons*/
 .menuScreen {
 	position: absolute;
@@ -155,9 +175,13 @@ body {
 }
 #playButton {
 	top: 300px;
+
+	visibility: hidden;
 }
 #controlButton {
 	top: 400px;
+
+	visibility:hidden;
 }
 #unlockButton {
 	top: 450px;

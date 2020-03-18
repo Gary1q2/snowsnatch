@@ -11,6 +11,11 @@
 			<canvas id="canvas" width=400 height=200></canvas>
 			<div id="overlay">
 
+
+				<!--Loading screen-->
+				<div id="loadingText" class="loadingScreen">Loading...</div>
+
+
 				<!--Arena screen-->
 				<div id="ammo1"></div>
 				<div id="ammo2"></div>
@@ -19,24 +24,24 @@
 					<img id="winnerImg" src="img/winBack.png" alt="Winner">
 					<div id="winnerText">Winner</div>
 				</div>
-				<img id="rematchButton" onmouseover="changeImage(this, rematchButtonFlash_img)" onmouseout="changeImage(this, rematchButton_img)" onclick="game.toCTFScreen()" src="img/rematchButton.png" alt="rematchButton">
-				<img id="tinyMenuButton" onmouseover="changeImage(this, menuButtonFlash_img)" onmouseout="changeImage(this, menuButton_img)" onclick="game.toMenuScreen()" src="img/menuButton.png" alt="menuButton">
+				<img id="rematchButton" onmouseover="changeImage(this, img['rematchButtonFlash'])" onmouseout="changeImage(this, img['rematchButton'])" onclick="game.toCTFScreen()" src="img/rematchButton.png" alt="rematchButton">
+				<img id="tinyMenuButton" onmouseover="changeImage(this, img['menuButtonFlash'])" onmouseout="changeImage(this, img['menuButton'])" onclick="game.toMenuScreen()" src="img/menuButton.png" alt="menuButton">
 
 				<!--Menu screen-->
-				<img class="menuScreen" id="playButton" onmouseover="changeImage(this, playButtonFlash_img)" onmouseout="changeImage(this, playButton_img)" onclick="game.toSelectionScreen()" src="img/playButton.png" alt="playButton">
-				<img class="menuScreen" id="controlButton" onmouseover="changeImage(this, controlButtonFlash_img)" onmouseout="changeImage(this, controlButton_img)" onclick="game.toControlScreen()" src="img/controlButton.png" alt="controlButton">
-				<!--<img class="menuScreen" id="unlockButton" onmouseover="changeImage(this, unlockButtonFlash_img)" onmouseout="changeImage(this, unlockButton_img)" onclick="game.toUnlockScreen()" src="img/unlockButton.png" alt="unlockButton">-->
+				<img class="menuScreen" id="playButton" onmouseover="changeImage(this, img['playButtonFlash'])" onmouseout="changeImage(this, img['playButton'])" onclick="game.toSelectionScreen()" src="img/playButton.png" alt="playButton">
+				<img class="menuScreen" id="controlButton" onmouseover="changeImage(this, img['controlButtonFlash'])" onmouseout="changeImage(this, img['controlButton'])" onclick="game.toControlScreen()" src="img/controlButton.png" alt="controlButton">
+				<!--<img class="menuScreen" id="unlockButton" onmouseover="changeImage(this, img['unlockButtonFlash'])" onmouseout="changeImage(this, img['unlockButton'])" onclick="game.toUnlockScreen()" src="img/unlockButton.png" alt="unlockButton">-->
 
 
 				<!--Selection screen-->
-				<img id="goButton" class="selectScreen" onmouseover="changeImage(this, goButtonFlash_img)" onmouseout="changeImage(this, goButton_img)" onclick="game.toCTFScreen()" src="img/goButton.png" alt="goButton">
-				<img id="levelLeft" class="selectScreen" onmouseover="changeImage(this, arrowFlipFlash_img)" onmouseout="changeImage(this, arrowFlip_img)" onclick="prevLevel()" src="img/arrowFlip.png" alt="levelLeft">
-				<img id="levelRight" class="selectScreen" onmouseover="changeImage(this, arrowFlash_img)" onmouseout="changeImage(this, arrow_img)" onclick="nextLevel()" src="img/arrow.png" alt="levelLeft">
+				<img id="goButton" class="selectScreen" onmouseover="changeImage(this, img['goButtonFlash'])" onmouseout="changeImage(this, img['goButton'])" onclick="game.toCTFScreen()" src="img/goButton.png" alt="goButton">
+				<img id="levelLeft" class="selectScreen" onmouseover="changeImage(this, img['arrowFlipFlash'])" onmouseout="changeImage(this, img['arrowFlip'])" onclick="prevLevel()" src="img/arrowFlip.png" alt="levelLeft">
+				<img id="levelRight" class="selectScreen" onmouseover="changeImage(this, img['arrowFlash'])" onmouseout="changeImage(this, img['arrow'])" onclick="nextLevel()" src="img/arrow.png" alt="levelLeft">
 				<div id="levelName" class="selectScreen">Level name</div>
 
 
 				<!--Control screen-->
-				<img class="selectScreen" id="backToMenuButton" onmouseover="changeImage(this, menuButtonFlash_img)" onmouseout="changeImage(this, menuButton_img)" onclick="game.toMenuScreen()" src="img/menuButton.png" alt="menuButton">
+				<img class="selectScreen" id="backToMenuButton" onmouseover="changeImage(this, img['menuButtonFlash'])" onmouseout="changeImage(this, img['menuButton'])" onclick="game.toMenuScreen()" src="img/menuButton.png" alt="menuButton">
 
 				<!--Unlock screen-->
 				<div class="unlockScreen" id="weaponry">
@@ -78,7 +83,10 @@ var canvas = document.getElementById('canvas');
 var ctx = canvas.getContext('2d');
 ctx.imageSmoothingEnabled = false;
 ctx.lineWidth = 1;
-ctx.font = "10px 'custom'";
+ctx.font = "40px 'custom'";
+ctx.fillStyle = '#DBF2FF';
+
+ctx.fillRect(0, 0, canvas.width, canvas.height);
 
 // Scale canvas by 3 times
 var canvasScaling = 3;
@@ -134,27 +142,29 @@ var wallArr;    // Array for walls
 var snowArr;    // Array for snow piles
 var game;
 var debug = false;
-
 var money = 0;
-
 var currLevel;  // Global level array of current level in play - keeps track of walls that break
+
+var filesLoaded = false;  // If files are loaded or not
+
+var img = {};   // Contains all the images in the game
+var snd = {};   // Contains all the sounds in the game
+
 
 
 window.onload = function() {
-	game = new Game();
-	requestAnimationFrame(gameLoop);
+
+	// Load in the files and then after load the game
+	loadFiles(sources, afterLoaded);
 }
+
 
 // Game loop
 function gameLoop() {
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
-	
-
 	game.update();
-
 	requestAnimationFrame(gameLoop);
 }
-
 
 
 </script>

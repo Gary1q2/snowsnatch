@@ -48,7 +48,7 @@ class Gun extends Entity {
 
 class Mine extends Gun {
 	constructor(player) {
-		super(0, 100, 8, 8, mine_img, 3, 3, [0], 0, 0, player);
+		super(0, 100, 8, 8, img['mine'], 3, 3, [0], 0, 0, player);
 		this.gunID = 6;
 
 		this.shootTime = 1;
@@ -93,7 +93,7 @@ class Mine extends Gun {
 
 class RocketLauncher extends Gun {
 	constructor(player) {
-		super(0, 100, 8, 8, rocketLauncher_img, 1, 2, [0], 0, 0, player);
+		super(0, 100, 8, 8, img['rocketLauncher'], 1, 2, [0], 0, 0, player);
 		this.gunID = 5;
  
 		this.shootTime = 80;
@@ -123,7 +123,7 @@ class RocketLauncher extends Gun {
 
 class Uzi extends Gun {
 	constructor(player) {
-		super(0, 100, 8, 8, uzi_img, 2, 2, [0], 0, 0, player);
+		super(0, 100, 8, 8, img['uzi'], 2, 2, [0], 0, 0, player);
 		this.gunID = 4;
  
 		this.shootTime = 25;
@@ -147,7 +147,7 @@ class Uzi extends Gun {
 		
 		playSound(uziShoot_snd);
 
-		tempArr.add(new Shell(this.x, this.y, shell_img, this.player.angle));
+		tempArr.add(new Shell(this.x, this.y, img['shell'], this.player.angle));
 
 		this.ammo--;
 
@@ -160,7 +160,7 @@ class Uzi extends Gun {
 
 class Shotgun extends Gun {
 	constructor(player) {
-		super(0, 100, 8, 8, shotgun_img, 2, 3, [0], 0, 0, player);
+		super(0, 100, 8, 8, img['shotgun'], 2, 3, [0], 0, 0, player);
 		this.gunID = 3;
 		this.shootTime = 60;
 		this.ammo = 10;
@@ -185,7 +185,7 @@ class Shotgun extends Gun {
 			if (this.finishAnim) {
 				this.shooting = false;
 				playSound(shotgunReload_snd);
-				tempArr.add(new Shell(this.x, this.y, shellShotgun_img, this.player.angle));
+				tempArr.add(new Shell(this.x, this.y, img['shellShotgun'], this.player.angle));
 				this.ammo--;
 			}
 
@@ -212,7 +212,7 @@ class Shotgun extends Gun {
 
 class SnowGun extends Gun {
 	constructor(player) {
-		super(0, 100, 8, 8, gun_img, 2, 2, [0], 0,0, player);
+		super(0, 100, 8, 8, img['gun'], 2, 2, [0], 0,0, player);
 		this.gunID = 1;
 		this.shootTime = 60;
 		this.shooting = false;
@@ -243,7 +243,7 @@ class SnowGun extends Gun {
 	 
 class LaserGun extends Gun {
 	constructor(player) {
-		super(0, 100, 8, 8, laserGun_img, 2, 2, [0], 0, 0, player);
+		super(0, 100, 8, 8, img['laserGun'], 2, 2, [0], 0, 0, player);
 		this.gunID = 2;
 		this.shootTime = 90;
 
@@ -383,7 +383,7 @@ class Explosion extends Bullet {
 			tempY += gridLen;
 		}
 
-		super(tempX, tempY, 60, 60, explosion_img, 4, 3, [0,1,2,3,4,5,6,7,8,9], 25, 25, owner, dir);
+		super(tempX, tempY, 60, 60, img['explosion'], 4, 3, [0,1,2,3,4,5,6,7,8,9], 25, 25, owner, dir);
 		this.dmgTime = 1;     // Initial time that can damage you
 
 		playSound(explosion_snd);
@@ -434,7 +434,7 @@ class Explosion extends Bullet {
 }
 class MineBomb extends Bullet {
 	constructor(x, y, owner) {
-		super(x, y, 16, 16, mine_img, 3, 3, [8,1,2,3,8,1,2,3,4,5,6], 0,0, owner);
+		super(x, y, 16, 16, img['mine'], 3, 3, [8,1,2,3,8,1,2,3,4,5,6], 0,0, owner);
 		this.armed = false;
 	}
 	update() {
@@ -477,9 +477,9 @@ class MineBomb extends Bullet {
 class Missile extends Bullet {
 	constructor(x, y, owner, dir) {
 		if (dir == DIR.left || dir == DIR.right) {
-			super(x, y, 14, 8, missile_img, 2, 2, [0,1,2,3], 0, 0, owner, dir);
+			super(x, y, 14, 8, img['missile'], 2, 2, [0,1,2,3], 0, 0, owner, dir);
 		} else {
-			super(x, y, 8, 14, missile_img, 2, 2, [0,1,2,3], 0, 0, owner, dir);
+			super(x, y, 8, 14, img['missile'], 2, 2, [0,1,2,3], 0, 0, owner, dir);
 		}
 		
 		this.speed = 1;
@@ -585,7 +585,7 @@ class Missile extends Bullet {
 
 class Pellet extends Bullet {
 	constructor(x, y, owner, dir, moveTime, deadTime, speed, spread) {
-		super(x, y, 4, 4, pellet_img, 1, 1, [0], 0, 0, owner, dir);
+		super(x, y, 4, 4, img['pellet'], 1, 1, [0], 0, 0, owner, dir);
 		this.moveTimer = moveTime;
 		this.deadTimer = deadTime;
 		this.speed = speed;
@@ -693,7 +693,7 @@ class LaserBlast extends Bullet {
 			wide = 8;
 			tall = 20;
 		}
-		super(x, y, wide, tall, laserBeam_img, 2, 3, [0,1,2], 0, 0, owner, dir);
+		super(x, y, wide, tall, img['laserBeam'], 2, 3, [0,1,2], 0, 0, owner, dir);
 		this.aliveTimer = 30;  // How long to stay alive for
 		this.hurtTimer = 1; // How long can deal damage
 
@@ -755,7 +755,7 @@ class LaserBlast extends Bullet {
 }
 class Snowball extends Bullet {
 	constructor(x, y, owner, dir) {
-		super(x, y, 6, 6, snowball_img, 3, 2, [0], 0,0, owner, dir);
+		super(x, y, 6, 6, img['snowball'], 3, 2, [0], 0,0, owner, dir);
 		this.speed = 2;
 		this.breaking = false;   // Showing breaking animation
 		this.id = Math.random();  // Random ID for snowball
