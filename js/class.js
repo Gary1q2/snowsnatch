@@ -569,7 +569,7 @@ class Flag extends Entity {
 				if (!this.touchOnce) {
 					this.touchOnce = true;
 				}
-				playSound(flagGot_snd);
+				playSound(snd['flagGot']);
 				break;
 			}
 		}
@@ -613,7 +613,7 @@ class Snow extends Entity {
 			if (this.collideWith(i)) {
 				if (!this.breaking) {
 					this.breaking = true;
-					playSound(snowbreak_snd);
+					playSound(snd['snowbreak']);
 				}
 				break;
 			}
@@ -663,7 +663,7 @@ class Crate extends Entity {
 			if (this.collideWith(i) && !this.dead && !this.broken) {
 				this.broken = true;
 				this.waitTimer = this.waitTime;
-				playSound(crateOpen_snd);
+				playSound(snd['crateOpen']);
 				currLevel[this.y/gridLen][this.x/gridLen] = 0;
 
 				// Give random gun
@@ -758,7 +758,7 @@ class Goal extends Entity {
 		this.owner.hasFlag = false;
 		this.owner.score++;
 		flag.respawn();
-		playSound(win_snd);
+		playSound(snd['win']);
 	}
 
 	draw() {
@@ -796,9 +796,9 @@ class Wall extends Entity {
 
 	// Damage the wall
 	damageWall(dmg) {
-		playSound(iceCrack_snd);
+		playSound(snd['iceCrack']);
 		if (this.hp <= dmg) {
-			playSound(wallBreak_snd);
+			playSound(snd['wallBreak']);
 		}
 		this.hp -= dmg;
 	}
@@ -984,8 +984,8 @@ class Player extends Entity {
 			}
 			this.changeSprite(temp, 14, 14, 3, 3, [0], 20, 20);
 
-			playSound(die_snd);
-			playSound(die2_snd);
+			playSound(snd['die']);
+			playSound(snd['die2']);
 
 
 
@@ -1245,7 +1245,7 @@ class Bot extends Player {
 
 		this.skipMine = false;
 
-		this.searchDist = 8; // Distance enemy is away before homing
+		this.searchDist = 10; // Distance enemy is away before homing
 	}
 
 	update() {

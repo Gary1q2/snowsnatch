@@ -87,7 +87,7 @@ class Mine extends Gun {
 	shoot() {
 		this.shooting = true;
 		tempArr.add(new MineBomb(this.x, this.y, this.player));
-		playSound(mineDrop_snd);
+		playSound(snd['mineDrop']);
 	}
 }
 
@@ -145,7 +145,7 @@ class Uzi extends Gun {
 		this.shooting = true;
 		tempArr.add(new Pellet(this.x, this.y, this.player, this.player.angle, -1, -1, 2, 10));
 		
-		playSound(uziShoot_snd);
+		playSound(snd['uziShoot']);
 
 		tempArr.add(new Shell(this.x, this.y, img['shell'], this.player.angle));
 
@@ -184,7 +184,7 @@ class Shotgun extends Gun {
 			this.drawAnimated([1,2,4,3,4,0]);
 			if (this.finishAnim) {
 				this.shooting = false;
-				playSound(shotgunReload_snd);
+				playSound(snd['shotgunReload']);
 				tempArr.add(new Shell(this.x, this.y, img['shellShotgun'], this.player.angle));
 				this.ammo--;
 			}
@@ -201,7 +201,7 @@ class Shotgun extends Gun {
 		for (var i = 0; i < 6; i++) {
 			tempArr.add(new Pellet(this.x, this.y, this.player, this.player.angle, 6+Math.floor(Math.random()*10), 17, 5, 40));
 		}
-		playSound(shotgunShoot_snd);
+		playSound(snd['shotgunShoot']);
 
 
 		// Prepare for new animation
@@ -233,7 +233,7 @@ class SnowGun extends Gun {
 	shoot() {
 		this.shooting = true;
 		tempArr.add(new Snowball(this.x, this.y, this.player, this.player.angle));
-		playSound(shoot_snd);
+		playSound(snd['shoot']);
 
 		// Prepare for new animation
 		this.animIndex = 0;
@@ -289,7 +289,7 @@ class LaserGun extends Gun {
 						tempArr.add(new LaserBlast(this.x, i, this.player, this.player.angle));
 					}
 				}
-				playSound(lasershoot_snd);
+				playSound(snd['lasershoot']);
 
 				// Prepare for new animation
 				this.animIndex = 0;
@@ -342,7 +342,7 @@ class LaserGun extends Gun {
 	shoot() {
 		if (this.chargeTimer == 0) {
 			this.chargeTimer = this.chargeTime;
-			playSound(lasercharge_snd);
+			playSound(snd['lasercharge']);
 		}
 	}
 }
@@ -386,7 +386,7 @@ class Explosion extends Bullet {
 		super(tempX, tempY, 60, 60, img['explosion'], 4, 3, [0,1,2,3,4,5,6,7,8,9], 25, 25, owner, dir);
 		this.dmgTime = 1;     // Initial time that can damage you
 
-		playSound(explosion_snd);
+		playSound(snd['explosion']);
 	}
 	update() {
 
@@ -513,7 +513,7 @@ class Missile extends Bullet {
 
 		console.log(this.dir);
 
-		playSound(missileLaunch_snd);
+		playSound(snd['missileLaunch']);
 	}
 	update() {
 		this.updateMovement();
@@ -847,7 +847,7 @@ class Snowball extends Bullet {
 	// Snowball break apart after hitting object
 	break() {
 		this.breaking = true;
-		playSound(snowbreak_snd);
+		playSound(snd['snowbreak']);
 
 		// Prepare for new animation
 		this.animIndex = 0;

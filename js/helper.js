@@ -1,22 +1,43 @@
 // Load all images and sound files
-function loadFiles(sources, callback) {
+function loadFiles(src_img, src_snd, callback) {
 
-	var loaded = 0;
-	var numImages = Object.keys(sources).length;
+	var loadedImages = 0;
+	var loadedSounds = 0;
+	var numImages = Object.keys(src_img).length;
+	var numSounds = Object.keys(src_snd).length;
 	console.log("num of images = " + numImages);
+	console.log("num of sounds = " + numSounds);
 
-
-	for (var src in sources) {
+	// Load the images
+	for (var src in src_img) {
 		console.log(src);
 		img[src] = new Image();
 		img[src].onload = function() {
-			loaded++;
-			if (loaded >= numImages) {
+			loadedImages++;
+			if (loadedImages >= numImages && loadedSounds >= numSounds) {
 				callback();
 			}
+			console.log("images = " + loadedImages+"    sounds = " + loadedSounds);
 		};
-		img[src].src = sources[src];
+		img[src].src = src_img[src];
+	}	
+	
+	console.log("sound time\n\n\n\n\n");
+
+	// Load the sounds
+	for (var src in src_snd) {
+		console.log(src);
+		snd[src] = document.createElement("audio");
+		snd[src].oncanplaythrough = function() {
+			loadedSounds++;
+			if (loadedSounds >= numSounds && loadedImages >= numImages) {
+				callback();
+			}
+			console.log("images = " + loadedImages+"    sounds = " + loadedSounds);
+		};
+		snd[src].src = src_snd[src];
 	}
+
 }
 
 // Start everything after all files have been loaded
@@ -41,7 +62,7 @@ function nextLevel() {
 	if (game.level < levels.length-1) {
 		game.level++;
 		document.getElementById("levelName").innerHTML = levelNames[game.level];
-		playSound(snowbreak_snd);
+		playSound(snd['snowbreak']);
 
 		// Hide button if reach end
 		if (game.level == levels.length-1) {
@@ -58,7 +79,7 @@ function prevLevel() {
 	if (game.level > 0) {
 		game.level--;
 		document.getElementById("levelName").innerHTML = levelNames[game.level];
-		playSound(snowbreak_snd);
+		playSound(snd['snowbreak']);
 
 		// Hide button if reach end
 		if (game.level == 0) {

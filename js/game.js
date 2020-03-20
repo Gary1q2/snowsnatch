@@ -58,7 +58,7 @@ class Game {
 		this.p2Pressed = false;
 
 		this.gamestate = GAMESTATE.selection;
-		playSound(snowbreak_snd);
+		playSound(snd['snowbreak']);
 	}
 
 	// Head to unlock screen
@@ -75,7 +75,7 @@ class Game {
 		document.getElementById("backToMenuButton").style.visibility = "visible";
 
 		this.gamestate = GAMESTATE.unlock;
-		playSound(snowbreak_snd);
+		playSound(snd['snowbreak']);
 	}
 
 	// Head to control screen
@@ -89,7 +89,7 @@ class Game {
 
 		this.gamestate = GAMESTATE.controls;	
 
-		playSound(snowbreak_snd);
+		playSound(snd['snowbreak']);
 	}
 
 	// Head to CTF screen
@@ -118,10 +118,10 @@ class Game {
 
 		
 		this.fightMsgTimer = 100;
-		playSound(readFight_snd);
-		playSound(snowbreak_snd);
+		playSound(snd['readFight']);
+		playSound(snd['snowbreak']);
 
-		//playSound(arenaBGM_snd);
+		//playSound(snd['arenaBGM']);
 
 
 		document.getElementById("scoreCTF").style.visibility = "visible";
@@ -154,7 +154,7 @@ class Game {
 
 		this.gamestate = GAMESTATE.menu;
 
-		playSound(snowbreak_snd);
+		playSound(snd['snowbreak']);
 	}
 
 	// Update the menu loop
@@ -180,7 +180,7 @@ class Game {
 			if (Keys.space) {
 				this.p1Pressed = true;
 				document.getElementById("goButton").style.visibility = "visible";
-				playSound(snowbreak_snd);
+				playSound(snd['snowbreak']);
 			}
 
 		// Show press to join for P2
@@ -191,7 +191,7 @@ class Game {
             if (Keys.f) {
             	this.p2Pressed = true;
             	this.bot = false;
-           		playSound(snowbreak_snd);
+           		playSound(snd['snowbreak']);
             }
 
 		} else if (this.p1Pressed && this.p2Pressed) {
@@ -240,7 +240,7 @@ class Game {
 		if (this.winner == -1) {
 			this.winner = this.checkWinner();
 			if (this.winner != -1) {
-				playSound(win_snd);
+				playSound(snd['win']);
 				for (var i = 0; i < 200; i++) {
 					tempArr.add(new Confetti(180, 180, 5, 9));
 				}

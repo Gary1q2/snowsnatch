@@ -1,4 +1,4 @@
-var sources = {
+var sources_img = {
 	peng: "img/player.png",
     peng: "img/player.png",
     peng2: "img/player2.png",
@@ -92,63 +92,35 @@ var sources = {
 
 
 
+var sources_snd = {
 
+    shoot: "sound/shoot.mp3",
+    die: "sound/die.mp3",
+    die2: "sound/die2.mp3",
+    snowbreak: "sound/snow_break.mp3",
 
+    lasershoot: "sound/laserShoot.mp3",
+    lasercharge: "sound/laserCharge.mp3",
 
+    crateOpen: "sound/crateOpen.mp3",
+    shotgunShoot: "sound/shotgunShoot.mp3",
+    shotgunReload: "sound/shotgunReload.mp3",
 
+    readFight: "sound/readyFight.mp3",
 
+    uziShoot: "sound/uziShoot.mp3",
 
+    missileLaunch: "sound/missileLaunch.mp3",
 
+    explosion: "sound/explosion.mp3",
 
+    win: "sound/winSound.mp3",
 
+    iceCrack: "sound/iceCrack.mp3",
+    wallBreak: "sound/wallBreak.mp3",
 
+    mineDrop: "sound/mineDrop.mp3",
+    flagGot: "sound/flagGot.mp3",
 
-
-// Sounds
-var shoot_snd = document.createElement("audio");
-shoot_snd.src = "sound/shoot.mp3";
-var die_snd = document.createElement("audio");
-die_snd.src = "sound/die.mp3";
-var die2_snd = document.createElement("audio");
-die2_snd.src = "sound/die2.mp3";
-var snowbreak_snd = document.createElement("audio");
-snowbreak_snd.src = "sound/snow_break.mp3";
-var lasershoot_snd = document.createElement("audio");
-lasershoot_snd.src = "sound/laserShoot.mp3";
-var lasercharge_snd = document.createElement("audio");
-lasercharge_snd.src = "sound/laserCharge.mp3";
-var crateOpen_snd = document.createElement("audio");
-crateOpen_snd.src = "sound/crateOpen.mp3";
-var shotgunShoot_snd = document.createElement("audio");
-shotgunShoot_snd.src = "sound/shotgunShoot.mp3";
-var shotgunReload_snd = document.createElement("audio");
-shotgunReload_snd.src = "sound/shotgunReload.mp3";
-
-var readFight_snd = document.createElement("audio");
-readFight_snd.src = "sound/readyFight.mp3";
-
-var uziShoot_snd = document.createElement("audio");
-uziShoot_snd.src = "sound/uziShoot.mp3";
-var missileLaunch_snd = document.createElement("audio");
-missileLaunch_snd.src = "sound/missileLaunch.mp3"
-var explosion_snd = document.createElement("audio");
-explosion_snd.src = "sound/explosion.mp3";
-
-var win_snd = document.createElement("audio");
-win_snd.src = "sound/winSound.mp3";
-
-var iceCrack_snd = document.createElement("audio");
-iceCrack_snd.src = "sound/iceCrack.mp3";
-var wallBreak_snd = document.createElement("audio");
-wallBreak_snd.src = "sound/wallBreak.mp3";
-
-
-var mineDrop_snd = document.createElement("audio");
-mineDrop_snd.src = "sound/mineDrop.mp3";
-
-var flagGot_snd = document.createElement("audio");
-flagGot_snd.src = "sound/flagGot.mp3";
-
-
-var arenaBGM_snd = document.createElement("audio");
-arenaBGM_snd.src = "sound/arenaBGM.mp3";
+    arenaBGM: "sound/arenaBGM.mp3"
+};
