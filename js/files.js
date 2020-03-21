@@ -122,5 +122,9 @@ var sources_snd = {
     mineDrop: "sound/mineDrop.mp3",
     flagGot: "sound/flagGot.mp3",
 
-    arenaBGM: "sound/arenaBGM.mp3"
+    arenaBGM: "sound/arenaBGM.mp3",
+
+    flagTimer: "sound/ticking.mp3",
+    flagDrop: "sound/flagDrop.mp3",
+    flagRespawn: "sound/flagRespawn.mp3"
 };

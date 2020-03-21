@@ -536,7 +536,11 @@ class Flag extends Entity {
 	tickRespawn() {
 		if (this.respawnTimer > 0) {
 			this.respawnTimer--;
+			if (this.respawnTimer == 180) {
+				playSound(snd['flagTimer']);
+			}
 			if (this.respawnTimer == 0) {
+				playSound(snd['flagRespawn']);
 				this.respawn();
 			}
 		}
@@ -554,6 +558,7 @@ class Flag extends Entity {
 			this.owner.hasFlag = false;
 			this.respawnTimer = this.respawnTime;
 			this.timer = new Timer(this.x+5, this.y+5, this.respawnTime);
+			playSound(snd["flagDrop"]);
 		}
 	}
 
@@ -667,10 +672,10 @@ class Crate extends Entity {
 				currLevel[this.y/gridLen][this.x/gridLen] = 0;
 
 				// Give random gun
-				//var rand = Math.random();
-				//if (rand < 0.2) {
+				var rand = Math.random();
+				if (rand < 0.2) {
 					i.gun = new LaserGun(i);
-				/*} else if (rand < 0.4) {
+				} else if (rand < 0.4) {
 					i.gun = new Shotgun(i);
 	     		} else if (rand < 0.6) {
 	     			i.gun = new Uzi(i);
@@ -678,7 +683,7 @@ class Crate extends Entity {
 	     			i.gun = new RocketLauncher(i);
 	     		} else {
 	     			i.gun = new Mine(i);
-	     		}*/
+	     		}
 	     		
 				this.spawnCrate();
 				break;
@@ -995,6 +1000,7 @@ class Player extends Entity {
 				this.currPos = this.startPos;
 				this.task = TASK.idle;
 				this.dodgedLaser = false;
+				this.dodging = false;
 			}
 		}
 	}
@@ -1240,12 +1246,15 @@ class Bot extends Player {
 
 		this.dodgedLaser = false;
 
+		this.getCrate = true;  // Determine whether to get a crate or not
+
 
 		this.mineList = [];  // Location of all the mines
 
 		this.skipMine = false;
 
 		this.searchDist = 10; // Distance enemy is away before homing
+		this.turnDist = 5;    // Distance before bot turns around
 	}
 
 	update() {
@@ -1255,7 +1264,6 @@ class Bot extends Player {
 
 			// Only move if allowed
 			if (!this.dead && this.canMoveTimer == 0) {
-
 
 				// Decide what task the bot needs to do
 				this.dodgeWay = this.checkDodge();
@@ -1299,9 +1307,11 @@ class Bot extends Player {
 				} else if (this.task == TASK.homing && this.path.length == 0) {
 					console.log("IM HOMING");
 
+					// Decide which grid to go to in order to home
 					var enemy = playerArr[0];
 					if (this.angle == DIR.left || this.angle == DIR.right) {
 						if (this.y - enemy.y >= this.searchDist) {  // Enemy is above
+
 							console.log("Above");
 							this.path.push({
 								x: this.currPos.x,
@@ -1314,6 +1324,16 @@ class Bot extends Player {
 								y: this.currPos.y+1
 							});
 						}
+
+						// Enemy crossed over, face opposite direction
+						if (this.x - enemy.x >= this.turnDist) {
+							this.angle = DIR.left;
+							this.shootDir = DIR.left;
+						} else if (this.x - enemy.x <= -this.turnDist) {
+							this.angle = DIR.right;
+							this.shootDir = DIR.right;
+						}
+
 					} else if (this.angle == DIR.up || this.angle == DIR.down) {
 						if (this.x - enemy.x >= this.searchDist) {  // Enemy is left
 							console.log("Left");
@@ -1328,11 +1348,20 @@ class Bot extends Player {
 								y: this.currPos.y
 							});
 						}
+
+						// Enemy crossed over, face opposite direction
+						if (this.y - enemy.y >= this.turnDist) {
+							this.angle = DIR.up;
+							this.shootDir = DIR.up;
+						} else if (this.y - enemy.y <= -this.turnDist) {
+							this.angle = DIR.down;
+							this.shootDir = DIR.down;
+						}
 					}
 
 
 				// Decide whether to attack or not 
-				} else if (this.task != TASK.attack && this.shouldBotAttack() && this.attackBanTimer == 0 && this.task != TASK.getCrate && this.shootTimer == 0 && !playerArr[0].dead) {
+				} else if (this.task != TASK.attack && this.shouldBotAttack() && this.attackBanTimer == 0 && this.shootTimer == 0 && !playerArr[0].dead) {
 					this.task = TASK.attack;
 					this.path = [];
 
@@ -1358,7 +1387,7 @@ class Bot extends Player {
 					}
 
 				// Get a crate for weapon if only have snowgun
-				} else if (this.task != TASK.getCrate && this.gun instanceof SnowGun && !this.dodging) {
+				} else if (this.task != TASK.getCrate && this.task != TASK.attack && this.gun instanceof SnowGun && !this.dodging && this.getCrate) {
 					this.task = TASK.getCrate;
 					this.path = [];
 
