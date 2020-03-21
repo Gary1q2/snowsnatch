@@ -126,5 +126,7 @@ var sources_snd = {
 
     flagTimer: "sound/ticking.mp3",
     flagDrop: "sound/flagDrop.mp3",
-    flagRespawn: "sound/flagRespawn.mp3"
+    flagRespawn: "sound/flagRespawn.mp3",
+
+    arrowHUDpoint: "sound/arrowHUDpoint.mp3"
 };

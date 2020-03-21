@@ -529,6 +529,9 @@ class Flag extends Entity {
 
 		if (this.waitBefore > 0) {
 			this.waitBefore--;
+			if (this.waitBefore == 0) {
+				playSound(snd["arrowHUDpoint"]);
+			}
 		}
 	}
 
@@ -729,6 +732,9 @@ class Goal extends Entity {
 		} else {
 			this.capArrow = new Entity(this.x, this.y+20, 20, 20, img['capArrowRed_up'], 4, 4, [0,1,2,3,4,5,6,7,8,9,10,11,12], 0, 0);
 		}
+
+
+		this.waitBefore = 2 * 60;
 	}
 	update() {
 		this.checkGoal();
@@ -738,7 +744,14 @@ class Goal extends Entity {
 		}
 
 		if (this.owner.score == 0 && this.owner.hasFlag) {
-			this.capArrow.update();
+			if (this.waitBefore == 0) {
+				this.capArrow.update();	
+			} else {
+				this.waitBefore--;
+				if (this.waitBefore == 0) {
+					playSound(snd["arrowHUDpoint"]);
+				}
+			}
 		}
 	}
 
