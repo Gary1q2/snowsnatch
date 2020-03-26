@@ -221,6 +221,17 @@ class Entity {
 		}
 	}
 
+	// Check if grid has wall or edge
+	checkIfGridHasWallOrEdge(xGrid, yGrid) {
+		if (xGrid < 0 || yGrid < 0 || xGrid >= numWidth || yGrid >= numHeight) {
+			return true;
+		}
+		if (currLevel[yGrid][xGrid] == "W") {
+			return true
+		}
+		return false;
+	}
+
 
 	setAngle(angle) {
 		this.angle = angle;
@@ -675,10 +686,10 @@ class Crate extends Entity {
 				currLevel[this.y/gridLen][this.x/gridLen] = 0;
 
 				// Give random gun
-				var rand = Math.random();
-				if (rand < 0.2) {
+				//var rand = Math.random();
+				//if (rand < 0.2) {
 					i.gun = new LaserGun(i);
-				} else if (rand < 0.4) {
+				/*} else if (rand < 0.4) {
 					i.gun = new Shotgun(i);
 	     		} else if (rand < 0.6) {
 	     			i.gun = new Uzi(i);
@@ -686,7 +697,7 @@ class Crate extends Entity {
 	     			i.gun = new RocketLauncher(i);
 	     		} else {
 	     			i.gun = new Mine(i);
-	     		}
+	     		}*/
 	     		
 				this.spawnCrate();
 				break;
@@ -1259,9 +1270,6 @@ class Bot extends Player {
 
 		this.dodgedLaser = false;
 
-		this.getCrate = true;  // Determine whether to get a crate or not
-
-
 		this.mineList = [];  // Location of all the mines
 
 		this.skipMine = false;
@@ -1326,16 +1334,21 @@ class Bot extends Player {
 						if (this.y - enemy.y >= this.searchDist) {  // Enemy is above
 
 							console.log("Above");
-							this.path.push({
-								x: this.currPos.x,
-								y: this.currPos.y-1
-							});
+							if (!this.checkIfGridHasWallOrEdge(this.currPos.x, this.currPos.y-1)) {
+								this.path.push({
+									x: this.currPos.x,
+									y: this.currPos.y-1
+								});
+							}
 						} else if (this.y - enemy.y <= -this.searchDist) {  // Enemy is below
+
 							console.log("BELOWW");
-							this.path.push({
-								x: this.currPos.x,
-								y: this.currPos.y+1
-							});
+							if (!this.checkIfGridHasWallOrEdge(this.currPos.x, this.currPos.y+1)) {
+								this.path.push({
+									x: this.currPos.x,
+									y: this.currPos.y+1
+								});
+							}
 						}
 
 						// Enemy crossed over, face opposite direction
@@ -1349,17 +1362,23 @@ class Bot extends Player {
 
 					} else if (this.angle == DIR.up || this.angle == DIR.down) {
 						if (this.x - enemy.x >= this.searchDist) {  // Enemy is left
+
 							console.log("Left");
-							this.path.push({
-								x: this.currPos.x-1,
-								y: this.currPos.y
-							});
+							if (!this.checkIfGridHasWallOrEdge(this.currPos.x-1, this.currPos.y)) {
+								this.path.push({
+									x: this.currPos.x-1,
+									y: this.currPos.y
+								});
+							}
 						} else if (this.x - enemy.x <= -this.searchDist) {  // Enemy is right
+
 							console.log("Right");
-							this.path.push({
-								x: this.currPos.x+1,
-								y: this.currPos.y
-							});
+							if (!this.checkIfGridHasWallOrEdge(this.currPos.x+1, this.currPos.y)) {
+								this.path.push({
+									x: this.currPos.x+1,
+									y: this.currPos.y
+								});
+							}
 						}
 
 						// Enemy crossed over, face opposite direction
@@ -1400,7 +1419,7 @@ class Bot extends Player {
 					}
 
 				// Get a crate for weapon if only have snowgun
-				} else if (this.task != TASK.getCrate && this.task != TASK.attack && this.gun instanceof SnowGun && !this.dodging && this.getCrate) {
+				} else if (this.task != TASK.getCrate && !this.hasFlag && this.task != TASK.attack && this.gun instanceof SnowGun && !this.dodging) {
 					this.task = TASK.getCrate;
 					this.path = [];
 
