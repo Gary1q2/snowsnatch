@@ -686,10 +686,10 @@ class Crate extends Entity {
 				currLevel[this.y/gridLen][this.x/gridLen] = 0;
 
 				// Give random gun
-				//var rand = Math.random();
-				//if (rand < 0.2) {
+				var rand = Math.random();
+				if (rand < 0.2) {
 					i.gun = new LaserGun(i);
-				/*} else if (rand < 0.4) {
+				} else if (rand < 0.4) {
 					i.gun = new Shotgun(i);
 	     		} else if (rand < 0.6) {
 	     			i.gun = new Uzi(i);
@@ -697,7 +697,7 @@ class Crate extends Entity {
 	     			i.gun = new RocketLauncher(i);
 	     		} else {
 	     			i.gun = new Mine(i);
-	     		}*/
+	     		}
 	     		
 				this.spawnCrate();
 				break;
