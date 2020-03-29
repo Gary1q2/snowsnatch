@@ -3,28 +3,7 @@ class Astar {
 
 		this.height = currLevel.length;
 		this.width = currLevel[0].length;
-
-/*
-		this.start; 
-		this.goal;
-
-		// Find start and goal nodes from level array
-		for (var i = 0; i < this.level.length; i++) {
-			for (var j = 0; j < this.level[i].length; j++) {
-				if (this.level[i][j] == 2) {
-					this.start = {
-						x: j,
-						y: i
-					};
-				} else if (this.level[i][j] == 3) {
-					this.goal = {
-						x: j,
-						y: i
-					};
-				}
-			}
-		}
-*/
+		
 		console.log("Loading in level, height="+this.height+", width="+this.width);
 
 		// Create 2D array

@@ -58,12 +58,8 @@ var sources_img = {
     controlButtonFlash: "img/controlButtonFlash.png",
     goButton: "img/goButton.png",
     goButtonFlash: "img/goButtonFlash.png",
-    unlockButton: "img/unlockButton.png",
-    unlockButtonFlash: "img/unlockButtonFlash.png",
     rematchButton: "img/rematchButton.png",
     rematchButtonFlash: "img/rematchButtonFlash.png",
-
-    unlockScreen: "img/unlockScreen.png",
 
     arrow: "img/arrow.png",
     arrowFlash: "img/arrowFlash.png",
@@ -121,8 +117,6 @@ var sources_snd = {
 
     mineDrop: "sound/mineDrop.mp3",
     flagGot: "sound/flagGot.mp3",
-
-    arenaBGM: "sound/arenaBGM.mp3",
 
     flagTimer: "sound/ticking.mp3",
     flagDrop: "sound/flagDrop.mp3",
