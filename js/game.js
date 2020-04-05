@@ -112,6 +112,7 @@ class Game {
 		document.getElementById("tinyMenuButton").style.visibility = "visible";
 		document.getElementById("ammo1").style.visibility = "visible";
 		document.getElementById("soundButton").style.visibility = "visible";
+		document.getElementById("musicButton").style.visibility = "visible";
 
 		// Reset these variables
 		playerArr = [];               // Array of players
@@ -130,8 +131,10 @@ class Game {
 		playSound(snd['readFight']);
 		playSound(snd['snowbreak']);
 
-		//playSound(snd['arenaBGM']);
-
+		bgm.currentTime = 0;
+		if (music) {
+			bgm.play();
+		}
 
 		document.getElementById("scoreCTF").style.visibility = "visible";
 
@@ -161,9 +164,12 @@ class Game {
 
 		document.getElementById("tinyMenuButton").style.visibility = "hidden";
 		document.getElementById("soundButton").style.visibility = "hidden";
+		document.getElementById("musicButton").style.visibility = "hidden";
 
 		// Reset sound array
 		soundArray = [];
+
+		bgm.pause();
 
 		this.gamestate = GAMESTATE.menu;
 
@@ -308,6 +314,8 @@ class Game {
 		document.getElementById("scoreCTF").innerHTML = "P1: "+playerArr[0].score+"   P2: "+playerArr[1].score;
 
 		if (this.gameover) {
+
+			bgm.pause();
 			var winnerBoard = document.getElementById("winnerBoard");
 			winnerBoard.style.visibility = "visible";
 			winnerBoard.childNodes[3].innerHTML = "Player " + this.winner + " wins!";

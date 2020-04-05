@@ -96,6 +96,11 @@ var sources_img = {
     soundButtonFlash: "img/soundButtonFlash.png",
     soundButtonOff: "img/soundButtonOff.png",
     soundButtonOffFlash: "img/soundButtonOffFlash.png",
+
+    music: "img/music.png",
+    musicFlash: "img/musicFlash.png",
+    musicOff: "img/musicOff.png",
+    musicOffFlash: "img/musicOffFlash.png"
 };
 
 
@@ -136,5 +141,7 @@ var sources_snd = {
     flagDrop: "sound/flagDrop.mp3",
     flagRespawn: "sound/flagRespawn.mp3",
 
-    arrowHUDpoint: "sound/arrowHUDpoint.mp3"
+    arrowHUDpoint: "sound/arrowHUDpoint.mp3",
+
+    music: "sound/music.mp3"
 };

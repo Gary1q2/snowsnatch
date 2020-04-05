@@ -45,6 +45,9 @@ function afterLoaded() {
 	game = new Game();
 	filesLoaded = true;
 
+	bgm = snd['music'].cloneNode(true);
+	bgm.volume = 0.3;
+
 	console.log("Finished loading files!!");
 
 	// Load the skin dictionary
@@ -132,6 +135,23 @@ function toggleSound(curr) {
 	} else {
 		volume = 1;
 		curr.src = img['soundButtonFlash'].src;
+	}
+
+	playSound(snd['snowbreak']);
+}
+
+// Turns music on or off
+function toggleMusic(curr) {
+	if (music) {
+		music = false;
+		curr.src = img['musicOffFlash'].src;
+
+		bgm.pause();
+	} else {
+		music = true;
+		bgm.currentTime = 0;
+		curr.src = img['musicFlash'].src;
+		bgm.play();
 	}
 
 	playSound(snd['snowbreak']);

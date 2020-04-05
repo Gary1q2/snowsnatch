@@ -113,7 +113,13 @@ body {
 
 	visibility: hidden;	
 }
+#musicButton {
+	position: absolute;
+	top: 2px;
+	right: 136px;
 
+	visibility: hidden;
+}
 
 
 /* Selection screen buttons */

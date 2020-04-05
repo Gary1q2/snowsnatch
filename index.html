@@ -27,6 +27,8 @@
 				<img id="rematchButton" onmouseover="changeImage(this, img['rematchButtonFlash'])" onmouseout="changeImage(this, img['rematchButton'])" onclick="game.toCTFScreen()" src="img/rematchButton.png" alt="rematchButton">
 				<img id="tinyMenuButton" onmouseover="changeImage(this, img['menuButtonFlash'])" onmouseout="changeImage(this, img['menuButton'])" onclick="game.toMenuScreen()" src="img/menuButton.png" alt="menuButton">
 				<img id="soundButton" onmouseover="if (volume==1){changeImage(this, img['soundButtonFlash'])}else{changeImage(this, img['soundButtonOffFlash'])}" onmouseout="if (volume==1){changeImage(this, img['soundButton'])}else{changeImage(this, img['soundButtonOff'])}" onclick="toggleSound(this)" src="img/soundButton.png" alt="soundButton">
+				<img id="musicButton" onmouseover="if (music){changeImage(this, img['musicFlash'])}else{changeImage(this, img['musicOffFlash'])}" onmouseout="if(!music){changeImage(this, img['musicOff'])}else{changeImage(this, img['music'])}" onclick="toggleMusic(this)" src="img/music.png" alt="musicButton">
+
 
 				<!--Menu screen-->
 				<img class="menuScreen" id="playButton" onmouseover="changeImage(this, img['playButtonFlash'])" onmouseout="changeImage(this, img['playButton'])" onclick="game.toSelectionScreen()" src="img/playButton.png" alt="playButton">
@@ -60,7 +62,6 @@
 	<script src="js/class.js"></script>
 	<script src="js/weapon.js"></script>
 	<script src="js/level.js"></script>
-	<script src="js/unlock.js"></script>
 	<script src="js/game.js"></script>
 	<script src="js/keyboard.js"></script>
 	<script src="js/helper.js"></script>
@@ -162,10 +163,12 @@ var filesLoaded = false;  // If files are loaded or not
 var img = {};   // Contains all the images in the game
 var snd = {};   // Contains all the sounds in the game
 
-var volume = 1;
+var volume = 1;   // Whether sound fx on or off
+var music = true; // Wether music on or off
 
-// Array where cloned audio goes
-var soundArray = [];
+var soundArray = []; // Array where cloned audio goes
+
+var bgm;   // Background music
 
 
 window.onload = function() {
