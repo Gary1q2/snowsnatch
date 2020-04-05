@@ -90,7 +90,12 @@ var sources_img = {
     capArrowBlue_up: "img/capArrowBlue_up.png",
     capArrowRed_up: "img/capArrowRed_up.png",
 
-    byGary: "img/byGary.png"
+    byGary: "img/byGary.png",
+
+    soundButton: "img/soundButton.png",
+    soundButtonFlash: "img/soundButtonFlash.png",
+    soundButtonOff: "img/soundButtonOff.png",
+    soundButtonOffFlash: "img/soundButtonOffFlash.png",
 };
 
 

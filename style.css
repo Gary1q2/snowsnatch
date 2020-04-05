@@ -106,6 +106,13 @@ body {
 
 	visibility: hidden;
 }
+#soundButton {
+	position: absolute;
+	top: 2px;
+	right: 104px;
+
+	visibility: hidden;	
+}
 
 
 

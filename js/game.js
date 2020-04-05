@@ -111,6 +111,7 @@ class Game {
 
 		document.getElementById("tinyMenuButton").style.visibility = "visible";
 		document.getElementById("ammo1").style.visibility = "visible";
+		document.getElementById("soundButton").style.visibility = "visible";
 
 		// Reset these variables
 		playerArr = [];               // Array of players
@@ -159,6 +160,10 @@ class Game {
 		document.getElementById("rematchButton").style.visibility = "hidden";
 
 		document.getElementById("tinyMenuButton").style.visibility = "hidden";
+		document.getElementById("soundButton").style.visibility = "hidden";
+
+		// Reset sound array
+		soundArray = [];
 
 		this.gamestate = GAMESTATE.menu;
 

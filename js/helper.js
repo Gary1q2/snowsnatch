@@ -111,10 +111,31 @@ function unstretchImage(img) {
 
 // Clones audio node and plays the sound
 function playSound(audioNode) {
-	var clone = audioNode.cloneNode(true);
+	soundArray.push(audioNode.cloneNode(true));
+
+	var clone = soundArray[soundArray.length-1];
+	clone.volume = volume;
 	clone.play();
 }
 
+// Turn sounds on or off
+function toggleSound(curr) {
+	if (volume == 1) {
+		volume = 0;
+		curr.src = img['soundButtonOffFlash'].src;
+
+		// Stop all current playing sounds
+		for (var i = 0; i < soundArray.length; i++) {
+			soundArray[i].pause();
+		}
+
+	} else {
+		volume = 1;
+		curr.src = img['soundButtonFlash'].src;
+	}
+
+	playSound(snd['snowbreak']);
+}
 
 // Checks if two rectangles have a collision (true or false)
 function testCollisionRectRect(rect1, rect2) {

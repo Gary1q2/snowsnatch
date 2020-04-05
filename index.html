@@ -26,6 +26,7 @@
 				</div>
 				<img id="rematchButton" onmouseover="changeImage(this, img['rematchButtonFlash'])" onmouseout="changeImage(this, img['rematchButton'])" onclick="game.toCTFScreen()" src="img/rematchButton.png" alt="rematchButton">
 				<img id="tinyMenuButton" onmouseover="changeImage(this, img['menuButtonFlash'])" onmouseout="changeImage(this, img['menuButton'])" onclick="game.toMenuScreen()" src="img/menuButton.png" alt="menuButton">
+				<img id="soundButton" onmouseover="if (volume==1){changeImage(this, img['soundButtonFlash'])}else{changeImage(this, img['soundButtonOffFlash'])}" onmouseout="if (volume==1){changeImage(this, img['soundButton'])}else{changeImage(this, img['soundButtonOff'])}" onclick="toggleSound(this)" src="img/soundButton.png" alt="soundButton">
 
 				<!--Menu screen-->
 				<img class="menuScreen" id="playButton" onmouseover="changeImage(this, img['playButtonFlash'])" onmouseout="changeImage(this, img['playButton'])" onclick="game.toSelectionScreen()" src="img/playButton.png" alt="playButton">
@@ -161,6 +162,10 @@ var filesLoaded = false;  // If files are loaded or not
 var img = {};   // Contains all the images in the game
 var snd = {};   // Contains all the sounds in the game
 
+var volume = 1;
+
+// Array where cloned audio goes
+var soundArray = [];
 
 
 window.onload = function() {
