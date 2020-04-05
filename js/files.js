@@ -2,6 +2,17 @@ var sources_img = {
 	peng: "img/player.png",
     peng: "img/player.png",
     peng2: "img/player2.png",
+    peng3: "img/player3.png",
+    peng4: "img/player4.png",
+    cpu: "img/cpu.png",
+
+    playerDie: "img/playerDie.png",
+    player2Die: "img/player2Die.png",
+    player3Die: "img/player3Die.png",
+    player4Die: "img/player4Die.png",
+    cpuDie: "img/cpuDie.png",
+
+
     gun: "img/gun.png",
     bg: "img/bg.png",
     snowball: "img/snowball.png",
@@ -12,8 +23,6 @@ var sources_img = {
     shotgun: "img/shotgun.png",
     crate: "img/crate.png",
     snow: "img/snow.png",
-    playerDie: "img/playerDie.png",
-    player2Die: "img/player2Die.png",
     pellet: "img/pellet.png",
     ammo: "img/ammo.png",
 

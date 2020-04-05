@@ -19,6 +19,10 @@ class Game {
 		this.p1Pressed = false;
 		this.p2Pressed = false;
 
+		// Players default skins
+		this.p1Skin = SKIN.blue;
+		this.p2Skin = SKIN.red;
+
 		// Offsets for the scrolling background
 		this.scrollXOff = 0;
 		this.scrollYOff = 0;
@@ -33,6 +37,10 @@ class Game {
 		this.filterStr = 20;
 		this.frameTime = 0;
 		this.lastLoop = new Date();
+
+		// Remember if players pressed shoot key last
+		this.p1LastPress = false;
+		this.p2LastPress = false;
 	}
 
 	// Head to selection screen
@@ -177,6 +185,7 @@ class Game {
 			ctx.drawImage(img['p1Join'], 0, 0);
 			this.p1JoinBounce.update();
 
+			// P1 joined
 			if (Keys.space) {
 				this.p1Pressed = true;
 				document.getElementById("goButton").style.visibility = "visible";
@@ -186,17 +195,53 @@ class Game {
 		// Show press to join for P2
 		} else if (this.p1Pressed && !this.p2Pressed) {
 			ctx.drawImage(img['p2Join'], 0, 0);
+			ctx.drawImage(skinDict['alive'][this.p1Skin], 0, 0, 20, 20, 65, 20, 50, 50);
+			ctx.drawImage(img['cpu'], 0, 0, 20, 20, 65, 88, 50, 50);
 			this.p2JoinBounce.update();
 
+			// P2 joined
             if (Keys.f) {
             	this.p2Pressed = true;
             	this.bot = false;
            		playSound(snd['snowbreak']);
             }
 
+	        // Change skin for P1
+	        if (Keys.space == true && this.p1LastPress == false) {
+	        	this.p1Skin++;
+	        	if (this.p1Skin >= skinDict['alive'].length) {
+	        		this.p1Skin = 0;
+	        	}
+	        	playSound(snd['snowbreak']);
+	        }
+
 		} else if (this.p1Pressed && this.p2Pressed) {
 			ctx.drawImage(img['p1p2Join'], 0, 0);
+			ctx.drawImage(skinDict['alive'][this.p1Skin], 0, 0, 20, 20, 65, 20, 50, 50);
+			ctx.drawImage(skinDict['alive'][this.p2Skin], 0, 0, 20, 20, 65, 88, 50, 50);
+
+	        // Change skin for P1
+	        if (Keys.space == true && this.p1LastPress == false) {
+	        	this.p1Skin++;
+	        	if (this.p1Skin >= skinDict['alive'].length) {
+	        		this.p1Skin = 0;
+	        	}
+	        	playSound(snd['snowbreak']);
+	        }
+
+	        // Change skin for P2
+	        if (Keys.f == true && this.p2LastPress == false) {
+	        	this.p2Skin++;
+	        	if (this.p2Skin >= skinDict['alive'].length) {
+	        		this.p2Skin = 0;
+	        	}
+	        	playSound(snd['snowbreak']);
+	        }
 		}
+
+		// Remember last keypress
+        this.p1LastPress = Keys.space;
+        this.p2LastPress = Keys.f;
 	}
 
 	// Update the control screen loop
@@ -354,12 +399,12 @@ class Game {
 		for (var i = 0; i < numHeight; i++) {
 			for (var j = 0; j < numWidth; j++) {
 				if (currLevel[i][j] == 1) {
-					playerArr.push(new Human(j*gridLen, i*gridLen, 1, DIR.right, false));
+					playerArr.push(new Human(j*gridLen, i*gridLen, 1, DIR.right, this.p1Skin));
 				} else if (currLevel[i][j] == 2) {
 					if (this.bot) {
-						playerArr.push(new Bot(j*gridLen, i*gridLen, 2, DIR.left));
+						playerArr.push(new Bot(j*gridLen, i*gridLen, 2, DIR.left, SKIN.cpu));
 					} else {
-						playerArr.push(new Human(j*gridLen, i*gridLen, 2, DIR.left));
+						playerArr.push(new Human(j*gridLen, i*gridLen, 2, DIR.left, this.p2Skin));
 					}
 				}
 			}
@@ -423,10 +468,10 @@ class Game {
 					//ctx.drawImage(img['flagGreen'], 0, 0, 20, 20, xPos+j*size, yPos+i*size-size, size, size);
 				} else if (value == "1") {
 					ctx.drawImage(img['snow'], 6, 6, 20, 20, xPos+j*size, yPos+i*size, size, size);
-					ctx.drawImage(img['peng'], 0, 0, 20, 20, xPos+j*size, yPos+i*size, size, size);
+					ctx.drawImage(skinDict['alive'][this.p1Skin], 0, 0, 20, 20, xPos+j*size, yPos+i*size, size, size);
 				} else if (value == "2") {
 					ctx.drawImage(img['snow'], 6, 6, 20, 20, xPos+j*size, yPos+i*size, size, size);
-					ctx.drawImage(img['peng2'], 0, 0, 20, 20, xPos+j*size, yPos+i*size, size, size);
+					ctx.drawImage(skinDict['alive'][this.p2Skin], 0, 0, 20, 20, xPos+j*size, yPos+i*size, size, size);
 				} else if (value == "0") {
 					ctx.drawImage(img['snow'], 6, 6, 20, 20, xPos+j*size, yPos+i*size, size, size);
 				}

@@ -837,15 +837,9 @@ class Wall extends Entity {
 
 // A playable character controlled by a human or bot
 class Player extends Entity {
-	constructor(x, y, playerID, startFace) {
-		var pengColor;
-		if (playerID == 1) {
-			pengColor = img['peng'];
-		} else {
-			pengColor = img['peng2'];
-		}
-
-		super(x, y, 14, 14, pengColor, 1, 3, [0,1], 0,0);
+	constructor(x, y, playerID, startFace, skin) {
+		super(x, y, 14, 14, skinDict['alive'][skin], 1, 3, [0,1], 0,0);
+		this.skin = skin;
 
 		this.speed = 1;            // Move speed
 
@@ -1004,14 +998,8 @@ class Player extends Entity {
 			this.animIndex = 0;
 			this.animDelay = 0;
 
-			// Player 1 vs player 2
-			var temp;
-			if (this.playerID == 1) {
-				temp = img['playerDie'];
-			} else {
-				temp = img['player2Die'];
-			}
-			this.changeSprite(temp, 14, 14, 3, 3, [0], 20, 20);
+
+			this.changeSprite(skinDict['die'][this.skin], 14, 14, 3, 3, [0], 20, 20);
 
 			playSound(snd['die']);
 			playSound(snd['die2']);
@@ -1046,12 +1034,6 @@ class Player extends Entity {
 		this.firstKeyPress = DIR.none;
 
 
-		var temp;
-		if (this.playerID == 1) {
-			temp = img['peng'];
-		} else {
-			temp = img['peng2'];
-		}
 
 		// Prepare for new animation
 		this.animIndex = 0;
@@ -1060,7 +1042,7 @@ class Player extends Entity {
 
 
 		this.setAngle(this.startFace);
-		this.changeSprite(temp, 14, 14, 1, 3, [0, 1], 0,0);
+		this.changeSprite(skinDict['alive'][this.skin], 14, 14, 1, 3, [0, 1], 0,0);
 
 		this.gun = new SnowGun(this);
 
@@ -1074,8 +1056,8 @@ class Player extends Entity {
 
 // Human controlled player
 class Human extends Player {
-	constructor(x, y, playerID, startFace) {
-		super(x, y, playerID, startFace);
+	constructor(x, y, playerID, startFace, skin) {
+		super(x, y, playerID, startFace, skin);
 
 		// Stores if the keys are pressed or not
 		this.leftKey;   
@@ -1204,8 +1186,8 @@ class Human extends Player {
 
 // Computer controlled player
 class Bot extends Player {
-	constructor(x, y, playerID, startFace) {
-		super(x, y, playerID, startFace);
+	constructor(x, y, playerID, startFace, skin) {
+		super(x, y, playerID, startFace, skin);
 
 		// This isn't updated... so won't update when walls are destroyed
 		this.astar = new Astar();

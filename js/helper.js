@@ -44,7 +44,12 @@ function loadFiles(src_img, src_snd, callback) {
 function afterLoaded() {
 	game = new Game();
 	filesLoaded = true;
+
 	console.log("Finished loading files!!");
+
+	// Load the skin dictionary
+	skinDict['alive'] = [img['cpu'], img['peng'], img['peng2'], img['peng3'], img['peng4']];
+	skinDict['die'] = [img['cpuDie'], img['playerDie'], img['player2Die'], img['player3Die'], img['player4Die']];
 
 	// Make menu buttons visible
 	document.getElementById("playButton").style.visibility = "visible";
