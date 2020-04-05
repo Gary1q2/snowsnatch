@@ -49,7 +49,7 @@ function afterLoaded() {
 
 	// Load the skin dictionary
 	skinDict['alive'] = [img['cpu'], img['peng'], img['peng2'], img['peng3'], img['peng4']];
-	skinDict['die'] = [img['cpuDie'], img['playerDie'], img['player2Die'], img['player3Die'], img['player4Die']];
+	skinDict['die'] = [img['cpuDie'], img['pengDie'], img['peng2Die'], img['peng3Die'], img['peng4Die']];
 
 	// Make menu buttons visible
 	document.getElementById("playButton").style.visibility = "visible";

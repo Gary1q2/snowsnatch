@@ -6,10 +6,10 @@ var sources_img = {
     peng4: "img/player4.png",
     cpu: "img/cpu.png",
 
-    playerDie: "img/playerDie.png",
-    player2Die: "img/player2Die.png",
-    player3Die: "img/player3Die.png",
-    player4Die: "img/player4Die.png",
+    pengDie: "img/playerDie.png",
+    peng2Die: "img/player2Die.png",
+    peng3Die: "img/player3Die.png",
+    peng4Die: "img/player4Die.png",
     cpuDie: "img/cpuDie.png",
 
 
